@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vnsky/spring-app:latest
+    container_name: sale-service
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT_HOST:-8082}:8082"
+    restart: unless-stopped

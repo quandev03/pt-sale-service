@@ -1,0 +1,66 @@
+= API Upload ảnh hợp đồng
+Tác giả <hoangll@vissoft>
+v1.0, {docdate}
+:toc:
+:toc-title: Mục lục
+:sectnums:
+
+== Mô tả API
+API này được sử dụng để NV CSKH upload hợp đồng đã có chữ ký của khách hàng
+
+== Thiết kế API
+
+=== Request
+
+.Endpoint
+[source]
+----
+POST /customer-service/private/v1/upload-contract
+----
+
+RequestPart
+|===
+|Key |Value
+
+|contract_img
+|MultipartFile
+
+|===
+
+=== Response
+
+.Success Response (200 OK)
+[source,json]
+----
+{"message":  "Upload contract image success"}
+----
+
+.Error Response
+[source,json]
+----
+{
+  "message": "Image size larger than 500kb",
+  "code": "001"
+}
+----
+
+=== Tổ chức Class
+
+=== Sequence Diagram
+
+[plantuml,diagram1,png]
+----
+@startuml
+actor User as U
+participant "Customer Service" as CS
+
+U -> CS: Upload ảnh hợp đồng đã có chữ ký khách hàng
+CS -> CS: Lưu lại ảnh hợp đồng
+
+CS -> U: Cập nhật ảnh hợp đồng thành công
+
+@enduml
+
+
+----
+

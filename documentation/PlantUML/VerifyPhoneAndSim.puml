@@ -1,0 +1,51 @@
+@startuml
+title API kiểm tra số thuê bao và serial SIM
+
+actor User as U
+participant "Customer-Management Service" as CMS
+database "CM-Schema" as DB
+
+U -> CMS : Nhập số thuê bao và serial SIM
+CMS -> CMS : Kiểm tra định dạng số thuê bao
+alt Số thuê bao không đúng định dạng
+    CMS -> U : Báo lỗi định dạng số thuê bao
+end
+
+CMS -> CMS : Kiểm tra độ dài số thuê bao (tối đa 10)
+alt Số thuê bao quá dài
+    CMS -> U : Báo lỗi độ dài số thuê bao
+end
+
+CMS -> CMS : Kiểm tra số thuê bao có thuộc Mobiphone
+alt Không phải số Mobiphone
+    CMS -> U : Báo lỗi không phải số Mobiphone
+    return
+end
+
+CMS -> DB : Kiểm tra trạng thái kích hoạt của số thuê bao
+alt Số thuê bao chưa được kích hoạt
+    CMS -> U : Báo lỗi số thuê bao chưa kích hoạt
+    return
+end
+
+CMS -> CMS : Kiểm tra định dạng serial SIM
+alt Serial SIM không đúng định dạng
+    CMS -> U : Báo lỗi định dạng serial SIM
+    return
+end
+
+CMS -> CMS : Kiểm tra độ dài serial SIM (tối đa 16)
+alt Serial SIM quá dài
+    CMS -> U : Báo lỗi độ dài serial SIM
+    return
+end
+
+CMS -> DB : Kiểm tra serial SIM đã ghép với số thuê bao
+alt Serial SIM chưa ghép với số thuê bao
+    CMS -> U : Báo lỗi serial SIM chưa ghép với số thuê bao
+    return
+else Serial SIM đã ghép đúng với số thuê bao
+    CMS -> U : Trả về kết quả kiểm tra thành công
+end
+
+@enduml

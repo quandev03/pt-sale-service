@@ -1,0 +1,14 @@
+template:
+  fields:
+    - name: NAME
+      coordinates:
+        x: 0
+        y: 0
+    - name: AGE
+      coordinates:
+        x: 0
+        y: 0
+    - name: COUNTRY
+      coordinates:
+        x: 0
+        y: 0

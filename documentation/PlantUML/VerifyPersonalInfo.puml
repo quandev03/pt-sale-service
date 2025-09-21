@@ -1,0 +1,35 @@
+@startuml
+autonumber
+
+actor User
+participant "Customer Service" as CS
+
+User -> CS: Upload ảnh căn cước mặt trước, mặt sau, ảnh chân dung
+CS -> CS: Kiểm tra dung lượng ảnh
+alt Dung lượng > 500kb
+    CS -> User: Báo lỗi "Dung lượng ảnh quá lớn"
+end
+
+CS -> CS: Gọi API OCR
+CS -> User: Trả về thông tin đã trích xuất
+
+CS -> CS: Thực hiện validate 8 tiêu chí
+alt Có vi phạm tiêu chí
+    CS -> User: Báo lỗi "Vi phạm tiêu chí"
+end
+
+CS -> CS: Gọi API C06
+
+alt Thông tin không chính xác
+    CS -> User: Báo lỗi thông tin không chính xác
+else Thông tin chính xác
+    CS -> User: Thông tin chính xác
+end
+
+CS -> CS: Gọi API EKYC
+alt Ảnh có tỷ lệ khớp quá thấp
+    CS -> User: Báo lỗi ảnh không chính xác
+end
+CS -> User: Xác minh thông tin thành công
+
+@enduml

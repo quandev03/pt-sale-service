@@ -1,0 +1,123 @@
+= API Xác thực Thông tin thuê bao người dùng
+Tác giả <hoangll@vissoft>
+v1.0, {docdate}
+:toc:
+:toc-title: Mục lục
+:sectnums:
+
+== Mô tả API
+API này được sử dụng để xác minh thông tin số điện thoại và SIM serial của người dùng. API này sử dụng phương thức POST và trả về kết quả dưới dạng JSON.
+
+== Thiết kế API
+
+=== Request
+
+.Endpoint
+[source]
+----
+POST /customer-service/private/v1/verify
+----
+
+.Body
+[source,json]
+----
+{
+  "phoneNumber": "0868627583",
+  "serialSim": "AB31DE"
+}
+----
+
+=== Response
+
+.Success Response (200 OK)
+[source,json]
+----
+"True"
+----
+
+.Error Response
+[source,json]
+----
+{
+  "message": "The provided phone number invalid.",
+  "code": "001"
+}
+----
+
+=== Tổ chức Class
+
+|===
+|Các Class
+
+|SIMResponse
+
+|PhoneResponse
+
+|PhoneAndSIMDTO
+
+|SubscriberController
+
+|SubscriberService
+
+|SubscriberServiceImpl
+
+|BaseMapper
+|===
+
+=== Sequence Diagram
+
+[plantuml, diagram1, png]
+----
+@startuml
+autonumber
+title Luồng xử lý kiểm tra số thuê bao và serial SIM
+
+actor User as U
+participant "Client (web)" as C
+participant "Customer Service" as CS
+database "3rd-Schema" as DB
+
+U -> C : Nhập số thuê bao và serial SIM
+
+CS -> CS: Gọi api MBF
+CS -> CS : Kiểm tra định dạng số thuê bao
+alt Số thuê bao không đúng định dạng
+    CS -> C : Báo lỗi định dạng số thuê bao
+end
+
+CS -> CS : Kiểm tra độ dài số thuê bao (tối đa 10)
+alt Số thuê bao quá dài
+    CS -> C : Báo lỗi độ dài số thuê bao
+end
+
+CS -> DB : Kiểm tra số thuê bao có thuộc Mobiphone không
+alt Không phải số Mobiphone
+    CS -> C : Báo lỗi không phải số Mobiphone
+end
+
+CS -> DB : Kiểm tra trạng thái kích hoạt của số thuê bao
+alt Số thuê bao chưa được kích hoạt
+    CS -> C : Báo lỗi số thuê bao chưa kích hoạt
+end
+
+CS -> CS : Kiểm tra định dạng serial SIM
+alt Serial SIM không đúng định dạng
+    CS -> C : Báo lỗi định dạng serial SIM
+end
+
+CS -> CS : Kiểm tra độ dài serial SIM (tối đa 16)
+alt Serial SIM quá dài
+    CS -> C : Báo lỗi độ dài serial SIM
+end
+
+CS -> DB : Kiểm tra serial SIM đã ghép với số thuê bao chưa
+alt Serial SIM chưa ghép với số thuê bao
+    CS -> C : Báo lỗi serial SIM chưa ghép với số thuê bao
+else Serial SIM đã ghép đúng với số thuê bao
+    CS -> C : Trả về kết quả kiểm tra thành công
+end
+
+C -> U : Hiển thị kết quả cho người dùng
+
+@enduml
+----

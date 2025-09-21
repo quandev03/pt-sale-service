@@ -1,0 +1,198 @@
+logging:
+  level:
+    zaxxer:
+      hikari:
+        HikariConfig: DEBUG
+    com:
+      vnsky:
+        common: DEBUG
+        bcss:
+          projectbase: INFO
+        vnsky-security: DEBUG
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: projectbase-service
+  threads:
+    virtual:
+      enabled: true
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: deferred
+  # web-security:
+  #   debug: true
+  #    redis:
+  #      database: 0
+  #      url: redis://localhost:6379
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      auto-commit: false
+      poolName: Hikari
+      maximum-pool-size: 40
+      data-source-properties:
+        oracle:
+          jdbc:
+            defaultConnectionValidation: LOCAL
+      minimum-idle: 10
+    type: com.zaxxer.hikari.HikariDataSource
+    url: ${DB_URL}
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    open-in-view: false
+    properties:
+      hibernate:
+        connection:
+          provider_disables_autocommit: true
+        generate_statistics: false
+        jdbc:
+          batch_size: 25
+          time_zone: UTC
+        order_inserts: true
+        order_updates: true
+        query:
+          fail_on_pagination_over_collection_fetch: true
+          in_clause_parameter_padding: true
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+  mail:
+    default-encoding: UTF-8
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    test-connection: true
+    protocol: ${MAIL_PROTOCOL:}
+    properties:
+      mail-sender-display-name: QLPT
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        test-connection: false
+  task:
+    execution:
+      pool:
+        keep-alive: 10s
+        max-size: 16
+        queue-capacity: 100
+      thread-name-prefix: ${spring.application.name}-task-
+    scheduling:
+      pool:
+        size: 2
+      thread-name-prefix: ${spring.application.name}-scheduling-
+application:
+  minio:
+    access:
+      secret: ${MINIO_ACCESS_KEY:hehe}
+    access-key: ${MINIO_ACCESS_KEY:}
+    secret-key: ${MINIO_SECRET_KEY:}
+    url: ${MINIO_URL:}
+    bucket-public: ${MINIO_PUBLIC_BUCKET:aab}
+    bucket-private: ${MINIO_BUCKET_PRIVATE:aa}
+    connect-timeout: ${MINIO_CONNECT_TIMEOUT:30000}
+    write-timeout: ${MINIO_WRITE_TIMEOUT:60000}
+    read-timeout: ${MINIO_READ_TIMEOUT:60000}
+
+  auth:
+    jwks-uri: ${JWKS_URL:}
+    jwk-kid: vnsky
+    policy-uri: ${POLICY_URL:}
+  cache:
+    redisson:
+      enabled: true
+      timeout: 30000
+      node-addresses: ${REDIS_URL:}
+      password: ${REDIS_PASSWORD:}
+      ttl: 60000
+      check-slots-coverage: true
+      idle-connect-timeout: 10000
+      connect-timeout: 30000
+      retry-attempts: 3
+      retry-interval: 1500
+      failed-slave-reconnection-interval: 3000
+      failed-slave-check-interval: 60000
+      subscriptions-per-connection: 5
+      client-name: ''
+      subscription-connection-pool-size: 50
+      slave-connection-minimum-idle-size: 24
+      slave-connection-pool-size: 64
+      master-connection-minimum-idle-size: 24
+      master-connection-pool-size: 64
+      scan-interval: 1000
+      ping-connection-interval: 30000
+      keep-alive: false
+      tcp-no-delay: false
+
+  version: ${APP_VERSION:1.0}
+  path:
+    base:
+      private: /private/api/v1
+      public: /public/api/v1
+      landing-page: /public/api/v1/landing-page
+  mail-header-logo-path: /customer-management/mail/logo-hivn.png
+  mail-header-background-path: https://minio-vnsky.vissoft.vn/api/v1/buckets/bcss-public-test/objects/download?preview=true&prefix=background-hivn.png&version_id=null
+
+server:
+  port: ${SERVER_PORT:8082}
+  servlet:
+    context-path: ${SERVER_CTX_PATH:}
+
+proxy:
+  enable: false
+  host: localhost
+  port: 8080
+
+
+kafka:
+  consumer:
+    bootstrap-servers: ${BOOTSTRAP_SERVER:}
+    auto-offset-reset: latest
+    group-id: ${spring.application.name}
+  producer:
+    bootstrap-servers: ${BOOTSTRAP_SERVER:}
+  properties:
+    security-protocol: SASL_PLAINTEXT
+    sasl-mechanism: PLAIN
+    sasl-jaas-config: ${JAAS_CONFIG:}
+
+third-party:
+  integration:
+    apikey: internal-test
+    general: ${DOMAIN_API_INTEGRATION}/internal/api/v1/third-party-api/general
+  mobifone:
+    user-mobifone: "C3_DLC_GEM3"
+    hlrgw-username-book-esim: "ESIM_GW_USER"
+    book-esim-profile-type: "VMS_eSIM19V2111"
+    default-package: "HVN0"
+    shop-code: "DEFAULT_SHOP"
+    employee: "SYSTEM"
+    reason-code: "ESIM_REGISTRATION"
+    qlkh-username: "hauser"
+    qlkh-password: "hpass"
+    mobi-sub-type: "PREPAID"
+  qr-code:
+    create-qr-code-url: ${QR_DOMAIN:}
+
+param:
+  template:
+    contract-sim-active-folder: /customer-management/template/
+    contract-sim-active-file: KHCN_Hợp đồng mẫu.docx
+    decree13confirmation-record: template_nd13.docx
+  contract:
+    sim-active:
+      final-contract-folder: /customer-management/final-contract
+
+hi-vn-service:
+  channel-code: ${VNSKY_HI_VNSKY_CHANNEl_CODE}

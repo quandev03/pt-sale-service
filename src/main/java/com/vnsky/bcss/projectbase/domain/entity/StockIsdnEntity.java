@@ -41,4 +41,4 @@ public class StockIsdnEntity extends AbstractAuditingEntity {
 
     @Column(name = "DESCRIPTION")
     private String description;
-} 
+}

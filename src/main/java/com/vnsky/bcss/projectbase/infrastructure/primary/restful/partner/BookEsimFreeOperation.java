@@ -12,12 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "eSIM Booking", description = "eSIM Booking APIs")
 @RequestMapping("${application.path.base.public}/esim-free")
 public interface BookEsimFreeOperation {
     @PostMapping("/book")
-    @Operation(summary = "Book eSIM", description = "Book eSIM with specified quantity and package")
-    ResponseEntity<Object> bookEsim(@Validated @RequestBody BookEsimRequest request);
+    @Operation(summary = "Book eSIM Free", description = "Book free eSIM with specified quantity and package for multiple requests")
+    ResponseEntity<Object> bookEsim(@Validated @RequestBody List<BookEsimRequest> requests);
 
     @GetMapping("/book-free")
     @Operation(summary = "Book eSIM Free", description = "Get List book eSim free")
@@ -28,7 +30,11 @@ public interface BookEsimFreeOperation {
         @RequestParam(name = "from", required = false) String dateFrom,
         @RequestParam(name = "to", required = false) String dateTo,
         @RequestParam(name = "status", required = false) Integer status,
-        @RequestParam(name= "textSearch", required = false) String textSearch
+        @RequestParam(name= "textSearch", required = false) String textSearch,
+        @RequestParam(name = "isFree", required = false,defaultValue = "0") Integer isFree
     );
+
+    @GetMapping("/get-package")
+    ResponseEntity<Object> freePackageProfile();
 
 }

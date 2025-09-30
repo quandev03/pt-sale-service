@@ -28,5 +28,7 @@ public class OcrAndFaceCheckResponse {
 
     private String serial;
 
+    private Long isdn;
+
     private OcrStepResponse.Infors ocrData;
 }

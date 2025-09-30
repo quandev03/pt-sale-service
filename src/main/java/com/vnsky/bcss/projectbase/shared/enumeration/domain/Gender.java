@@ -9,8 +9,8 @@ import java.util.Objects;
 @Getter
 public enum Gender {
     MALE("Male", 1, "Nam"),
-    FEMALE("Female", 2, "Nữ"),
-    UNKNOWN("Other", 3, "");
+    FEMALE("Female", 0, "Nữ"),
+    UNKNOWN("Other", 2, "");
 
     private final String value;
     private final Integer code;

@@ -16,10 +16,10 @@ import java.time.LocalDate;
 @SuperBuilder
 public class OrganizationDeliveryInfoDTO extends CommonDTO{
     @Schema(description = "Id")
-    private Long id;
+    private String id;
 
     @Schema(description = "ID đối tác")
-    private Long orgId;
+    private String orgId;
 
     @Schema(description = "mã tỉnh/thành phố")
     private String provinceCode;

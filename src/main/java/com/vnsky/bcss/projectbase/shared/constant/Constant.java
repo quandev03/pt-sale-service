@@ -1,6 +1,8 @@
 package com.vnsky.bcss.projectbase.shared.constant;
 
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorSubcriberKey;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.NumberTransactionType;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
@@ -8,6 +10,7 @@ import org.springframework.http.MediaType;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -74,6 +77,20 @@ public class Constant {
     public static final String TEMPLATE_EMAIL_ESIM = "EmailEsim";
 
     public static final MediaType XLSX = MediaType.valueOf(HeaderConstants.HEADER_VALUE_APPLICATION);
+
+    public static final String VNSKY_CLIENT_ID = "000000000000";
+
+    public static final String COMMA = ",";
+
+    public static final String SYSTEM = "SYSTEM";
+
+    public static final String EMPTY_STRING = "";
+
+    public static final String MESSAGE_SUCCESS = "Thành công";
+    public static final String MESSAGE_VALID = "Hợp lệ";
+    public static final String MESSAGE_FAILURE = "Thất bại";
+
+    public static final String DATE_TIME_FORMAT = "ddMMyyyyHHmmss";
 
     public static final String COMMON_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
@@ -146,6 +163,39 @@ public class Constant {
 
     }
 
+    public static final class OrderType{
+        public static final String BOOK_ESIM = "Book eSIM";
+        public static final String MUA_GOI = "Mua gói";
+        public static final String BAN_GOI = "Bán gói";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Order{
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class OrderType{
+            public static final String BOOK_ESIM = "Book eSIM";
+            public static final String MUA_GOI = "Mua gói";
+            public static final String BAN_GOI = "Bán gói";
+        }
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public class SubscriberStatusConstant {
+
+        public static final String DA_CAP_NHAT_TTTB     = "Đã cập nhật TTTB";
+        public static final String DA_GOI_900           = "Đã gọi 900";
+        public static final String DA_BAN               = "Đã bán";
+        public static final String TRONG_KHO            = "Trong kho";
+        public static final String CHUA_SU_DUNG         = "Chưa sử dụng";
+
+        public static final String KHONG_BI_CHAN                 = "Không bị chặn";
+        public static final String CHAN_MOT_CHIEU_YEU_CAU        = "Chặn một chiều do yêu cầu";
+        public static final String CHAN_HAI_CHIEU_YEU_CAU        = "Chặn hai chiều do yêu cầu";
+        public static final String CHAN_MOT_CHIEU_NHA_MANG       = "Chặn một chiều do nhà mạng";
+        public static final String CHAN_HAI_CHIEU_NHA_MANG       = "Chặn hai chiều do nhà mạng";
+    }
+
+
     public static final String ACTIVED_STRING = "1";
 
     public static final String CREATE_NEW_CODE = "CM";
@@ -194,14 +244,14 @@ public class Constant {
         public static final Integer FIELD_NAME = 2;
         public static final String ID_TYPE = "ID_TYPE";
         public static final Set<String> VALID_CODE = Set.of(
-            Constant.ApplicationConfig.MAX_SUBSCRIBER_BY_USER,
-            Constant.ApplicationConfig.SUB_FREQUENCY,
-            Constant.ApplicationConfig.SUBSCRIBER_ACTIVE_TIME
+            ApplicationConfig.MAX_SUBSCRIBER_BY_USER,
+            ApplicationConfig.SUB_FREQUENCY,
+            ApplicationConfig.SUBSCRIBER_ACTIVE_TIME
         );
         public static final Set<String> VALID_TYPE = Set.of(
-            Constant.ApplicationConfig.SUBSCRIBER_ACTIVE_REQUIREMENT,
-            Constant.ApplicationConfig.SUBSCRIBER_ACTIVE_PARAM,
-            Constant.ApplicationConfig.SUBSCRIBER_ACTIVE_TIME
+            ApplicationConfig.SUBSCRIBER_ACTIVE_REQUIREMENT,
+            ApplicationConfig.SUBSCRIBER_ACTIVE_PARAM,
+            ApplicationConfig.SUBSCRIBER_ACTIVE_TIME
         );
     }
 
@@ -692,10 +742,10 @@ public class Constant {
         public static final String OPEN_ACTION = "OPEN_ACTION";
         public static final String BLOCK_ACTION = "BLOCK_ACTION";
         public static final Map<String, String> LOCK_UNLOCK_SUCCESS_MAP = Map.of(
-            Constant.SearchSubscriber.LOCK_ONE, "Chặn 1 chiều thành công",
-            Constant.SearchSubscriber.LOCK_TWO, "Chặn 2 chiều thành công",
-            Constant.SearchSubscriber.UNLOCK_ONE, "Mở 1 chiều thành công",
-            Constant.SearchSubscriber.UNLOCK_TWO, "Mở 2 chiều thành công"
+            SearchSubscriber.LOCK_ONE, "Chặn 1 chiều thành công",
+            SearchSubscriber.LOCK_TWO, "Chặn 2 chiều thành công",
+            SearchSubscriber.UNLOCK_ONE, "Mở 1 chiều thành công",
+            SearchSubscriber.UNLOCK_TWO, "Mở 2 chiều thành công"
         );
 
         public static final String STATUS_TRUE = "Đang hoạt động";
@@ -712,16 +762,16 @@ public class Constant {
         public static final String SEND_MESSAGE_FAIL = ". Gửi tin nhắn thất bại do lỗi hệ thống";
         public static final String OTHER = "OTHER";
         public static final Map<String, String> LOCK_UNLOCK_OPTION_MAP = Map.of(
-            Constant.SearchSubscriber.LOCK_ONE, "1",
-            Constant.SearchSubscriber.LOCK_TWO, "2",
-            Constant.SearchSubscriber.UNLOCK_ONE, "1",
-            Constant.SearchSubscriber.UNLOCK_TWO, "2"
+            SearchSubscriber.LOCK_ONE, "1",
+            SearchSubscriber.LOCK_TWO, "2",
+            SearchSubscriber.UNLOCK_ONE, "1",
+            SearchSubscriber.UNLOCK_TWO, "2"
         );
         public static final Map<String, Integer> LOCK_UNLOCK_STATUS_UPDATE = Map.of(
-            Constant.SearchSubscriber.LOCK_ONE, 10,
-            Constant.SearchSubscriber.LOCK_TWO, 20,
-            Constant.SearchSubscriber.UNLOCK_ONE, 1,
-            Constant.SearchSubscriber.UNLOCK_TWO, 1
+            SearchSubscriber.LOCK_ONE, 10,
+            SearchSubscriber.LOCK_TWO, 20,
+            SearchSubscriber.UNLOCK_ONE, 1,
+            SearchSubscriber.UNLOCK_TWO, 1
         );
         public static final String SUB_CHARGE_PACKAGE = "SUB_CHARGE_PACKAGE";
         public static final String ACTIVE_STATUS = "ACTIVE_STATUS";
@@ -901,10 +951,15 @@ public class Constant {
         public static final String COMMA = ",";
         public static final String PERCENT = "%";
         public static final String ASTERISK = "*";
+        public static final String DOT = ".";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class MinioDir{
+        public static final String ISDN_TRANSACTION = "ISDN_TRANSACTION";
+        public static final String PARTNER_FILE = "PARTNER_FILE/";
+        public static final String ATTACHMENTS = "ATTACHMENTS";
+        public static final String BATCH_PACKAGE_SALE = "BATCH_PACKAGE_SALE";
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static class ActiveSubscriber{
@@ -912,10 +967,53 @@ public class Constant {
 
             public static final String TEMP_FOLDER = FOLDER_URL + "/temp";
         }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class UpdateInformation{
+            public static final String FOLDER_URL = "update-information";
+
+            public static final String TEMP_FOLDER = FOLDER_URL + "/temp";
+        }
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static class PackageProfile{
             public static final String FOLDER_URL = "image-package-profile";
         }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class UserSignature{
+            public static final String FOLDER_URL = "USER_SIGNATURE";
+
+            public static String buildSignatureUrl(@NotNull String userId){
+                return FOLDER_URL + "/" + userId + ".png";
+            }
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class BatchPackageSale{
+            public static final String INPUT_FOLDER = BATCH_PACKAGE_SALE + "/input";
+            public static final String RESULTS_FOLDER = BATCH_PACKAGE_SALE + "/results";
+        }
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Status {
+        public static final Integer ACTIVE = 1;
+        public static final Integer IN_ACTIVE = 0;
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class OrgType {
+        public static final String NBO = "NBO";
+        public static final String PARTNER = "PARTNER";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class ApprovalStatus {
+        public static final Integer WAITING_APPROVE = 1;
+        public static final Integer IN_APPROVE = 2;
+        public static final Integer APPROVED = 3;
+        public static final Integer REJECTED = 4;
+        public static final Integer CANCEL = 5;
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -985,6 +1083,90 @@ public class Constant {
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class AuditTarget {
+        public static final String PROMOTION_PROGRAM_CATALOG = "PROMOTION_CATALOG";
+        public static final String DELIVERY_PROMOTION = "DELIVERY_PROMOTION";
+        public static final String PARTNER_USER = "PARTNER_USER";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class UploadFile {
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class SalePackageBatch {
+            public static final String SUCCESS = "Thành công";
+            public static final String FAIL = "Thất bại";
+        }
+
+        public static final String PHONE_NUMBER_NOT_FOUND = "Số điện thoại không được để trống; ";
+        public static final String PACKAGE_CODE_NOT_FOUND = "Mã gói cước không được để trống; ";
+        public static final String PACKAGE_NOT_FOUND = "Gói cước không tồn tại; ";
+        public static final String INVALID_PHONE_NUMBER = "Số thuê bao không đúng định dạng; ";
+        public static final String PACKAGE_NOT_EXIST = "Gói cước không tồn tại; ";
+
+        public static final Pattern PHONE_PATTERN = Pattern.compile("^(84\\d{9}|0\\d{9}|\\d{9})$");
+
+        public static final List<String> HEADER_FILE_SALE_PACKAGE = Arrays.asList("Số thuê bao", "Mã gói cước");
+    }
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class TableNameConstant {
+        public static final String ISDN_TRANSACTION = "ISDN_TRANSACTION";
+        public static final String STOCK_ISDN_ORG = "STOCK_ISDN_ORG";
+        public static final String STOCK_ISDN = "STOCK_ISDN";
+        public static final String COMBINE_KIT = "COMBINE_KIT";
+        public static final String REASON = "REASON";
+        public static final String SALE_ORDER = "SALE_ORDER";
+        public static final String STOCK_PRODUCT_UPLOAD_ORDER = "STOCK_PRODUCT_UPLOAD_ORDER";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class FixedListName {
+        public static final String FIELD_STATUS = "fieldStatus";
+        public static final String APPROVAL_STATUS = "approvalStatus";
+        public static final String TRANSACTION_STATUS = "transactionStatus";
+        public static final String TRANSACTION_TYPE = "transactionType";
+        public static final String PROCESS_TYPE = "processType";
+        public static final String UPLOAD_STATUS = "uploadStatus";
+        public static final String TRANSFER_STATUS = "transferStatus";
+        public static final String STOCK_STATUS = "status";
+        public static final String MOVE_TYPE = "MoveType";
+        public static final String NUMBER_STATUS = "numberStatus";
+    }
+
+    public static class NumberProcessFile {
+
+        private static final DateTimeFormatter FILE_TIMESTAMP_FMT = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+
+        public static final Pattern NUMBER_REGEX = Pattern.compile("^84.{14}$");
+
+        public static String attachmentAtIndex(int index) {
+            return String.format("attachments[%s]", index);
+        }
+
+        public static String getCheckFileName() {
+            LocalDateTime now = LocalDateTime.now();
+            return String.format("Ket_qua_kiem_tra_%s.xlsx", FILE_TIMESTAMP_FMT.format(now));
+        }
+
+        public static String getSampleFileName(NumberTransactionType numberTransactionType) {
+            return getSampleFileName(numberTransactionType, ".xlsx");
+        }
+
+        public static String getSampleFileName(NumberTransactionType numberTransactionType, String extension) {
+            return numberTransactionType.getUnaccentDescription() + extension;
+        }
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class ProcessCode {
+        public static final String UPLOAD_NUMBER = "UPLOAD_NUMBER";
+        public static final String TRANSFER_NUMBER_OTHER = "TRANSFER_WAREHOUSE";
+        public static final String DISTRIBUTE_NUMBER = "NUMBER_DISTRIBUTION";
+        public static final String EXPORT_NUMBER_FOR_PARTNER = "EXPORT_NUMBER_FOR_PARTNER";
+        public static final String BACK_NUMBER = "BACK_NUMBER";
+        public static final String STOCK_PRODUCT_UPLOAD_ORDER = "SERIAL_UPLOAD_ORDER";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ActiveStatusSub {
         public static final String ACTIVE = "Bình thường";
         public static final String BLOCK_OUTGOING_BY_REQUEST = "Chặn một chiều theo yêu cầu";
@@ -1002,7 +1184,7 @@ public class Constant {
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class UploadFile {
+    public static class FileUpload{
         public static final String REGEX = "^84.{14}$";
         public static final List<String> HEADER_FILE_STOCK_IN = List.of("Mã sản phẩm", "Serial đầu", "Serial cuối", "Số lượng");
         public static final List<String> HEADER_FILE_STOCK_OUT = List.of("Mã sản phẩm", "Số lượng", "Serial đầu");

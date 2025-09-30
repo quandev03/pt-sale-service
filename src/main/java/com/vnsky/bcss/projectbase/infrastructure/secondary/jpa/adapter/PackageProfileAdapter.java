@@ -4,10 +4,13 @@ import com.vnsky.bcss.projectbase.domain.dto.PackageProfileDTO;
 import com.vnsky.bcss.projectbase.domain.entity.PackageProfileEntity;
 import com.vnsky.bcss.projectbase.domain.mapper.PackageProfileMapper;
 import com.vnsky.bcss.projectbase.domain.port.secondary.PackageProfileRepoPort;
+import com.vnsky.bcss.projectbase.infrastructure.data.response.StatisticOrgResponse;
+import com.vnsky.bcss.projectbase.infrastructure.data.response.StatisticResponse;
 import com.vnsky.bcss.projectbase.infrastructure.secondary.jpa.repository.PackageProfileRepository;
 import com.vnsky.bcss.projectbase.shared.utils.DbMapper;
 import com.vnsky.common.exception.domain.BaseException;
 import com.vnsky.common.exception.domain.ErrorKey;
+import jakarta.persistence.Tuple;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -52,8 +54,8 @@ public class PackageProfileAdapter extends BaseJPAAdapterVer2<PackageProfileEnti
     }
 
     @Override
-    public List<PackageProfileDTO> getListPackageProfileFree() {
-        return mapper.toListDto(repository.getPackageProfileFree());
+    public List<PackageProfileDTO> getListPackageProfile(String clientId) {
+        return mapper.toListDto(repository.getPackageProfile(clientId));
     }
 
     @Override
@@ -74,5 +76,37 @@ public class PackageProfileAdapter extends BaseJPAAdapterVer2<PackageProfileEnti
     public Page<PackageProfileDTO> searchPackageProfile(String pckCodeOrPckName, Integer status, Long
             minPrice, Long maxPrice, Pageable pageable) {
         return repository.searchPackageProfile(pckCodeOrPckName, status, minPrice, maxPrice, pageable).map(entity -> mapper.toDto(entity));
+    }
+
+    @Override
+    public boolean isExistPckName(String pckName) {
+        return repository.existsByPckName(pckName);
+    }
+
+    @Override
+    public List<PackageProfileDTO> getPackageByClientId(String clientId) {
+        return repository.getPackageByClientId(clientId).stream().map(entity -> mapper.toDto(entity)).toList();
+    }
+
+    @Override
+    public Long totalPackagesSold(String orgCode) {
+        return repository.totalPackagesSold(orgCode);
+    }
+
+    @Override
+    public List<StatisticResponse> statisticPackagesSold(String orgCode, String startDate, String endDate, int granularity) {
+        List<Tuple> results = repository.statisticPackagesSold(orgCode, startDate, endDate, granularity);
+        return results.stream().map(result -> dbMapper.castSqlResult(result, StatisticResponse.class)).toList();
+    }
+
+    @Override
+    public List<StatisticOrgResponse> statisticPackagesSoldOrg(String orgCode, String startDate, String endDate) {
+        List<Tuple> results = repository.statisticPackagesSoldOrg(orgCode, startDate, endDate);
+        return results.stream().map(result -> dbMapper.castSqlResult(result, StatisticOrgResponse.class)).toList();
+    }
+
+    @Override
+    public Long revenusPackageSold(String orgCode) {
+        return repository.revenusPackageSold(orgCode);
     }
 }

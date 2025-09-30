@@ -11,6 +11,6 @@ public class CustomDateSerialize extends LocalDateTimeSerializer {
     }
 
     public CustomDateSerialize() {
-        this(DateTimeFormatter.ofPattern("d/MM/yyyy HH:mm:ss"));
+        this(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
     }
 }

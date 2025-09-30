@@ -39,4 +39,9 @@ public class PackageProfileEntity extends AbstractAuditingEntity {
     @Column(name = "URL_IMAGE_PCK")
     private String urlImagePackage;
 
+    @Column(name = "CYCLE_VALUE")
+    private Integer cycleValue;
+
+    @Column(name = "CYCLE_UNIT")
+    private Integer cycleUnit;
 }

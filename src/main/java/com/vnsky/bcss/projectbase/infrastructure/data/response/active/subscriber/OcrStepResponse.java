@@ -2,6 +2,7 @@ package com.vnsky.bcss.projectbase.infrastructure.data.response.active.subscribe
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -40,6 +41,7 @@ public class OcrStepResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     @Data
+    @Builder
     public static class Infors{
         private String idNumber;
         private String fullname;

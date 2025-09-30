@@ -14,4 +14,5 @@ import java.util.List;
 public class EsimProcessingResult {
     private List<EsimBookingResult> successfulResults;
     private List<EsimErrorInfo> errorInfos;
+    private List<ActionHistoryDTO> actionHistory;
 } 

@@ -1,6 +1,6 @@
 package com.vnsky.bcss.projectbase.infrastructure.data.request.active.subscriber;
 
-import com.vnsky.bcss.projectbase.domain.dto.AgreeDegree13DTO;
+import com.vnsky.bcss.projectbase.domain.dto.AgreeDecree13DTO;
 import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -16,5 +16,5 @@ public class GenActiveSubscriberContractRequest {
     private String transactionId;
 
     @Valid
-    private AgreeDegree13DTO agreeDegree13;
+    private AgreeDecree13DTO agreeDegree13;
 }

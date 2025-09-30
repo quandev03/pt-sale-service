@@ -22,17 +22,34 @@ public class SecurityConfigCustomerService {
             ignoreConfigurer
                 .requestMatchers("/actuator/**")
                 .requestMatchers("/public/api/v1/landing-page/active-subscriber/**")
-                .requestMatchers("/public/api/v1/esim-manager/esim-qr");
+                .requestMatchers("public/api/v1/hook/**")
+                .requestMatchers("/private/api/v1/organization-unit/check-org-parent")
+                .requestMatchers("/public/api/v1/update-subscriber-information/sign-contract")
+                .requestMatchers("/public/api/v1/update-subscriber-information/preview-confirm-contract/**")
+                .requestMatchers("/public/api/v1/update-subscriber-information/preview-confirm-contract-png/**")
+                .requestMatchers("/private/api/v1/organization-user")
+                .requestMatchers("/private/api/v1/organization-user/unit/**")
+                .requestMatchers("/private/api/v1/organization-unit/get-org-name/**")
+                .requestMatchers("/private/api/v1/organization-unit/get-info-org-unit/**")
+                .requestMatchers("/private/api/v1/organization-user-private")
+                .requestMatchers("/public/api/v1/esim-manager/esim-qr")
+                .requestMatchers("/private/api/v1/update-subscriber-information/sign-contract")
+                .requestMatchers("/private/api/v1/update-subscriber-information/preview-confirm-contract/**")
+                .requestMatchers("/private/api/v1/update-subscriber-information/preview-confirm-contract-png/**")
+            ;
     }
 
     @Bean
     public SecurityRuleCustomizer securityRuleCustomizer() {
         log.info("SecurityRuleCustomizer");
         return ruleConfigurer ->
-            ruleConfigurer
+            ruleConfigurer.requestMatchers("/public/api/v1/landing-page/active-subscriber/**")
+                .permitAll()
                 .requestMatchers(
                     "/actuator/**",
                     "/actuator/health/**")
+                .permitAll()
+                .requestMatchers("public/api/v1/hook/**")
                 .permitAll();
     }
 

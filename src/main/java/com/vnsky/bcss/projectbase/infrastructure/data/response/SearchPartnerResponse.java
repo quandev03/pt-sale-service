@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class SearchPartnerResponse {
 
     @DbColumnMapper("ID")
-    private Long id;
+    private String id;
 
     @DbColumnMapper("ORG_NAME")
     private String orgName;
@@ -44,4 +44,7 @@ public class SearchPartnerResponse {
 
     @DbColumnMapper("APPROVAL_STATUS")
     private Integer approvalStatus;
+
+    @DbColumnMapper("CLIENT_ID")
+    private String clientId;
 }

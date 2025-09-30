@@ -4,6 +4,7 @@ package com.vnsky.bcss.projectbase.infrastructure.primary.restful.partner;
 import com.vnsky.bcss.projectbase.domain.dto.ActionHistoryDTO;
 import com.vnsky.bcss.projectbase.domain.dto.EsimInforDTO;
 import com.vnsky.bcss.projectbase.domain.dto.PackageProfileDTO;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.partner.ExportQrCodeRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.partner.SendQrCodeRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitResponse;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.active.subscriber.ESimDetailResponse;
@@ -30,7 +31,9 @@ public interface EsimManagerOperation {
         @RequestParam(name = "subStatus", required = false) Integer subStatus,
         @RequestParam(name = "activeStatus", required = false) Integer activeStatus,
         @RequestParam(name = "pckCode", required = false)  String pckCode,
-        @RequestParam(name = "orgId", required = false)  String orgId,
+        @RequestParam(name = "orgId", required = false)  List<String> orgId,
+        @RequestParam(name = "fromDate" ,required = false)  String fromDate,
+        @RequestParam(name = "toDate", required = false)  String toDate,
         Pageable pageable
     );
 
@@ -61,6 +64,11 @@ public interface EsimManagerOperation {
         @RequestParam(name = "subStatus", required = false) Integer subStatus,
         @RequestParam(name = "activeStatus", required = false) Integer activeStatus,
         @RequestParam(name = "pckCode", required = false)  String pckCode,
-        @RequestParam(name = "orgId", required = false)  String orgId
+        @RequestParam(name = "orgId", required = false)  List<String> orgId,
+        @RequestParam(name = "fromDate", required = false) String fromDate,
+        @RequestParam(name = "toDate", required = false) String toDate
     );
+
+    @PostMapping("/export-qr")
+    ResponseEntity<Resource> exportQrCode(@RequestBody ExportQrCodeRequest request);
 }

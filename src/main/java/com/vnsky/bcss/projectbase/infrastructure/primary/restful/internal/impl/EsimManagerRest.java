@@ -3,12 +3,12 @@ package com.vnsky.bcss.projectbase.infrastructure.primary.restful.internal.impl;
 import com.vnsky.bcss.projectbase.domain.dto.ActionHistoryDTO;
 import com.vnsky.bcss.projectbase.domain.dto.EsimInforDTO;
 import com.vnsky.bcss.projectbase.domain.dto.PackageProfileDTO;
-import com.vnsky.bcss.projectbase.domain.dto.SubscriberDTO;
 import com.vnsky.bcss.projectbase.domain.port.primary.EsimManagerServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.PackageManagerServicePort;
-import com.vnsky.bcss.projectbase.infrastructure.data.request.partner.SendQrCodeRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.active.subscriber.ESimDetailResponse;
 import com.vnsky.bcss.projectbase.infrastructure.primary.restful.internal.EsimManagerOperation;
+import com.vnsky.bcss.projectbase.shared.constant.Constant;
+import com.vnsky.bcss.projectbase.shared.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -31,8 +32,8 @@ public class EsimManagerRest implements EsimManagerOperation {
     private final PackageManagerServicePort packageManagerServicePort;
 
     @Override
-    public ResponseEntity<Page<EsimInforDTO>> getListEsimInforDTO(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, String orgId, Pageable pageable) {
-        return ResponseEntity.ok(esimManagerServicePort.getListEsimInforDTO(textSearch, subStatus, activeStatus, pckCode,orgId, pageable));
+    public ResponseEntity<Page<EsimInforDTO>> getListEsimInforDTO(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, List<String> orgId,String fromDate, String toDate, Pageable pageable) {
+        return ResponseEntity.ok(esimManagerServicePort.getListEsimInforDTO(textSearch, subStatus, activeStatus, pckCode,orgId, fromDate, toDate, pageable));
     }
 
     @Override
@@ -56,10 +57,12 @@ public class EsimManagerRest implements EsimManagerOperation {
     }
 
     @Override
-    public ResponseEntity<Resource> export(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, String orgId) {
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("danh_sach_esim.xlsx").build().toString())
+    public ResponseEntity<Resource> export(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, List<String> orgId, String fromDate, String toDate) {
+        String timestamp = DateUtils.localDateTimeToString(LocalDateTime.now(), Constant.DATE_TIME_NO_SYMBOL_PATTERN);
+        String filename = "Danh sách eSIM-" + timestamp + ".xlsx";
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(filename).build().toString())
             .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
-            .body(esimManagerServicePort.exportListEsimExcelInternal(textSearch, subStatus, activeStatus, pckCode, orgId));
+            .body(esimManagerServicePort.exportListEsimExcelInternal(textSearch, subStatus, activeStatus, pckCode, orgId, fromDate, toDate));
     }
 
 }

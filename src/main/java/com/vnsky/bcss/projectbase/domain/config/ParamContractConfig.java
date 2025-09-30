@@ -31,6 +31,7 @@ public class ParamContractConfig {
         private String contractSimActiveFolder;
         private String contractSimActiveFile;
         private String decree13confirmationRecord;
+        private String countryCode;
     }
 
     @Data
@@ -47,6 +48,10 @@ public class ParamContractConfig {
             private String finalContractType;
 
             private String finalContractFolder;
+
+            private String customerCodeFormat;
+
+            private String contractCodeFormat;
 
             private Map<String, String> tags;
 

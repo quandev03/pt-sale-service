@@ -71,4 +71,4 @@ public class IsdnTransactionEntity extends AbstractAuditingEntity {
 
     @Column(name = "CLIENT_ID")
     private String clientId;
-} 
+}

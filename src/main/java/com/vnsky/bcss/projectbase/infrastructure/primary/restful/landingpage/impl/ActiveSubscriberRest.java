@@ -53,7 +53,7 @@ public class ActiveSubscriberRest implements ActiveSubscriberOperation {
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(resource.getFilename()).build().toString())
             .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
-            .contentType(MediaType.APPLICATION_PDF)
+            .contentType(MediaType.IMAGE_PNG)
             .body(resource);
     }
 

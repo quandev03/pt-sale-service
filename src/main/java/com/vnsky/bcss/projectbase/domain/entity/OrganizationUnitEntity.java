@@ -98,4 +98,16 @@ public class OrganizationUnitEntity extends AbstractAuditingEntity {
 
     @Column(name = "NOTE")
     private String note;
-} 
+
+    @Column(name = "PARENT_CODE")
+    private String parentCode;
+
+    @Column(name = "EMPLOYEE_CODE")
+    private String employeeCode;
+
+    @Column(name = "DEBT_LIMIT")
+    private Long debtLimit;
+
+    @Column(name = "DEBT_LIMIT_MBF")
+    private Long debtLimitMbf;
+}

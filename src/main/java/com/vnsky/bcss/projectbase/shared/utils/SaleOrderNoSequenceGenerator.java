@@ -2,6 +2,7 @@ package com.vnsky.bcss.projectbase.shared.utils;
 
 import com.vnsky.bcss.projectbase.domain.entity.SaleOrderEntity;
 import com.vnsky.bcss.projectbase.shared.constant.Constant;
+import com.vnsky.bcss.projectbase.shared.constant.SaleOrderConstant;
 import jakarta.persistence.ParameterMode;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -27,7 +28,7 @@ public class SaleOrderNoSequenceGenerator implements BeforeExecutionGenerator {
         // lấy số đơn hàng trong năm theo ncc và đối tác (org_id và request_org_id)
         SaleOrderEntity orderEntity = (SaleOrderEntity) owner;
 
-        if (Objects.equals(orderEntity.getOrderType(), Constant.SaleOrder.Type.PARTNER)) {
+        if (Objects.equals(orderEntity.getOrderType(), Constant.SaleOrder.Type.PARTNER) || Objects.equals(orderEntity.getOrderType(), SaleOrderConstant.BOOK_ESIM)) {
             try (ProcedureCall storedProcedure = session.asSessionImplementor().createStoredProcedureCall(PROCEDURE_ORDER_NO_GENERATOR)) {
                 storedProcedure.registerStoredProcedureParameter(SUPPLIER_ID_PARAM, String.class, ParameterMode.IN);
                 storedProcedure.registerStoredProcedureParameter(ORDER_NO_PARAM, String.class, ParameterMode.OUT);

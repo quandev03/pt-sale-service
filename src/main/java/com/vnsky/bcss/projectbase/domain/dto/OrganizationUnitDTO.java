@@ -39,6 +39,9 @@ public class OrganizationUnitDTO extends CommonDTO {
     @NotBlank(message = "Tên đơn vị không được bỏ trống")
     private String orgName;
 
+    @Schema(description = "Mã nhân viên")
+    private String employeeCode;
+
     @Schema(description = "Loại đơn vị (NBO: Nội bộ)")
     private String orgType;
 
@@ -120,4 +123,13 @@ public class OrganizationUnitDTO extends CommonDTO {
 
     @Schema(description = "Phân vùng giao hàng")
     private String deliveryAreas;
+
+    @Schema(description = "Mã đại lý cha")
+    private String parentCode;
+
+    @Schema(description = "Công nợ tạm tính")
+    private Long debtLimit;
+
+    @Schema(description = "Công nợ thực tế")
+    private Long debtLimitMbf;
 }

@@ -69,9 +69,28 @@ public class SubscriberDTO extends AbstractAuditDTO{
     private String mbfSubId;
 
     private String msgId;
+
+    private String orgId;
+
     private Integer activeStatus;
+
     private LocalDate regDate;
+
     private String esimGwId;
+
+    private String customerCode;
+
+    private String contractCode;
+
     private String genQrBy;
+
+    private String signatureUrl;
+
+    private String clientId;
+
     private Integer boughtStatus;
+
+    private String updateInfoBy;
+
+    private LocalDateTime updateInfoDate;
 }

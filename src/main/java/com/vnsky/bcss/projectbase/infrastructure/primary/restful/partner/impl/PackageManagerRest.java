@@ -6,6 +6,7 @@ import com.vnsky.bcss.projectbase.infrastructure.primary.restful.partner.Package
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +52,16 @@ public class PackageManagerRest implements PackageManagerOperation {
 
     @Override
     public ResponseEntity<Object> freePackageProfile() {
-        return ResponseEntity.ok(packageManagerService.getListPackageProfileFree());
+        return ResponseEntity.ok(packageManagerService.getListPackageProfile());
+    }
+
+    @Override
+    public ResponseEntity<Resource> downloadImage(String idPackageProfile) {
+        return packageManagerService.downloadImage(idPackageProfile);
+    }
+
+    @Override
+    public ResponseEntity<Object> getAllPackageProfile() {
+        return ResponseEntity.ok(packageManagerService.getAllPackageProfile());
     }
 }

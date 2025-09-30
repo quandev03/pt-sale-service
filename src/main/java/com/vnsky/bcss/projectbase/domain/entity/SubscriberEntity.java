@@ -58,7 +58,7 @@ public class SubscriberEntity extends AbstractAuditingEntity{
     private String fullName;
 
     @Column(name = "VERIFIED_STATUS")
-    private Integer verifiedStatus;
+    private Integer verifiedStatus = 0;
 
     @Column(name = "ACTIVE_STATUS")
     private Integer activeStatus;
@@ -67,7 +67,10 @@ public class SubscriberEntity extends AbstractAuditingEntity{
     private Integer status;
 
     @Column(name = "STATUS_900")
-    private Integer statusCall900;
+    private Integer statusCall900 = 0;
+
+    @Column(name = "BOUGHT_STATUS")
+    private Integer boughtStatus = 0;
 
     @Column(name = "APP_OBJECT")
     private String appObject;
@@ -93,8 +96,8 @@ public class SubscriberEntity extends AbstractAuditingEntity{
     @Column(name = "PACK_CODE")
     private String packCode;
 
-    @Column(name = "CHANGE_STATUS_DATE")
-    private Integer changeStatusDate;
+    @Column(name = "GEN_QR_BY")
+    private String genQrBy;
 
     @Column(name = "DEVICE_NAME")
     private String deviceName;
@@ -147,9 +150,6 @@ public class SubscriberEntity extends AbstractAuditingEntity{
     @Column(name = "UPDATE_INFO_DATE")
     private LocalDateTime updateInfoDate;
 
-    @Column(name = "GEN_QR_BY")
-    private String genQrBy;
+    private String signatureUrl;
 
-    @Column(name = "BOUGHT_STATUS")
-    private Integer boughtStatus;
 }

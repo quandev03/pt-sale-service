@@ -1,5 +1,6 @@
 package com.vnsky.bcss.projectbase.infrastructure.data.response.partner;
 
+import com.vnsky.bcss.projectbase.domain.dto.SubscriberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 public class BookEsimResponse {
     private List<String> serials;
     private List<String> qrCodes;
+    private List<SubscriberDTO> registration;
     private String status;
     private String message;
     private LocalDateTime createdDate;

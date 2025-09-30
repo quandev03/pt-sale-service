@@ -1,18 +1,16 @@
 package com.vnsky.bcss.projectbase.shared.pdf;
 
+import com.itextpdf.text.Element;
 import com.itextpdf.text.PageSize;
-import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.spire.doc.Document;
 import com.spire.doc.documents.ImageType;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.TypeContract;
 import com.vnsky.common.exception.domain.BaseException;
 import jakarta.xml.bind.JAXBElement;
+import kotlin.Pair;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.docx4j.TraversalUtil;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.finders.RangeFinder;
@@ -26,10 +24,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.w14.CTOnOff;
 import org.docx4j.w14.CTSdtCheckbox;
 import org.docx4j.wml.*;
-import com.itextpdf.text.Element;
 import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
@@ -38,11 +33,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Slf4j
 public class ContractUtils {
@@ -81,29 +73,6 @@ public class ContractUtils {
 
     private ContractUtils() {
     }
-
-    public static List<String> readPdfToString(InputStream pdfInputData) {
-        PdfReader reader = null;
-        List<String> resultTextPdf = new ArrayList<>();
-        try {
-            reader = new PdfReader(pdfInputData);
-            int numberOfPages = reader.getNumberOfPages();
-            for (int i = 0; i < numberOfPages; i++) {
-                String pageText = PdfTextExtractor.getTextFromPage(reader, i + 1);
-                resultTextPdf.add(pageText);
-                log.info("page text data : {} ", pageText);
-            }
-            return resultTextPdf;
-        } catch (Exception e) {
-            log.error("error read pdf from inputStream ======");
-            throw BaseException.internalErrorDefaultMessage();
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
-        }
-    }
-
 
     public static <T> String replaceText(T object, String pageText) {
         try {
@@ -259,7 +228,7 @@ public class ContractUtils {
         }
     }
 
-    private static boolean handlePrimitiveValue(Field field, Object value) {
+    public static boolean handlePrimitiveValue(Field field, Object value) {
         Class<?> type = field.getType();
 
         if (type == boolean.class) {
@@ -532,51 +501,61 @@ public class ContractUtils {
                 .addParameter(MESSAGE, "convert word to pdf fail")
                 .build();
         }finally {
-            if (document != null) {
-                document.close();
-                document.dispose();
-            }
+            document.close();
+            document.dispose();
         }
     }
 
-    public static ByteArrayOutputStream convertPngToPds(InputStream pngInputStream){
-        try(ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
-            ByteArrayOutputStream imageOutputStream = new ByteArrayOutputStream();
-        ) {
-            // Read PNG from InputStream
-            BufferedImage image = ImageIO.read(pngInputStream);
+    public static Pair<ByteArrayOutputStream, ByteArrayOutputStream> convertWordToPdfAndPng(Document document) {
+        ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
 
-            // Create PDF document
-            com.itextpdf.text.Document pdfDoc = new com.itextpdf.text.Document();
+        try {
+            // Khởi tạo file PDF đầu ra
+            com.itextpdf.text.Document pdfDoc = new com.itextpdf.text.Document(PageSize.A4);
             PdfWriter.getInstance(pdfDoc, pdfOutputStream);
             pdfDoc.open();
 
-            // Convert BufferedImage to iText Image
-            ImageIO.write(image, "png", imageOutputStream);
-            com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(imageOutputStream.toByteArray());
+            int pageCount = document.getPageCount();
+            BufferedImage[] images = document.saveToImages(0, document.getPageCount(), ImageType.Bitmap, 200, 200);
 
-            // Scale image to fit A4
-            pdfImage.scaleToFit(PageSize.A4.getWidth() - 20, PageSize.A4.getHeight() - 20);
-            pdfImage.setAlignment(Element.ALIGN_CENTER);
+            //combieImage
+            BufferedImage bufferedImageCombie = ImageUtils.combineImages(images);
+            ByteArrayOutputStream imageOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(filterImage(bufferedImageCombie), "png", imageOutputStream);
+            pngOutputStream.write(imageOutputStream.toByteArray());
 
-            pdfDoc.add(pdfImage);
+            for (int i = 0; i < pageCount; i++) {
+                // Chuyển từng trang thành ảnh
+                BufferedImage image = images[i];
+
+                // Chuyển ảnh thành byte[]
+                ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", imageStream);
+
+                // Thêm ảnh vào PDF
+                com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(imageStream.toByteArray());
+
+                // Tự động scale vừa khổ A4
+                pdfImage.scaleToFit(PageSize.A4.getWidth() - 20, PageSize.A4.getHeight() - 20);
+                pdfImage.setAlignment(Element.ALIGN_CENTER);
+
+                pdfDoc.add(pdfImage);
+
+                // Nếu không phải trang cuối thì thêm trang mới
+                if (i < pageCount - 1) {
+                    pdfDoc.newPage();
+                }
+            }
+
             pdfDoc.close();
-
-            return pdfOutputStream;
+            return new Pair<>(pdfOutputStream, pngOutputStream);
 
         } catch (Exception e) {
-            log.error("Error converting PNG to PDF", e);
+            log.error("Exception when convert docx to pdf");
             throw BaseException.badRequest(ErrorCode.GEN_CONTRACT_FAIL)
-                .addParameter(MESSAGE, "convert png to pdf fail")
+                .message("Lỗi khi chuyển Word sang PDF qua PNG")
                 .build();
-        } finally {
-            try {
-                if (pngInputStream != null) {
-                    pngInputStream.close();
-                }
-            } catch (IOException e) {
-                log.error("Error closing input stream", e);
-            }
         }
     }
 
@@ -590,10 +569,11 @@ public class ContractUtils {
             pdfDoc.open();
 
             int pageCount = document.getPageCount();
+            BufferedImage[] images = document.saveToImages(0, document.getPageCount(), ImageType.Bitmap, 200, 200);
 
             for (int i = 0; i < pageCount; i++) {
                 // Chuyển từng trang thành ảnh
-                BufferedImage image = document.saveToImages(i, ImageType.Bitmap);
+                BufferedImage image = images[i];
 
                 // Chuyển ảnh thành byte[]
                 ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
@@ -628,11 +608,11 @@ public class ContractUtils {
     public static ByteArrayOutputStream convertWordToImagePNG(Document document) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BufferedImage[] images = document.saveToImages(0, document.getPageCount(), ImageType.Bitmap, 300, 300);
+            BufferedImage[] images = document.saveToImages(0, document.getPageCount(), ImageType.Bitmap, 200, 200);
             //combieImage
             BufferedImage bufferedImageCombie = ImageUtils.combineImages(images);
             ByteArrayOutputStream imageOutputStream = new ByteArrayOutputStream();
-            javax.imageio.ImageIO.write(filterImage(bufferedImageCombie), "png", imageOutputStream);
+            ImageIO.write(filterImage(bufferedImageCombie), "png", imageOutputStream);
             outputStream.write(imageOutputStream.toByteArray());
             return outputStream;
         } catch (Exception e) {
@@ -643,8 +623,6 @@ public class ContractUtils {
                 .build();
         }
     }
-
-
 
     public static void insertImageAtMergeField(WordprocessingMLPackage wordMLPackage, byte[] imageData,ImageKeyFiled imageKeyFiled) throws Exception {
         if(imageData.length == 0)
@@ -720,128 +698,4 @@ public class ContractUtils {
 
         return sharpenOp.filter(blurredImage, null);
     }
-
-
-    public static ByteArrayOutputStream convertDocxToPdf(InputStream docxInputStream) throws Exception {
-        File tempDir = Files.createTempDirectory("docx-convert-").toFile();
-
-        try {
-            File inputDocx = new File(tempDir, UUID.randomUUID() + ".docx");
-            try (FileOutputStream fos = new FileOutputStream(inputDocx)) {
-                docxInputStream.transferTo(fos);
-            }
-
-            String sofficeCommand = System.getProperty("os.name").toLowerCase().contains("win")
-                ? "C:\\Users\\phucdm\\Downloads\\LibreOfficePortable\\LibreOfficePortable.exe"
-                : "soffice";
-
-            ProcessBuilder pb = new ProcessBuilder(
-                sofficeCommand,
-                "--headless",
-                "--convert-to", "pdf",
-                "--outdir", tempDir.getAbsolutePath(),
-                inputDocx.getAbsolutePath()
-            );
-
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
-
-            // Đọc hết output để tránh process bị block
-            try (InputStream processOutput = process.getInputStream()) {
-                processOutput.transferTo(OutputStream.nullOutputStream());
-            }
-
-            int exitCode = process.waitFor();
-
-            if (exitCode != 0) {
-                log.error("LibreOffice failed to convert file");
-                throw BaseException.badRequest(ErrorCode.GEN_CONTRACT_FAIL)
-                    .message("LibreOffice failed to convert file").build();
-            }
-
-            String pdfFileName = inputDocx.getName().replace(".docx", ".pdf");
-            File outputPdf = new File(tempDir, pdfFileName);
-
-            if (!outputPdf.exists()) {
-                log.error("PDF output file not found");
-                throw BaseException.badRequest(ErrorCode.GEN_CONTRACT_FAIL)
-                    .message("PDF output file not found")
-                    .build();
-            }
-
-            // Đọc file PDF vào ByteArrayOutputStream
-            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                FileInputStream fis = new FileInputStream(outputPdf)) {
-                fis.transferTo(outputStream);
-                return outputStream;
-            }
-        } finally {
-            // Xóa thư mục tạm cùng toàn bộ nội dung
-            deleteDirectoryRecursively(tempDir);
-        }
-    }
-
-    private static void deleteDirectoryRecursively(File dir) throws IOException {
-        if (dir.exists()) {
-            try (Stream<Path> walk = Files.walk(dir.toPath())) {
-                walk.sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-            }
-        }
-    }
-
-    public static ByteArrayOutputStream convertPdfToPng(InputStream docxInputStream) throws Exception {
-        // 1. Chuyển DOCX sang PDF và lấy dưới dạng ByteArrayOutputStream
-        ByteArrayOutputStream pdfResource = convertDocxToPdf(docxInputStream);
-
-        // 2. Lấy PDF bytes từ ByteArrayOutputStream
-        byte[] pdfBytes = pdfResource.toByteArray();
-
-        // 3. Chuyển PDF bytes sang ảnh PNG dạng dài
-        byte[] combinedPngBytes = convertPdfToSingleLongPng(pdfBytes, 150);
-
-        // 4. Ghi byte[] ảnh PNG vào ByteArrayOutputStream để trả về
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(combinedPngBytes);
-
-        return outputStream;
-    }
-
-    public static byte[] convertPdfToSingleLongPng(byte[] pdfBytes, float dpi) throws IOException {
-        try (PDDocument document = PDDocument.load(pdfBytes)) {
-            PDFRenderer pdfRenderer = new PDFRenderer(document);
-            int pageCount = document.getNumberOfPages();
-
-            BufferedImage[] pagesImages = new BufferedImage[pageCount];
-            int totalHeight = 0;
-            int maxWidth = 0;
-
-            for (int i = 0; i < pageCount; i++) {
-                BufferedImage bim = pdfRenderer.renderImageWithDPI(i, dpi);
-                pagesImages[i] = bim;
-                totalHeight += bim.getHeight();
-                if (bim.getWidth() > maxWidth) maxWidth = bim.getWidth();
-            }
-
-            BufferedImage combined = new BufferedImage(maxWidth, totalHeight, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = combined.createGraphics();
-
-            g2d.setPaint(Color.WHITE);
-            g2d.fillRect(0, 0, maxWidth, totalHeight);
-
-            int currentHeight = 0;
-            for (BufferedImage pageImage : pagesImages) {
-                g2d.drawImage(pageImage, 0, currentHeight, null);
-                currentHeight += pageImage.getHeight();
-            }
-            g2d.dispose();
-
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                ImageIO.write(combined, "png", baos);
-                return baos.toByteArray();
-            }
-        }
-    }
 }
-

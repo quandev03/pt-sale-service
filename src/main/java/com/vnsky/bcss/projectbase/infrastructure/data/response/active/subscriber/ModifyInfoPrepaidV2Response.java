@@ -1,16 +1,22 @@
 package com.vnsky.bcss.projectbase.infrastructure.data.response.active.subscriber;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class ModifyInfoPrepaidV2Response {
     private String code;
 
     private String description;
+
+    private List<Data> data;
 
     @AllArgsConstructor
     @NoArgsConstructor

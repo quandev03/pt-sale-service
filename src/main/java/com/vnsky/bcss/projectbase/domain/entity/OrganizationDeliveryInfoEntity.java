@@ -13,51 +13,41 @@ import java.time.LocalDate;
 @Table(name = "ORGANIZATION_DELIVERY_INFO")
 public class OrganizationDeliveryInfoEntity extends CommonEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORGANIZATION_DELIVERY_INFO_id_gen")
-    @SequenceGenerator(name = "ORGANIZATION_DELIVERY_INFO_id_gen", sequenceName = "ORGANIZATION_DELIVERY_INFO_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID", nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "ORG_ID", nullable = false)
-    private Long orgId;
+    private String orgId;
 
-    @Size(max = 10)
-    @Column(name = "PROVINCE_CODE", length = 10)
+    @Column(name = "PROVINCE_CODE")
     private String provinceCode;
 
-    @Size(max = 10)
-    @Column(name = "DISTRICT_CODE", length = 10)
+    @Column(name = "DISTRICT_CODE")
     private String districtCode;
 
-    @Size(max = 15)
-    @Column(name = "WARD_CODE", length = 15)
+    @Column(name = "WARD_CODE")
     private String wardCode;
 
-    @Size(max = 250)
-    @Column(name = "ADDRESS", length = 250)
+    @Column(name = "ADDRESS")
     private String address;
 
-    @Size(max = 100)
-    @Column(name = "CONSIGNEE_NAME", length = 100)
+    @Column(name = "CONSIGNEE_NAME")
     private String consigneeName;
 
     @Column(name = "CONSIGNEE_ADDRESS")
     private String consigneeAddress;
 
-    @Size(max = 100)
-    @Column(name = "ORG_TITLE", length = 100)
+    @Column(name = "ORG_TITLE")
     private String orgTitle;
 
-    @Size(max = 30)
-    @Column(name = "ID_NO", length = 30)
+    @Column(name = "ID_NO")
     private String idNo;
 
-    @Size(max = 30)
-    @Column(name = "ID_DATE", length = 30)
+    @Column(name = "ID_DATE")
     private String idDate;
 
-    @Size(max = 300)
-    @Column(name = "ID_PLACE", length = 30)
+    @Column(name = "ID_PLACE")
     private String idPlace;
 
     @Column(name = "ID_CARD_FRONT_SITE_FILE_URL")
@@ -69,22 +59,19 @@ public class OrganizationDeliveryInfoEntity extends CommonEntity {
     @Column(name = "MULTI_FILE_URL")
     private String multiFileUrl;
 
-    @Size(max = 1)
-    @Column(name = "GENDER", length = 1)
+    @Column(name = "GENDER")
     private String gender;
 
     @Column(name = "DATE_OF_BIRTH")
     private LocalDate dateOfBirth;
 
-    @Column(name = "EMAIL", length = 100)
+    @Column(name = "EMAIL")
     private String email;
 
-    @Size(max = 15)
-    @Column(name = "PHONE", length = 15)
+    @Column(name = "PHONE")
     private String phone;
 
-    @Size(max = 30)
-    @Column(name = "PASSPORT_NO", length = 30)
+    @Column(name = "PASSPORT_NO")
     private String passportNo;
 
     @Column(name = "STATUS")

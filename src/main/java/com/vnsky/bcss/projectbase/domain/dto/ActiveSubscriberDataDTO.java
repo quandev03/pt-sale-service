@@ -30,13 +30,32 @@ public class ActiveSubscriberDataDTO {
     @Schema(description = "Link url của chân dung")
     private String portraitUrl;
 
-    private ContractFileUrlDTO contractUrl;
+    @Schema(description = "Link url file hợp đồng png")
+    private String contractPngUrl;
+
+    @Schema(description = "Link url file hợp đồng pdf")
+    private String contractPdfUrl;
+
+    private String agreeDecree13PdfUrl;
+
+    private String agreeDecree13PngUrl;
+
+    @Schema(description = "LinK url file ảnh chân dung")
+    private String signatureUrl;
 
     @Schema(description = "Bước thực hiện")
     private Integer stepActive;
 
     @Schema(description = "Thông tin đồng ý nghị định 13")
-    private AgreeDegree13DTO agreeDegree13;
+    private AgreeDecree13DTO agreeDegree13;
 
     private String idEkyc;
+
+    private String customerCode;
+
+    private String contractCode;
+
+    private String userId;
+
+    private String employeeFullName;
 }

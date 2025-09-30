@@ -33,4 +33,4 @@ public class ReasonEntity extends AbstractAuditingEntity {
 
     @Column(name = "DESCRIPTION")
     private String description;
-} 
+}

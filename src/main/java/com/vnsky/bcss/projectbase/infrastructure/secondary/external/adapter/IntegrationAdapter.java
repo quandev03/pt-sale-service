@@ -2,6 +2,10 @@ package com.vnsky.bcss.projectbase.infrastructure.secondary.external.adapter;
 
 import com.vnsky.bcss.projectbase.domain.port.secondary.external.IntegrationPort;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.active.subscriber.BaseIntegrationRequest;
+import com.vnsky.bcss.projectbase.infrastructure.data.response.external.BaseMbfResponse;
+import com.vnsky.bcss.projectbase.shared.constant.IntegrationConstant;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
+import com.vnsky.common.exception.domain.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +49,29 @@ public class IntegrationAdapter implements IntegrationPort {
     }
 
     @Override
+    @Retryable(retryFor = {Exception.class}, backoff = @Backoff(value = 30000L), maxAttempts = 5)
+    public <T extends BaseMbfResponse<?>> T executeRequestWithRetryAndErrorHandling(BaseIntegrationRequest request, Class<T> clazz) {
+        log.debug("Executing request with retry and error handling for type: {}", request.getType());
+
+        T response = this.executeRequest(request, clazz);
+
+        // Kiểm tra nếu response có code ERROR thì throw exception để trigger retry
+        if (response != null && !IntegrationConstant.SUCCESS_MESSAGE.equals(response.getCode())) {
+            String errorMessage = String.format("Code: %s, Description: %s",
+                response.getCode(), response.getDescription());
+            log.warn("MBF response indicates error, will retry: {}", errorMessage);
+
+            // Sử dụng error code chung cho tất cả lỗi MBF
+            throw BaseException.internalServerError(ErrorCode.MBF_RESPONSE_ERROR)
+                .message(errorMessage)
+                .build();
+        }
+
+        log.debug("MBF response successful for type: {}", request.getType());
+        return response;
+    }
+
+    @Override
     public BaseIntegrationRequest buildIntegrationRequest(String cmd, String type, Object extraInfo, Object data) {
         return BaseIntegrationRequest.builder()
             .cmd(cmd)
@@ -55,7 +82,7 @@ public class IntegrationAdapter implements IntegrationPort {
     }
 
     @Override
-    public <T> T excuteRequest(String url, HttpMethod method, Object body, Class<T> clazz) {
+    public <T> T executeRequest(String url, HttpMethod method, Object body, Class<T> clazz) {
         HttpHeaders httpHeaders = getHeader();
         HttpEntity<Object> requestEntity = new HttpEntity<>(body, httpHeaders);
         return restTemplate.exchange(url, method, requestEntity, clazz).getBody();

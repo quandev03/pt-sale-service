@@ -56,4 +56,7 @@ public class EsimInforDTO {
 
     @DbColumnMapper("LPA")
     private String lpaCode;
+
+    @DbColumnMapper("CREATED_DATE")
+    private LocalDateTime createdDate;
 }

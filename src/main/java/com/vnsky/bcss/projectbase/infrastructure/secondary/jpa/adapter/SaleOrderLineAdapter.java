@@ -21,12 +21,10 @@ implements SaleOrderLineRepoPort {
     }
 
     @Override
-    public SaleOrderLineDTO saveAndFlush(SaleOrderLineDTO saleOrderLineDTO) {
-        return super.saveAndFlush(saleOrderLineDTO);
+    public List<SaleOrderLineDTO> findBySaleOrderId(String saleOrderId) {
+        List<SaleOrderLineEntity> entities = repository.findBySaleOrderId(saleOrderId);
+        return entities.stream()
+            .map(mapper::toDto)
+            .toList();
     }
-
-    @Override
-    public List<SaleOrderLineDTO> saveAllAndFlush(List<SaleOrderLineDTO> saleOrderLineDTOs) {
-        return super.saveAllAndFlush(saleOrderLineDTOs);
-    }
-} 
+}

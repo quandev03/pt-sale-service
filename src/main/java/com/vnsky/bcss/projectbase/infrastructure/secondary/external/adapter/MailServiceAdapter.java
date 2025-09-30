@@ -40,7 +40,7 @@ public class MailServiceAdapter implements MailServicePort {
     private final ISpringTemplateEngine templateEngine;
     private final JavaMailSender javaMailSender;
     private final MinioOperations minioOperations;
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.from}")
     private String mailFrom;
 
     @Value("${spring.mail.properties.mail-sender-display-name}")

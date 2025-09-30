@@ -30,7 +30,9 @@ public interface EsimManagerOperation {
         @RequestParam(name = "subStatus", required = false) Integer subStatus,
         @RequestParam(name = "activeStatus", required = false) Integer activeStatus,
         @RequestParam(name = "pckCode", required = false)  String pckCode,
-        @RequestParam(name = "orgId", required = false) String orgId,
+        @RequestParam(name = "orgId", required = false) List<String> orgId,
+        @RequestParam(name = "fromDate", required = false)  String fromDate,
+        @RequestParam(name = "toDate", required = false) String toDate,
         Pageable pageable
     );
 
@@ -47,13 +49,15 @@ public interface EsimManagerOperation {
     @GetMapping("/organization-unit")
     ResponseEntity<Object> getOrganizationUnit();
 
-    @PostMapping("/export")
+    @GetMapping("/export")
     ResponseEntity<Resource> export(
         @RequestParam(name = "textSearch", required = false) String textSearch,
         @RequestParam(name = "subStatus", required = false) Integer subStatus,
         @RequestParam(name = "activeStatus", required = false) Integer activeStatus,
         @RequestParam(name = "pckCode", required = false)  String pckCode,
-        @RequestParam(name = "orgId", required = false)  String orgId
+        @RequestParam(name = "orgId", required = false)  List<String> orgId,
+        @RequestParam(name = "fromDate", required = false) String fromDate,
+        @RequestParam(name = "toDate",  required = false) String toDate
     );
 
 }

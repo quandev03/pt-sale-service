@@ -33,9 +33,6 @@ public class SaleOrderEntity extends AbstractAuditingEntity {
     @Column(name = "AMOUNT_TOTAL")
     private BigDecimal amountTotal;
 
-    @Column(name = "BOOK_ESIM_STATUS")
-    private Integer status;
-
     @Column(name = "REASON_ID")
     private String reasonId;
 
@@ -56,18 +53,6 @@ public class SaleOrderEntity extends AbstractAuditingEntity {
 
     @Column(name = "CANCEL_REASON")
     private String cancelReason;
-
-    @Column(name = "SUCCEEDED_NUMBER")
-    private Integer succeededNumber;
-
-    @Column(name = "FAILED_NUMBER")
-    private Integer failedNumber;
-
-    @Column(name = "FINISHED_DATE")
-    private LocalDateTime finishedDate;
-
-    @Column(name = "PCK_CODE")
-    private String pckCode;
 
     @Column(name = "ORDER_DATE")
     private LocalDateTime orderDate;

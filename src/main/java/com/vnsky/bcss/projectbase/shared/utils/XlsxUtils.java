@@ -8,9 +8,13 @@ import com.vnsky.excel.dto.ExcelData;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.streaming.SXSSFDrawing;
+import org.apache.poi.xssf.streaming.SXSSFPicture;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFPicture;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.CollectionUtils;
@@ -23,6 +27,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @UtilityClass
@@ -97,16 +103,16 @@ public class XlsxUtils {
         return headerLineNames;
     }
 
-    public static <T> TemporaryFileResource writeExcel(ExcelData<T> excelData, Class<T> clazz, boolean ignore) {
-        return writeExcel(excelData, clazz,null, null, ignore);
+    public static <T> TemporaryFileResource writeExcel(ExcelData<T> excelData, Class<T> clazz, boolean ignore, String title, String headerLineNames) {
+        return writeExcel(excelData, clazz,null, null, ignore,  title, headerLineNames);
     }
 
-    public static <T> TemporaryFileResource writeExcelHaveImage(ExcelData<T> excelData, Class<T> clazz, Function<String, byte[]> imageConverter, boolean ignore) {
-        return writeExcel(excelData, clazz, imageConverter, null, ignore);
+    public static <T> TemporaryFileResource writeExcelHaveImage(ExcelData<T> excelData, Class<T> clazz, Function<String, byte[]> imageConverter, boolean ignore, String title, String headerLineNames) {
+        return writeExcel(excelData, clazz, imageConverter, null, ignore, title, headerLineNames);
     }
 
     @SuppressWarnings("java:S3776")
-    public static <T> TemporaryFileResource writeExcel(ExcelData<T> excelData, Class<T> clazz, Function<String, byte[]> imageConverter, ConditionShowValue conditionShowValue, boolean ignore) {
+    public static <T> TemporaryFileResource writeExcel(ExcelData<T> excelData, Class<T> clazz, Function<String, byte[]> imageConverter, ConditionShowValue conditionShowValue, boolean ignore, String title, String headerLineNames) {
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Sheet1");
 
@@ -124,28 +130,102 @@ public class XlsxUtils {
             addBorders(dataStyle);
             // Get Field of data Object
             Set<Integer> fieldImages = new HashSet<>();
-            Map<Integer, Field> hmField = getHmField(ignore, clazz, fieldImages);
-
-            // Create Header Row
-            Row headerRow = sheet.createRow(0);
-            Map<Integer, Integer> columnSizeMap = new HashMap<>();
+            Map<Integer, Field> hmField = getHmField(excelData.isIncludeRowNum(), ignore, clazz, fieldImages);
             List<Integer> columnsInx = new ArrayList<>(hmField.keySet());
+
+            if(!Objects.isNull(title) && !title.isEmpty()){
+                // Tạo style cho title
+                CellStyle titleStyle = workbook.createCellStyle();
+
+                // Căn giữa ngang + dọc
+                titleStyle.setAlignment(HorizontalAlignment.CENTER);
+                titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+                // Font to, in đậm
+                Font titleFont = workbook.createFont();
+                titleFont.setFontHeightInPoints((short) 16); // 16pt
+                titleFont.setBold(true);
+                titleStyle.setFont(titleFont);
+                // Tạo row title
+                Row titleRow = sheet.createRow(0);
+                titleRow.setHeightInPoints(25); // tăng chiều cao hàng
+
+                Cell titleCell = titleRow.createCell(0, CellType.STRING);
+                titleCell.setCellValue(title);
+                titleCell.setCellStyle(titleStyle);
+
+                // Merge các ô từ cột 0 -> columnsInx.size()
+                sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columnsInx.size()));
+
+            }
+            if(!Objects.isNull(headerLineNames) && !headerLineNames.isEmpty()){
+                // Tạo style cho title
+                CellStyle titleStyle = workbook.createCellStyle();
+
+                // Căn giữa ngang + dọc
+                titleStyle.setAlignment(HorizontalAlignment.CENTER);
+                titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+                // Font to, in đậm
+                Font titleFont = workbook.createFont();
+                titleFont.setFontHeightInPoints((short) 14); // 16pt
+                titleFont.setBold(true);
+                titleStyle.setFont(titleFont);
+                // Tạo row title
+                Row titleRow = sheet.createRow(indexHeaderRow(title, headerLineNames) - 1);
+                titleRow.setHeightInPoints(25); // tăng chiều cao hàng
+
+                Cell titleCellHeader = titleRow.createCell(0, CellType.STRING);
+                titleCellHeader.setCellValue(headerLineNames);
+                titleCellHeader.setCellStyle(titleStyle);
+
+                // Merge các ô từ cột 0 -> columnsInx.size()
+                sheet.addMergedRegion(new CellRangeAddress(indexHeaderRow(title, headerLineNames) - 1, indexHeaderRow(title, headerLineNames) - 1, 0, columnsInx.size()));
+            }
+
+
+            // Create Header Style
+            CellStyle headType = workbook.createCellStyle();
+            headType.setAlignment(HorizontalAlignment.CENTER);
+            headType.setVerticalAlignment(VerticalAlignment.CENTER);
+
+            // Nền xanh (blue)
+            headType.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+            headType.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+// Font chữ trắng + in đậm
+            Font headFont = workbook.createFont();
+            headFont.setColor(IndexedColors.WHITE.getIndex());
+            headFont.setBold(true);
+            headType.setFont(headFont);
+
+// Create Header Row
+            Row headerRow = sheet.createRow(indexHeaderRow(title, headerLineNames));
+            Map<Integer, Integer> columnSizeMap = new HashMap<>();
+
             if (excelData.isIncludeRowNum()) {
                 Cell cell = headerRow.createCell(0, CellType.STRING);
                 cell.setCellValue("STT");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headType);
             }
+
             columnsInx.forEach(k -> {
                 int cellIndex = k + (excelData.isIncludeRowNum() ? 1 : 0);
                 Cell cell = headerRow.createCell(cellIndex, CellType.STRING);
                 String headerValue = excelData.getHeaderLineNamesOf(k, getHeader(hmField.get(k), false));
                 cell.setCellValue(headerValue);
-                cell.setCellStyle(headerStyle);
-                columnSizeMap.put(cellIndex, headerValue.length());
+                cell.setCellStyle(headType);
+
+                if (isImage(hmField.get(k))) {
+                    columnSizeMap.put(cellIndex, 300);
+                    sheet.setColumnWidth(cellIndex, 3500);
+                } else {
+                    columnSizeMap.put(cellIndex, headerValue.length());
+                }
             });
 
             // Create Data Rows
-            int rowIdx = 0;
+            int rowIdx = indexHeaderRow(title, headerLineNames);
             for (T dataObj : excelData.getDataLines()) {
                 Row dataRow = sheet.createRow(++rowIdx);
                 //INSERT STT COLUMN
@@ -200,7 +280,8 @@ public class XlsxUtils {
                 int inputImage = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_PNG);
                 SXSSFDrawing drawing = (SXSSFDrawing) sheet.createDrawingPatriarch();
                 XSSFClientAnchor clientAnchor = getXssfClientAnchor(cell);
-                drawing.createPicture(clientAnchor, inputImage);
+                drawing.createPicture(clientAnchor, inputImage).resize(1,1);
+                cell.setCellStyle(dataStyle);
             } catch (Exception e) {
                 cell.setCellValue("");
             }
@@ -241,7 +322,7 @@ public class XlsxUtils {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(bos, StandardCharsets.UTF_8))) {
 
-            Map<Integer, Field> hmField = getHmField(ignore, clazz, new HashSet<>());
+            Map<Integer, Field> hmField = getHmField(excelData.isIncludeRowNum(), ignore, clazz, new HashSet<>());
 
             List<Integer> columnsInx = new ArrayList<>(hmField.keySet().stream().sorted(Integer::compareTo).toList());
             List<String> header = new ArrayList<>();
@@ -340,7 +421,7 @@ public class XlsxUtils {
                 if (DateUtil.isCellDateFormatted(cell)) {
                     return cell.getDateCellValue().toString();
                 } else {
-                    String data = String.format(Constant.UploadFile.FORMAT_NUMBER, cell.getNumericCellValue());
+                    String data = String.format(Constant.FileUpload.FORMAT_NUMBER, cell.getNumericCellValue());
                     return data.isBlank() ? null : data.trim();
                 }
             }
@@ -364,17 +445,25 @@ public class XlsxUtils {
         return csv ? column.headerCsv() : column.header();
     }
 
-    private static Map<Integer, Field> getHmField(boolean ignore, Class<?> clazz, Set<Integer> fieldImages) {
+    private boolean isImage(Field field) {
+        XlsxColumn column = field.getAnnotation(XlsxColumn.class);
+        if (column == null) {
+            return false;
+        }
+        return column.isImageColumn();
+    }
+
+    private static Map<Integer, Field> getHmField(boolean isIncludeRowNum, boolean ignore, Class<?> clazz, Set<Integer> fieldImages) {
         ConditionGetKeyOfField<Integer> conditionGetKeyOfField = field -> {
             XlsxColumn column = field.getAnnotation(XlsxColumn.class);
             if (column == null) {
                 return null;
             } else {
                 if(column.isImageColumn()) {
-                    fieldImages.add(column.index());
+                    fieldImages.add(isIncludeRowNum ? column.index() + 1 : column.index());
                 }
                 if (ignore) {
-                    return column.ignore() ? null : column.ignoreIndex();
+                    return column.ignore() ? null : column.index();
                 } else {
                     return column.index();
                 }
@@ -388,5 +477,11 @@ public class XlsxUtils {
             hmFieldCommon.forEach((k, v) -> hmField.put(k + max, v));
         }
         return hmField;
+    }
+    private int indexHeaderRow (String title, String hmField) {
+        if ( (Objects.isNull(hmField)|| hmField.isEmpty()) && Objects.isNull(title)) return 0;  // không có title và header
+        else if (!Objects.isNull(hmField) && Objects.isNull(title)) return 1; // không có title
+        else if (Objects.isNull(hmField) || hmField.isEmpty()) return 1; // không có title
+        else return 2;
     }
 }

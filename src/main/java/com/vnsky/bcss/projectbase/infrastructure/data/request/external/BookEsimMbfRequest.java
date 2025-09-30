@@ -14,7 +14,4 @@ public class BookEsimMbfRequest {
 
     @JsonProperty("profile_type")
     private String profileType;
-
-    @JsonProperty("getSuccess")
-    private Boolean getSuccess;
-} 
+}

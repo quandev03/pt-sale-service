@@ -3,6 +3,7 @@ package com.vnsky.bcss.projectbase.domain.port.primary;
 import com.vnsky.bcss.projectbase.domain.dto.ActionHistoryDTO;
 import com.vnsky.bcss.projectbase.domain.dto.EsimInforDTO;
 import com.vnsky.bcss.projectbase.domain.dto.OrganizationUnitDTO;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.partner.ExportQrCodeRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.partner.SendQrCodeRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitResponse;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.active.subscriber.ESimDetailResponse;
@@ -14,13 +15,13 @@ import java.util.List;
 
 public interface EsimManagerServicePort {
 
-    Page<EsimInforDTO> getListEsimInforPartnerDTO(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, String orgId, Pageable pageable);
+    Page<EsimInforDTO> getListEsimInforPartnerDTO(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, List<String> orgId, String fromDate, String toDate, Pageable pageable);
 
     List<ActionHistoryDTO> getActionHistoryDTO(String id);
 
     void sendMailEsim(SendQrCodeRequest request);
 
-    Page<EsimInforDTO> getListEsimInforDTO(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, String orgId, Pageable pageable);
+    Page<EsimInforDTO> getListEsimInforDTO(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, List<String> orgId, String fromDate, String toDate, Pageable pageable);
 
     List<OrganizationUnitResponse> getListOrganization();
 
@@ -32,7 +33,9 @@ public interface EsimManagerServicePort {
 
     List<OrganizationUnitResponse> getListOrganizationUnit();
 
-    Resource exportListEsimExcel(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, String orgId);
+    Resource exportListEsimExcel(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, List<String> orgId, String fromDate, String toDate);
 
-    Resource exportListEsimExcelInternal(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, String orgId);
+    Resource exportListEsimExcelInternal(String textSearch, Integer subStatus, Integer activeStatus, String pckCode, List<String> orgId, String fromDate, String toDate);
+
+    Resource exportListQrCode(ExportQrCodeRequest request);
 }

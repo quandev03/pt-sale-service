@@ -3,18 +3,22 @@ package com.vnsky.bcss.projectbase.domain.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "BATCH_PACKAGE_SALE")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-public class BatchPackageSaleEntity extends AbstractAuditingEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class BatchPackageSaleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -45,4 +49,22 @@ public class BatchPackageSaleEntity extends AbstractAuditingEntity {
 
     @Column(name = "CLIENT_ID")
     private String clientId;
-} 
+
+    @Column(name = "TYPE")
+    private Integer type;
+
+    @Column(name = "ORDER_ID")
+    private String orderId;
+
+    @CreatedBy
+    @Column(name = "CREATED_BY", nullable = false, updatable = false)
+    private String createdBy;
+
+    @CreatedDate
+    @Column(name = "CREATED_DATE", updatable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "FINISHED_DATE")
+    private LocalDateTime finishedDate;
+
+}

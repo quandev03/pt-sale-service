@@ -51,8 +51,6 @@ public class MailInfoDTO {
 
     private List<ESimInfo> eSimInfos;
 
-    private String linkBackground;
-
     @Builder
     @Getter
     @Setter

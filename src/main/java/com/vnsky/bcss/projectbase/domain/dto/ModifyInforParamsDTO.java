@@ -19,4 +19,24 @@ public class ModifyInforParamsDTO {
     private String strActionFlag;
 
     private String strAppObject;
+
+    private String strProvince;
+
+    private String strDistrict;
+
+    private String strPrecinct;
+
+    private String strNationality;
+
+    private String strSubName;
+
+    private String strSex;
+
+    private String strBirthday;
+
+    private String strPasspost;
+
+    private String strPasspostIssueDate;
+
+    private String strPasspostIssuePlace;
 }

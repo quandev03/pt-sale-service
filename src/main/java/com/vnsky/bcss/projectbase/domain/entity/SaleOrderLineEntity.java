@@ -32,6 +32,15 @@ public class SaleOrderLineEntity extends AbstractAuditingEntity {
     @Column(name = "NOTE")
     private String note;
 
-    @Column(name = "SUB_ID")
-    private String subId;
+    @Column(name = "ISDN")
+    private String isdn;
+
+    @Column(name = "PCK_CODE")
+    private String pckCode;
+
+    @Column(name = "QUANTITY")
+    private Long quantity = 1L;
+
+    @Column(name = "PAY_STATUS")
+    private Integer payStatus;
 }

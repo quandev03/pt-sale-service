@@ -6,7 +6,9 @@ import com.vnsky.bcss.projectbase.infrastructure.data.response.partner.BookEsimR
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface BookEsimFreeServicePort {
-    BookEsimResponse bookEsim(BookEsimRequest request);
-    Page<SaleOrderDTO> getListBookEsimFree(Pageable pageable);
+    List<BookEsimResponse> bookEsim(List<BookEsimRequest> requests);
+    Page<SaleOrderDTO> getListBookEsimFree(Pageable pageable, String toDate, String fromDate, String textSearch, int isFree);
 }

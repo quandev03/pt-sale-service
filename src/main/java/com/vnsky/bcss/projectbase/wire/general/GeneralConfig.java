@@ -32,7 +32,6 @@ public class GeneralConfig {
         return objectMapper;
     }
 
-
     @SneakyThrows
     @Bean
     public ProxyCustomizer proxyCustomizer() {

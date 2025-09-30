@@ -7,6 +7,7 @@ import com.vnsky.bcss.projectbase.infrastructure.data.request.active.subscriber.
 import com.vnsky.bcss.projectbase.domain.entity.SubscriberEntity;
 import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.Gender;
+import com.vnsky.bcss.projectbase.shared.utils.PassportUtils;
 import org.mapstruct.Mapper;
 import java.time.LocalDate;
 import java.util.List;
@@ -31,23 +32,36 @@ public interface SubscriberMapper extends BaseMapper<SubscriberEntity, Subscribe
         esimRegistration.setNationality(activeSubscriberData.getOcrData().getNationality());
     }
 
-    default UpdateSubscriberDataMbfRequest mapUpdateMbfData(SubscriberDTO esimRegistration, List<List<String>> buildArrImagesForUpdateMbf, ModifyInforParamsDTO params) {
+    default UpdateSubscriberDataMbfRequest mapUpdateMbfData(SubscriberDTO esimRegistration, ActiveSubscriberDataDTO activeData, List<List<String>> buildArrImagesForUpdateMbf, ModifyInforParamsDTO params) {
+        String countryCode = PassportUtils.getCountryCodeFromMrz(activeData.getOcrData().getMrz());
         return UpdateSubscriberDataMbfRequest.builder()
-            .strIsdn(esimRegistration.getIsdn())
+            .strIsdn(esimRegistration.getIsdn() + "")
             .strSerial(esimRegistration.getSerial())
+            .strImsi(esimRegistration.getImsi() + "")
             .strSubType(params.getStrSubType())
             .strCustType(params.getStrCustType())
             .strReasonCode(params.getStrReasonCode())
             .strActionFlag(params.getStrActionFlag())
             .strAppObject(params.getStrAppObject())
             .strPasspost(esimRegistration.getIdNumber())
-            .strPasspostIssuePlace(esimRegistration.getIdNoIssuedPlace())
-            .strPasspostIssueDate(esimRegistration.getIdNoExpiredDate().format(Constant.FE_DATE_FORMATTER))
+            .strPasspostIssuePlace(countryCode)
             .arrImages(buildArrImagesForUpdateMbf)
             .strBirthday(esimRegistration.getDateOfBirth().format(Constant.FE_DATE_FORMATTER))
-            .strImsi(esimRegistration.getImsi())
-            .strNationality(esimRegistration.getNationality())
-            .countNumber(0)
+            .strNationality(countryCode)
+            .strContractNumber(esimRegistration.getContractCode())
+            .strSubName(esimRegistration.getFullName())
+            .strSex(String.valueOf(esimRegistration.getGender()))
+            .strIdNo("")
+            .strIdIssueDate("")
+            .strIdIssuePlace("")
+            .strPasspostIssueDate("01/01/2024")
+            .strLanguage(1)
             .build();
     }
+
+//    private String resolveLanguageCode() {
+////        String languageTag = LocaleContextHolder.getLocale().toLanguageTag().toLowerCase();
+////        return languageTag.startsWith("vi") ? "2" : "1"; // 1 - English, 2 - Vietnamese
+//        return "2";
+//    }
 }

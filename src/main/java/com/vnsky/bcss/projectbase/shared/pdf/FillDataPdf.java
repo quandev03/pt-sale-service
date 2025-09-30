@@ -20,5 +20,5 @@ public @interface FillDataPdf {
 
     int maxWidth() default 800;
 
-
+    boolean isMultiFieldSameName() default false;
 }

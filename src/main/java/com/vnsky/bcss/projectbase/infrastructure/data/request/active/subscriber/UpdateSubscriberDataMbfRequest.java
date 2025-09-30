@@ -13,13 +13,10 @@ import java.util.List;
 @Builder
 public class UpdateSubscriberDataMbfRequest {
     @Schema(description = "Số thuê bao")
-    private Long strIsdn;
+    private String strIsdn;
 
     @Schema(description = "Thông tin serial")
     private String strSerial;
-
-    @Schema(description = "Imsi")
-    private Long strImsi;
 
     @Schema(description = "Số hộ chiếu")
     private String strPasspost;
@@ -29,11 +26,6 @@ public class UpdateSubscriberDataMbfRequest {
 
     @Schema(description = "Nơi cấp hộ chiếu")
     private String strPasspostIssuePlace;
-
-    @Schema(description = "Danh sách các dịch vụ")
-    private List<String> arrRegService;
-
-    private List<List<String>> arrRegProm;
 
     private List<List<String>> arrImages;
 
@@ -59,19 +51,34 @@ public class UpdateSubscriberDataMbfRequest {
 
     private String strAppObject;
 
-    private Integer countNumber;
+    private String strProvince;
+
+    private String strDistrict;
+
+    private String strPrecinct;
+
+    private String strHome;
+
+    private String strImsi;
+
+    private String strIdNo;
+
+    private String strIdIssueDate;
+
+    private String strIdIssuePlace;
+
+    @Schema(description = "Ngôn ngữ: 1 - Tiếng Anh, 2 - Tiếng Việt")
+    private Integer strLanguage;
 
     @Override
     public String toString() {
         return "UpdateSubscriberDataMbfRequest{" +
             "strIsdn=" + strIsdn +
             ", strSerial='" + strSerial + '\'' +
-            ", strImsi=" + strImsi +
             ", strPasspost='" + strPasspost + '\'' +
             ", strPasspostIssueDate='" + strPasspostIssueDate + '\'' +
             ", strPasspostIssuePlace='" + strPasspostIssuePlace + '\'' +
-            ", arrRegService=" + arrRegService +
-            ", arrRegProm=" + arrRegProm +
+            ", arrImages=" + (arrImages != null ? "[BASE64_IMAGES_EXCLUDED: " + arrImages.size() + " items]" : "null") +
             ", strSex='" + strSex + '\'' +
             ", strNationality='" + strNationality + '\'' +
             ", strSubName='" + strSubName + '\'' +
@@ -83,7 +90,15 @@ public class UpdateSubscriberDataMbfRequest {
             ", strActionFlag='" + strActionFlag + '\'' +
             ", strContactName='" + strContactName + '\'' +
             ", strAppObject='" + strAppObject + '\'' +
-            ", countNumber=" + countNumber +
+            ", strProvince='" + strProvince + '\'' +
+            ", strDistrict='" + strDistrict + '\'' +
+            ", strPrecinct='" + strPrecinct + '\'' +
+            ", strHome='" + strHome + '\'' +
+            ", strImsi='" + strImsi + '\'' +
+            ", strIdNo='" + strIdNo + '\'' +
+            ", strIdIssueDate='" + strIdIssueDate + '\'' +
+            ", strIdIssuePlace='" + strIdIssuePlace + '\'' +
+            ", strLanguage=" + strLanguage +
             '}';
     }
 }

@@ -21,6 +21,9 @@ public class EsimConfig {
     @Value("${third-party.mobifone.book-esim-profile-type}")
     private String bookEsimProfileType;
 
+    @Value("${third-party.mobifone.bhm}")
+    private String bhm;
+
     @Value("${third-party.mobifone.default-package}")
     private String defaultPackage;
 
@@ -41,4 +44,7 @@ public class EsimConfig {
 
     @Value("${third-party.mobifone.mobi-sub-type}")
     private String mobiSubType;
-} 
+
+    @Value("${third-party.mobifone.book-esim-thread-pool-size}")
+    private Integer bookEsimThreadPoolSize;
+}

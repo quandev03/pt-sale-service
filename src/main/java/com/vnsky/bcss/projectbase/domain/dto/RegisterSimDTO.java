@@ -10,5 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RegisterSimDTO {
-    private String serial;
+    private String isdn;
+    private String msgId;
+    private String imsi;
+    private String profile;
+    private String createTime;
 }

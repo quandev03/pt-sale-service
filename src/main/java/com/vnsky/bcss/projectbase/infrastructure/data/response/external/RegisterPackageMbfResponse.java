@@ -5,11 +5,6 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RegisterPackageMbfResponse extends BaseMbfResponse<RegisterPackageMbfResponse.PackageData> {
+public class RegisterPackageMbfResponse extends BaseMbfResponse<Object> {
 
-    @Data
-    public static class PackageData {
-        private String pckCode;
-        private String pricePck;
-    }
-} 
+}

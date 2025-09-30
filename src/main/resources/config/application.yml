@@ -71,10 +71,11 @@ spring:
     port: ${MAIL_PORT:}
     username: ${MAIL_USERNAME:}
     password: ${MAIL_PASSWORD:}
-    test-connection: true
+    test-connection: false
     protocol: ${MAIL_PROTOCOL:}
+    from: ${MAIL_FROM:}
     properties:
-      mail-sender-display-name: QLPT
+      mail-sender-display-name: VNSKY-Admin
       mail:
         smtp:
           auth: true
@@ -92,6 +93,10 @@ spring:
       pool:
         size: 2
       thread-name-prefix: ${spring.application.name}-scheduling-
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
 application:
   minio:
     access:
@@ -142,10 +147,17 @@ application:
       public: /public/api/v1
       landing-page: /public/api/v1/landing-page
   mail-header-logo-path: /customer-management/mail/logo-hivn.png
-  mail-header-background-path: https://minio-vnsky.vissoft.vn/api/v1/buckets/bcss-public-test/objects/download?preview=true&prefix=background-hivn.png&version_id=null
+  mail-header-background-path: /customer-management/mail/background-hivn.png
+  internal-path:
+    organization-unit: /private/api/v1/organization-unit/check-org-parent
+    organization-unit-get-name: /private/api/v1/organization-unit/get-org-name
+    organization-user: /private/api/v1/organization-user
+    organization-unit-by-id: /private/api/v1/organization-unit/get-info-org-unit
+    organization-user-update-unit: /private/api/v1/organization-user/unit
+    organization-user-private: /private/api/v1/organization-user-private
 
 server:
-  port: ${SERVER_PORT:8082}
+  port: ${SERVER_PORT:8080}
   servlet:
     context-path: ${SERVER_CTX_PATH:}
 
@@ -171,28 +183,45 @@ third-party:
   integration:
     apikey: internal-test
     general: ${DOMAIN_API_INTEGRATION}/internal/api/v1/third-party-api/general
+  admin:
+    apikey: ${ADMIN_API_KEY:api-key-hi-viet-nam}
+    general: ${DOMAIN_API_ADMIN}/internal/api
   mobifone:
     user-mobifone: "C3_DLC_GEM3"
     hlrgw-username-book-esim: "ESIM_GW_USER"
     book-esim-profile-type: "VMS_eSIM19V2111"
+    bhm: "BTG-HVN0"
     default-package: "HVN0"
-    shop-code: "DEFAULT_SHOP"
+    shop-code: "7KHO00294"
     employee: "SYSTEM"
     reason-code: "ESIM_REGISTRATION"
     qlkh-username: "hauser"
     qlkh-password: "hpass"
     mobi-sub-type: "PREPAID"
+    book-esim-thread-pool-size: ${BOOK_ESIM_THREAD_POOL_SIZE:2}
   qr-code:
     create-qr-code-url: ${QR_DOMAIN:}
 
 param:
   template:
     contract-sim-active-folder: /customer-management/template/
-    contract-sim-active-file: KHCN_Hợp đồng mẫu.docx
-    decree13confirmation-record: template_nd13.docx
+    contract-sim-active-file: KHCN_Hợp đồng mẫu.pdf
+    decree13confirmation-record: ND13.pdf
+    country-code: country_code.xlsx
   contract:
     sim-active:
       final-contract-folder: /customer-management/final-contract
+      customer-code-format: HVN%010d
+      contract-code-format: DNHVN-%08d
 
 hi-vn-service:
   channel-code: ${VNSKY_HI_VNSKY_CHANNEl_CODE}
+
+domain:
+  internal:
+    domain-admin: ${DOMAIN_API_ADMIN}
+#    domain-admin: http://localhost:8081/hvn-admin-service
+management:
+  health:
+    mail:
+      enabled: false

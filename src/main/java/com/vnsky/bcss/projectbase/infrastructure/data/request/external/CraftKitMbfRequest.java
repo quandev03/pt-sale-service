@@ -13,6 +13,4 @@ public class CraftKitMbfRequest {
     private String isdn;
     private String serial;
     private String bhm;
-    private String user;
-    private boolean getSuccess;
-} 
+}

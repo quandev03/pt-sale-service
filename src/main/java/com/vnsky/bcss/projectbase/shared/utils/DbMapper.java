@@ -9,6 +9,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -264,6 +266,22 @@ public class DbMapper {
         Map<String, DbFieldHolder> methodMap = new HashMap<>();
         getMethodMap(clazz, methodMap);
         return tuples.stream().map(e -> castSqlResult(e, constructor, methodMap)).collect(Collectors.toList());
+    }
+
+    @SneakyThrows
+    public <R> Page<R> castSqlResult(Page<Tuple> tuples, Class<R> clazz) {
+        Constructor<R> constructor = clazz.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        Map<String, DbFieldHolder> methodMap = new HashMap<>();
+        getMethodMap(clazz, methodMap);
+
+        List<R> content = tuples.getContent()
+            .stream()
+            .map(t -> castSqlResult(t, constructor, methodMap))
+            .toList();
+
+        return new PageImpl<>(content, tuples.getPageable(), tuples.getTotalElements());
     }
 
 }

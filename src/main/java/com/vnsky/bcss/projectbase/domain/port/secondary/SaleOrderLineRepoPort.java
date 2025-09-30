@@ -7,4 +7,5 @@ import java.util.List;
 public interface SaleOrderLineRepoPort {
     SaleOrderLineDTO saveAndFlush(SaleOrderLineDTO saleOrderLineDTO);
     List<SaleOrderLineDTO> saveAllAndFlush(List<SaleOrderLineDTO> saleOrderLineDTOs);
+    List<SaleOrderLineDTO> findBySaleOrderId(String saleOrderId);
 } 

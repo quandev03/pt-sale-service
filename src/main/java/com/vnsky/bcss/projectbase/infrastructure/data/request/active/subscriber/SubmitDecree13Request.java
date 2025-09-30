@@ -11,14 +11,21 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class SubmitDecree13Request {
-    private Long isdn;
+    private String isdn;
 
-    @JsonProperty("CHANNEL_CODE")
-    private String channelCode;
+    private String subId;
 
-    @JsonProperty("ACCEPTED_VALUE")
-    private String acceptedValue;
+    private String contractId;
 
-    @JsonProperty("ACCEPTED_DATETIME")
-    private String acceptedDateTime;
+    private String tc1;
+
+    private String tc2;
+
+    private String tc3;
+
+    private String tc4;
+
+    private String tc5;
+
+    private String noteDesc;
 }

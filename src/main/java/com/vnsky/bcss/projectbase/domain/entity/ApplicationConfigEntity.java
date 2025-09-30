@@ -1,5 +1,6 @@
 package com.vnsky.bcss.projectbase.domain.entity;
 
+import com.vnsky.database.annotation.UlidSequence;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

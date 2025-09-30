@@ -17,5 +17,9 @@ public class SaleOrderLineDTO extends AbstractAuditDTO {
     private Long price;
     private Long version;
     private String note;
+    private String isdn;
+    private String pckCode;
+    private Long quantity;
     private String subId;
+    private Integer payStatus;
 }

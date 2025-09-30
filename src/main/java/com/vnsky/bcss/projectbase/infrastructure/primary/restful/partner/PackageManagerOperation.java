@@ -6,9 +6,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,4 +49,9 @@ public interface PackageManagerOperation {
     @GetMapping("/free")
     ResponseEntity<Object> freePackageProfile();
 
+    @PostMapping("/download-image/{idPackageProfile}")
+    ResponseEntity<Resource> downloadImage(@PathVariable String idPackageProfile);
+
+    @GetMapping("/get-all")
+    ResponseEntity<Object> getAllPackageProfile();
 }

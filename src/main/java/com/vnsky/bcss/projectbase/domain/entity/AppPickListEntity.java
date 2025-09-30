@@ -42,4 +42,4 @@ public class AppPickListEntity extends AbstractAuditingEntity {
 
     @Column(name = "IS_DEFAULT")
     private Integer isDefault;
-} 
+}

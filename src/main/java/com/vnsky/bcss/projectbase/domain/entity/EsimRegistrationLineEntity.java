@@ -31,9 +31,12 @@ public class EsimRegistrationLineEntity extends AbstractAuditingEntity {
     @Column(name = "IMSI")
     private Long imsi;
 
-    @Column(name = "SALE_ORDER_ID")
-    private String saleOrderId;
+    @Column(name = "ESIM_REGISTRATION_ID")
+    private String esimRegistrationId;
 
     @Column(name = "LPA")
     private String lpa;
-} 
+
+    @Column(name = "PCK_CODE")
+    private String pckCode;
+}

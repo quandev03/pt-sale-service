@@ -1,6 +1,5 @@
 package com.vnsky.bcss.projectbase.infrastructure.data.response;
 
-
 import com.vnsky.bcss.projectbase.domain.dto.CommonDTO;
 import com.vnsky.bcss.projectbase.shared.utils.DbColumnMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,11 +12,11 @@ import lombok.*;
 public class GetAllOrganizationUnitResponse extends CommonDTO {
     @DbColumnMapper("ID")
     @Schema(description = "Id đơn vị")
-    private Long id;
+    private String id;
 
     @DbColumnMapper("PARENT_ID")
     @Schema(description = "Id đơn vị cha")
-    private Long parentId;
+    private String parentId;
 
     @DbColumnMapper("ORG_CODE")
     @Schema(description = "Mã đơn vị")

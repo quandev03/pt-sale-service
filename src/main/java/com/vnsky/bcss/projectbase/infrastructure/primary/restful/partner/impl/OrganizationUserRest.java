@@ -15,6 +15,16 @@ public class OrganizationUserRest implements OrganizationUserOperation {
     private final OrganizationUserService organizationUserService;
 
     @Override
+    public ResponseEntity<OrganizationUserDTO> addPartnerUser(OrganizationUserDTO organizationUnitDTO) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Object> updatePartnerOfUser(String userId, String partnerId) {
+        return null;
+    }
+
+    @Override
     public ResponseEntity<OrganizationUserDTO> addOrganizationUnit(OrganizationUserDTO request) {
         return ResponseEntity.ok(organizationUserService.save(request));
     }

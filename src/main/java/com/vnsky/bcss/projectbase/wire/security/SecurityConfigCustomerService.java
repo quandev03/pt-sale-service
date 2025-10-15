@@ -36,6 +36,7 @@ public class SecurityConfigCustomerService {
                 .requestMatchers("/private/api/v1/update-subscriber-information/sign-contract")
                 .requestMatchers("/private/api/v1/update-subscriber-information/preview-confirm-contract/**")
                 .requestMatchers("/private/api/v1/update-subscriber-information/preview-confirm-contract-png/**")
+                .requestMatchers("/public/api/v1/address/**")
             ;
     }
 

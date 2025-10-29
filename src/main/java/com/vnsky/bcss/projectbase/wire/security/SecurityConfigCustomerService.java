@@ -22,7 +22,7 @@ public class SecurityConfigCustomerService {
             ignoreConfigurer
                 .requestMatchers("/actuator/**")
                 .requestMatchers("/public/api/v1/landing-page/active-subscriber/**")
-                .requestMatchers("public/api/v1/hook/**")
+                .requestMatchers("/public/api/v1/hook/**")
                 .requestMatchers("/private/api/v1/organization-unit/check-org-parent")
                 .requestMatchers("/public/api/v1/update-subscriber-information/sign-contract")
                 .requestMatchers("/public/api/v1/update-subscriber-information/preview-confirm-contract/**")
@@ -50,7 +50,7 @@ public class SecurityConfigCustomerService {
                     "/actuator/**",
                     "/actuator/health/**")
                 .permitAll()
-                .requestMatchers("public/api/v1/hook/**")
+                .requestMatchers("/public/api/v1/hook/**")
                 .permitAll();
     }
 

@@ -85,7 +85,7 @@ public class OrganizationUnitEntity extends AbstractAuditingEntity {
     private String businessLicenseAddress;
 
     @Column(name = "ORG_PARTNER_TYPE")
-    private String orgPartnerType;
+    private Integer orgPartnerType;
 
     @Column(name = "ORG_BANK_ACCOUNT_NO")
     private String orgBankAccountNo;
@@ -110,4 +110,7 @@ public class OrganizationUnitEntity extends AbstractAuditingEntity {
 
     @Column(name = "DEBT_LIMIT_MBF")
     private Long debtLimitMbf;
+
+    @Column(name = "CCCD")
+    private String cccd;
 }

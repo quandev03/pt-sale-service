@@ -79,13 +79,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
         }
 
         // Nếu thêm mới đơn vị gốc => Kiểm tra đã có đơn vị gốc tồn tại chưa
-        if (Objects.isNull(organizationUnitDTO.getParentId())) {
-            OrganizationUnitDTO parentUnit = this.organizationUnitRepositoryPort.getOrgRoot(id);
-            if (!Objects.isNull(parentUnit)) {
-                log.error("{}save org unit root exited", LOG_PREFIX);
-                throw BaseException.conflictError(ErrorCode.ORG_ROOT_EXISTED).build();
-            }
-        }
+
 
         // Set orgType cho danh mục đơn vị
         organizationUnitDTO.setOrgType(Constant.OrgType.NBO);

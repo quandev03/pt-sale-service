@@ -27,9 +27,6 @@ public class OrganizationUnitDTO extends CommonDTO {
     @Schema(description = "Id đơn vị")
     private String id;
 
-    @Schema(description = "Id đơn vị cha")
-    private String parentId;
-
     @Schema(description = "Mã đơn vị")
     @NotBlank(message = "Mã đơn vị không được bỏ trống")
     @Pattern(regexp = "[A-Za-z0-9_-]*", message = "Mã đơn vị chưa đúng định dạng")
@@ -53,9 +50,6 @@ public class OrganizationUnitDTO extends CommonDTO {
 
     @Schema(description = "Mã tỉnh")
     private String provinceCode;
-
-    @Schema(description = "Mã huyện")
-    private String districtCode;
 
     @Schema(description = "Mã xã")
     private String wardCode;
@@ -86,7 +80,7 @@ public class OrganizationUnitDTO extends CommonDTO {
     private String email;
 
     @Schema(description = "Kiểu đối tác")
-    private String orgPartnerType;
+    private Integer orgPartnerType;
 
     @Schema(description = "số tk ngân hàng")
     private String orgBankAccountNo;
@@ -132,4 +126,7 @@ public class OrganizationUnitDTO extends CommonDTO {
 
     @Schema(description = "Công nợ thực tế")
     private Long debtLimitMbf;
+
+    @Schema(description = "CCCD")
+    private String cccd;
 }

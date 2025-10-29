@@ -25,7 +25,7 @@ public class SearchPartnerResponse {
     private String orgCode;
 
     @DbColumnMapper("ORG_SUB_TYPE")
-    private String orgPartnerType;
+    private Integer orgPartnerType;
 
     @DbColumnMapper("CREATED_BY")
     private String createdBy;

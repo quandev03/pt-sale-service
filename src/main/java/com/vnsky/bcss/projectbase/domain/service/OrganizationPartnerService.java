@@ -180,7 +180,6 @@ public class OrganizationPartnerService implements OrganizationPartnerServicePor
             dto.setOrgName(info.getShopName());
             dto.setOrgType(info.getShopType());
             dto.setProvinceCode(info.getProvinceCode());
-            dto.setParentId(info.getParentShopId());
             dto.setAddress(info.getShopAddress());
             dto.setStatus("1".equals(info.getShopStatus()) ? 1 : 0);
             dto.setTaxCode(info.getTaxCode());

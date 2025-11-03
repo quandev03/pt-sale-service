@@ -24,7 +24,7 @@ spring:
         bootstrap-mode: deferred
     redis:
       repositories:
-        enabled=false:
+        enabled: false
   # web-security:
   #   debug: true
   #    redis:
@@ -120,7 +120,7 @@ application:
     policy-uri: ${POLICY_URL:}
   cache:
     redisson:
-      enabled: true
+      enabled: false
       timeout: 30000
       node-addresses: ${REDIS_URL:}
       password: ${REDIS_PASSWORD:}

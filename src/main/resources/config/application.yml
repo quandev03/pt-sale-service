@@ -130,8 +130,8 @@ application:
       connect-timeout: 30000
       retry-attempts: 3
       retry-interval: 1500
-      failed-slave-reconnection-interval: 3000
-      failed-slave-check-interval: 60000
+#      failed-slave-reconnection-interval: 3000
+#      failed-slave-check-interval: 60000
       subscriptions-per-connection: 5
       client-name: ''
       subscription-connection-pool-size: 50

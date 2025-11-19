@@ -10,7 +10,6 @@ logging:
           projectbase: INFO
         vnsky-security: DEBUG
 spring:
-
   main:
     allow-bean-definition-overriding: true
   application:
@@ -22,9 +21,6 @@ spring:
     jpa:
       repositories:
         bootstrap-mode: deferred
-    redis:
-      repositories:
-        enabled: false
   # web-security:
   #   debug: true
   #    redis:

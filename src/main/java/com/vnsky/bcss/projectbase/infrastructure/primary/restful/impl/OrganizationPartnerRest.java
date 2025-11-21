@@ -2,6 +2,7 @@ package com.vnsky.bcss.projectbase.infrastructure.primary.restful.impl;
 
 import com.vnsky.bcss.projectbase.domain.dto.*;
 import com.vnsky.bcss.projectbase.domain.port.primary.OrganizationPartnerServicePort;
+import com.vnsky.bcss.projectbase.domain.port.primary.SubscriberServicePort;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.PackageClientRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.GetAllOrganizationUnitResponse;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.SearchPartnerResponse;
@@ -12,8 +13,12 @@ import com.vnsky.kafka.annotation.AuditId;
 import com.vnsky.kafka.constant.AuditActionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +30,7 @@ import java.util.List;
 public class OrganizationPartnerRest implements OrganizationPartnerOperation {
 
     private final OrganizationPartnerServicePort organizationPartnerServicePort;
+    private final SubscriberServicePort subscriberServicePort;
 
     @Override
     @AuditAction(targetType = "PARTNER", actionType = AuditActionType.CREATE)
@@ -32,6 +38,16 @@ public class OrganizationPartnerRest implements OrganizationPartnerOperation {
         String lang = resolveLang(acceptLanguage);
         OrganizationUnitDTO response = this.organizationPartnerServicePort.createPartner(organizationUnitDTO, lang);
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<Object> downloadFile(String file) {
+        Resource resource = subscriberServicePort.downloadFile(file);
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(resource.getFilename()).build().toString())
+            .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(resource);
     }
 
     private String resolveLang(String acceptLanguageHeader) {

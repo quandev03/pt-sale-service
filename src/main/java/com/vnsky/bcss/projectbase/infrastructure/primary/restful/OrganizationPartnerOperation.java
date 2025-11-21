@@ -34,6 +34,10 @@ public interface OrganizationPartnerOperation {
     ResponseEntity<Object> createPartner(@RequestPart @Validated OrganizationUnitDTO organizationUnitDTO,
                                          @RequestHeader(value = HttpHeaders.ACCEPT_LANGUAGE, required = false) String acceptLanguage);
 
+
+    @GetMapping("/file")
+    ResponseEntity<Object> downloadFile( @RequestParam String file);
+
     /**
      * API cập nhật đối tác
      *

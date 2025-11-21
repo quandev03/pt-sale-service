@@ -103,5 +103,5 @@ public interface OrganizationUnitRepoPort {
 
     OrganizationUnitDTO getOrgNBOByPartner(String partnerID);
 
-    OrganizationUnitDTO getRootOrg();
+    OrganizationUnitDTO getRootOrg(String clientId);
 }

@@ -161,8 +161,8 @@ public class OrganizationUnitAdapter extends BaseJPAAdapterVer2<OrganizationUnit
     }
 
     @Override
-    public OrganizationUnitDTO getRootOrg() {
-        return this.mapper.toDto(this.repository.getOrgRoot(SecurityUtil.getCurrentClientId()));
+    public OrganizationUnitDTO getRootOrg(String clientID) {
+        return this.mapper.toDto(this.repository.getOrgRoot(clientID));
     }
 
     @Override

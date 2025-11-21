@@ -37,6 +37,7 @@ import java.util.Optional;
 @Slf4j
 public class OrganizationUnitAdapter extends BaseJPAAdapterVer2<OrganizationUnitEntity, OrganizationUnitDTO, String, OrganizationUnitMapper, OrganizationUnitRepository> implements OrganizationUnitRepoPort {
 
+
     private final OrganizationDeliveryInfoRepository organizationDeliveryInfoRepository;
     private final EntityManager entityManager;
     private final DbMapper dbMapper;
@@ -157,6 +158,11 @@ public class OrganizationUnitAdapter extends BaseJPAAdapterVer2<OrganizationUnit
     @Override
     public OrganizationUnitDTO getOrgNBOByPartner(String partnerID) {
         return this.mapper.toDto(this.repository.findNBOByPartnerId(partnerID));
+    }
+
+    @Override
+    public OrganizationUnitDTO getRootOrg() {
+        return this.mapper.toDto(this.repository.getOrgRoot(SecurityUtil.getCurrentClientId()));
     }
 
     @Override
@@ -293,7 +299,7 @@ public class OrganizationUnitAdapter extends BaseJPAAdapterVer2<OrganizationUnit
 
     @Override
     public List<OrganizationUnitResponse> getListOrganizationUnitChild(String parentId) {
-        return repository.getInfoOrganizationByParentId(parentId)
+        return repository.getInfoOrganizationByParentId(SecurityUtil.getCurrentClientId())
             .stream().map(org-> dbMapper.castSqlResult(org, OrganizationUnitResponse.class)).toList();
     }
 }

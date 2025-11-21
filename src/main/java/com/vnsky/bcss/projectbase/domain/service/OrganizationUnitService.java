@@ -46,7 +46,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
     @Transactional
     public OrganizationUnitDTO save(OrganizationUnitDTO organizationUnitDTO, String id) {
         // Kiểm tra mã đơn vị
-        OrganizationUnitDTO orgDTO = this.organizationUnitRepositoryPort.getByOrgCode(id, organizationUnitDTO.getOrgCode());
+        OrganizationUnitDTO orgDTO = this.organizationUnitRepositoryPort.getRootOrg();
         if (!Objects.isNull(orgDTO)) {
             log.error("{}save orgCode : {} existed", LOG_PREFIX, orgDTO.getOrgCode());
             throw BaseException.badRequest(ErrorCode.VALIDATION_ERROR_CODE).

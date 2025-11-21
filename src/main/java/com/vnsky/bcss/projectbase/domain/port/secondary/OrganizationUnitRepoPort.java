@@ -102,4 +102,6 @@ public interface OrganizationUnitRepoPort {
     OrganizationUnitDTO findByUserId(String userId);
 
     OrganizationUnitDTO getOrgNBOByPartner(String partnerID);
+
+    OrganizationUnitDTO getRootOrg();
 }

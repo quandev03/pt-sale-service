@@ -269,10 +269,9 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
     @Query(value = """
         SELECT ID, PARENT_ID , ORG_CODE , ORG_NAME
               FROM ORGANIZATION_UNIT ou
-              START WITH ou.ID = :orgId
-              CONNECT BY PRIOR ou.ID = ou.PARENT_ID
+              where ou.CLIENT_ID = :clientId and ou.PARENT_ID is not null and AND ORG_TYPE = 'NBO'
     """, nativeQuery = true)
-    List<Tuple> getInfoOrganizationByParentId(@Param("orgId") String orgId);
+    List<Tuple> getInfoOrganizationByParentId(@Param("clientId") String orgId);
 
     @Query(value = """
         SELECT ou.*
@@ -299,4 +298,10 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
     JOIN ESIM_REGISTRATION er ON er.ORDER_ID = so.ID AND er.ID = :esimRegistrationId
     """, nativeQuery = true)
     String findOrganizationIdByEsimRegistration(@Param("esimRegistrationId") String esimRegistrationId);
+
+
+    @Query(value = """
+        Select * from ORGANIZATION_UNIT ou where ou.CLIENT_ID = :clientId and ou.PARENT_ID is NULL AND ORG_TYPE = 'NBO'    """
+        , nativeQuery = true)
+    OrganizationUnitEntity getOrgRoot(String clientId);
 }

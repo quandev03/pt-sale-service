@@ -18,18 +18,3 @@ public interface PartnerPackageSubscriptionPaymentRepoPort {
                                                                                          List<PartnerPackageSubscriptionPaymentStatus> statuses);
 }
 
-package com.vnsky.bcss.projectbase.domain.port.secondary;
-
-import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionPaymentDTO;
-
-import java.util.Optional;
-
-public interface PartnerPackageSubscriptionPaymentRepoPort {
-
-    PartnerPackageSubscriptionPaymentDTO saveAndFlush(PartnerPackageSubscriptionPaymentDTO dto);
-
-    Optional<PartnerPackageSubscriptionPaymentDTO> findByTxnRef(String txnRef);
-
-    Optional<PartnerPackageSubscriptionPaymentDTO> findBySubscriptionId(String subscriptionId);
-}
-

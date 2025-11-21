@@ -117,9 +117,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
 
     @Override
     public List<GetAllOrganizationUnitResponse> getAll(Integer status, String orgType, String orgSubType, String textSearch) {
-        String currentUserId = SecurityUtil.getCurrentUserId();
-        String currentOrgId = organizationUserRepositoryPort.findByUserId(currentUserId).orElseThrow(()-> BaseException.bussinessError(ErrorCode.ORG_ID_NOT_FOUND).build()).getOrgId();
-        return this.organizationUnitRepositoryPort.getAllOrganizationUnits(status, orgType, orgSubType, textSearch,currentOrgId);
+        return this.organizationUnitRepositoryPort.getAllOrganizationUnits(status, orgType, orgSubType, textSearch);
     }
 
     @Override

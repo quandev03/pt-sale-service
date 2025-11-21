@@ -41,11 +41,9 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
               AND o.ORG_TYPE    = :orgType
               AND o.CLIENT_ID   = :clientId
               AND (:orgSubType IS NULL OR o.ORG_SUB_TYPE = :orgSubType)
-            CONNECT BY NOCYCLE PRIOR o.ID = o.PARENT_ID
-            START WITH o.ID = :currentOrgId
             ORDER SIBLINGS BY o.MODIFIED_DATE DESC
             """, nativeQuery = true)
-    List<Tuple> getAllOrganizationUnit(@Param("status") Integer status, @Param("orgType") String orgType, @Param("clientId") String clientId, String orgSubType, @Param("textSearch") String textSearch, @Param("currentOrgId") String currentOrgId);
+    List<Tuple> getAllOrganizationUnit(@Param("status") Integer status, @Param("orgType") String orgType, @Param("clientId") String clientId, String orgSubType, @Param("textSearch") String textSearch);
 
     @Query(value = """
         SELECT o.ID,

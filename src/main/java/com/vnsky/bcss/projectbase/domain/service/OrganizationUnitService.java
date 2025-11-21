@@ -46,9 +46,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
     @Transactional
     public OrganizationUnitDTO save(OrganizationUnitDTO organizationUnitDTO, String id) {
         // Kiểm tra mã đơn vị
-        String clientID = SecurityUtil.getCurrentClientId();
-        log.info("String clientID: {}", clientID);
-        OrganizationUnitDTO orgDTO = this.organizationUnitRepositoryPort.getRootOrg(clientID);
+        OrganizationUnitDTO orgDTO = this.organizationUnitRepositoryPort.getByOrgCode(id, organizationUnitDTO.getOrgCode());
         if (!Objects.isNull(orgDTO)) {
             log.error("{}save orgCode : {} existed", LOG_PREFIX, orgDTO.getOrgCode());
             throw BaseException.badRequest(ErrorCode.VALIDATION_ERROR_CODE).
@@ -61,9 +59,8 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
                 .build();
         }
 
-        if (Objects.nonNull(id)) {
             // kiểm tra Id có tồn tại trong Db không
-            orgDTO = this.organizationUnitRepositoryPort.get(id);
+            orgDTO = this.organizationUnitRepositoryPort.getOrgRoot(SecurityUtil.getCurrentClientId());
 
             if (Objects.isNull(orgDTO)) {
                 log.error("{}save org unit not found with id : {}", LOG_PREFIX, id);
@@ -78,7 +75,6 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
                     throw BaseException.bussinessError(ErrorCode.CHILD_ACTIVE_CANNOT_EDIT).build();
                 }
             }
-        }
 
         // Nếu thêm mới đơn vị gốc => Kiểm tra đã có đơn vị gốc tồn tại chưa
 

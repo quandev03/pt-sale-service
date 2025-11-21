@@ -7,9 +7,9 @@ import com.vnsky.bcss.projectbase.domain.port.secondary.PackageProfileRepoPort;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.StatisticOrgResponse;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.StatisticResponse;
 import com.vnsky.bcss.projectbase.infrastructure.secondary.jpa.repository.PackageProfileRepository;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
 import com.vnsky.bcss.projectbase.shared.utils.DbMapper;
 import com.vnsky.common.exception.domain.BaseException;
-import com.vnsky.common.exception.domain.ErrorKey;
 import jakarta.persistence.Tuple;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,7 +40,10 @@ public class PackageProfileAdapter extends BaseJPAAdapterVer2<PackageProfileEnti
 
     @Override
     public PackageProfileDTO findById(String idPackageProfile) {
-        return mapper.toDto(repository.findById(idPackageProfile).orElseThrow(() -> BaseException.notFoundError(ErrorKey.BAD_REQUEST).build()));
+        return mapper.toDto(repository.findById(idPackageProfile)
+            .orElseThrow(() -> BaseException.notFoundError(ErrorCode.PACKAGE_NOT_EXISTS)
+                .message("Gói cước không tồn tại")
+                .build()));
     }
 
     @Override

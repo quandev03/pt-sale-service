@@ -24,3 +24,4 @@ public class PartnerPackageSubscriptionPaymentRequest {
     private String returnUrl;
 }
 
+

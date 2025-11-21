@@ -84,6 +84,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
         // Set orgType cho danh mục đơn vị
         organizationUnitDTO.setOrgType(Constant.OrgType.NBO);
         organizationUnitDTO.setClientId(SecurityUtil.getCurrentClientId());
+        organizationUnitDTO.setParentCode(orgDTO.getId());
         checkDuplicate(organizationUnitDTO);
 
         if (Objects.isNull(id)) {

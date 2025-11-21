@@ -10,7 +10,7 @@ public interface PartnerPackageSubscriptionPaymentRepository extends BaseJPARepo
 
     Optional<PartnerPackageSubscriptionPaymentEntity> findByTxnRef(String txnRef);
 
-    Optional<PartnerPackageSubscriptionPaymentEntity> findFirstBySubscriptionIdAndStatusInOrderByCreatedDateDesc(String subscriptionId,
-                                                                                                                List<PartnerPackageSubscriptionPaymentStatus> statuses);
+    Optional<PartnerPackageSubscriptionPaymentEntity> findFirstBySubscriptionIdAndPaymentStatusInOrderByCreatedDateDesc(String subscriptionId,
+                                                                                                                          List<PartnerPackageSubscriptionPaymentStatus> statuses);
 }
 

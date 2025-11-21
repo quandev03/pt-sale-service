@@ -47,7 +47,7 @@ public class PartnerPackageSubscriptionPaymentAdapter extends BaseJPAAdapterVer2
     @Override
     public Optional<PartnerPackageSubscriptionPaymentDTO> findFirstBySubscriptionIdAndStatuses(String subscriptionId,
                                                                                                List<PartnerPackageSubscriptionPaymentStatus> statuses) {
-        return repository.findFirstBySubscriptionIdAndStatusInOrderByCreatedDateDesc(subscriptionId, statuses)
+        return repository.findFirstBySubscriptionIdAndPaymentStatusInOrderByCreatedDateDesc(subscriptionId, statuses)
             .map(mapper::toDto);
     }
 }

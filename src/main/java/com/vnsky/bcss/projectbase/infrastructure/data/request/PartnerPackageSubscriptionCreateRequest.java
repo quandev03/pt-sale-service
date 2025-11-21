@@ -1,6 +1,7 @@
 package com.vnsky.bcss.projectbase.infrastructure.data.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.vnsky.bcss.projectbase.shared.utils.IsoLocalDateTimeDeserializer;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class PartnerPackageSubscriptionCreateRequest {
     @NotBlank
     private String packageProfileId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonDeserialize(using = IsoLocalDateTimeDeserializer.class)
     private LocalDateTime startTime;
 }
 

@@ -111,6 +111,6 @@ public class OrganizationUnitEntity extends AbstractAuditingEntity {
     @Column(name = "DEBT_LIMIT_MBF")
     private Long debtLimitMbf;
 
-    @Column(name = "CCCD")
+    @Transient
     private String cccd;
 }

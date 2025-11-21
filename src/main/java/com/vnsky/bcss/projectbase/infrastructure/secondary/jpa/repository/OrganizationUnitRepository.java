@@ -41,7 +41,7 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
               AND o.ORG_TYPE    = :orgType
               AND o.CLIENT_ID   = :clientId
               AND (:orgSubType IS NULL OR o.ORG_SUB_TYPE = :orgSubType)
-            ORDER SIBLINGS BY o.MODIFIED_DATE DESC
+            ORDER BY o.MODIFIED_DATE DESC
             """, nativeQuery = true)
     List<Tuple> getAllOrganizationUnit(@Param("status") Integer status, @Param("orgType") String orgType, @Param("clientId") String clientId, String orgSubType, @Param("textSearch") String textSearch);
 

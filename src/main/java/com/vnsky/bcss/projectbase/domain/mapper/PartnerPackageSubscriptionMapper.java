@@ -8,3 +8,4 @@ import org.mapstruct.Mapper;
 public interface PartnerPackageSubscriptionMapper extends BaseMapper<PartnerPackageSubscriptionEntity, PartnerPackageSubscriptionDTO> {
 }
 
+

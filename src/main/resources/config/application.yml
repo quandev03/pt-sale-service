@@ -202,6 +202,19 @@ third-party:
   qr-code:
     create-qr-code-url: ${QR_DOMAIN:}
 
+payment:
+  vnpay:
+    tmn-code: ${VNP_TMN_CODE:GQ8OID19}
+    hash-secret: ${VNP_HASH_SECRET:WGPK5GFWO1YFXNXH3SYBS11OISZIITE3}
+    url: ${VNP_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+    return-url: ${VNP_RETURN_URL:https://sandbox.hivn.vn/public/api/v1/payment/vnpay/return}
+    ipn-url: ${VNP_IPN_URL:https://sandbox.hivn.vn/public/api/v1/payment/vnpay/ipn}
+    version: ${VNP_VERSION:2.1.0}
+    command: ${VNP_COMMAND:pay}
+    order-type: ${VNP_ORDER_TYPE:partner_package}
+    currency: ${VNP_CURRENCY:VND}
+    locale: ${VNP_LOCALE:vn}
+
 param:
   template:
     contract-sim-active-folder: /customer-management/template/

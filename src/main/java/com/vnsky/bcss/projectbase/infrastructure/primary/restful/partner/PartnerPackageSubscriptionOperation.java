@@ -1,6 +1,7 @@
 package com.vnsky.bcss.projectbase.infrastructure.primary.restful.partner;
 
 import com.vnsky.bcss.projectbase.infrastructure.data.request.PartnerPackageSubscriptionCreateRequest;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.PartnerPackageSubscriptionPaymentRequest;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.PartnerPackageSubscriptionStatus;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,6 +17,9 @@ public interface PartnerPackageSubscriptionOperation {
     @PostMapping
     ResponseEntity<Object> createSubscription(@RequestBody @Valid PartnerPackageSubscriptionCreateRequest request);
 
+    @PostMapping("/payments")
+    ResponseEntity<Object> createSubscriptionPayment(@RequestBody @Valid PartnerPackageSubscriptionPaymentRequest request);
+
     @GetMapping
     ResponseEntity<Object> listSubscriptions(
         @RequestParam(required = false) String organizationUnitId,
@@ -27,4 +31,5 @@ public interface PartnerPackageSubscriptionOperation {
     @PostMapping("/{id}/stop")
     ResponseEntity<Object> stopSubscription(@PathVariable("id") String id);
 }
+
 

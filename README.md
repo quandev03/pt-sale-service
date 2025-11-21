@@ -27,4 +27,16 @@ You need to have Java 17:
 - [CORS configuration](documentation/cors-configuration.md)
 - [Rest pagination](documentation/rest-pagination.md)
 
+## Partner package subscriptions
+
+|Endpoint|Description|
+|---|---|
+|`POST ${application.path.base.private}/partner-package-subscriptions`|Tạo gói dịch vụ cho đối tác. Đầu vào gồm `organizationUnitId`, `packageProfileId`, `startTime` (tùy chọn). Hệ thống kiểm tra trạng thái hoạt động của đơn vị/gói, tính `endTime = startTime + cycleValue * cycleUnit`.|
+|`GET ${application.path.base.private}/partner-package-subscriptions`|Danh sách gói đã bán với các tham số lọc `organizationUnitId`, `packageProfileId`, `status` và hỗ trợ phân trang. Kết quả gồm tên đối tác, tên gói, thời gian bắt đầu/kết thúc, trạng thái.|
+|`POST ${application.path.base.private}/partner-package-subscriptions/{id}/stop`|Dừng thủ công một gói đang hoạt động, đồng thời cập nhật `endTime` = thời điểm hiện tại.|
+
+### Automatic expiration job
+
+- `PartnerPackageSubscriptionScheduler` chạy mỗi 30 phút để tự động chuyển trạng thái `ACTIVE` sang `EXPIRED` nếu `endTime` đã đến hạn.
+
 <!-- jhipster-needle-documentation -->

@@ -1,0 +1,16 @@
+.git
+.gitignore
+.idea
+.vscode
+target
+**/target
+tmp
+node_modules
+**/*.iml
+Dockerfile.local
+docker-compose.override.yml
+*.log
+*.tmp
+*.swp
+*.swo
+

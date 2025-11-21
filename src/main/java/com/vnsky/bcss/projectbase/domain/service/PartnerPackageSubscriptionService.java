@@ -55,7 +55,11 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
                 .build();
         }
 
-        subscriptionRepoPort.findActiveByOrgUnitAndPackage(organizationUnit.getId(), packageProfile.getId())
+        subscriptionRepoPort.findByOrgUnitAndPackageAndStatuses(
+                organizationUnit.getId(),
+                packageProfile.getId(),
+                List.of(PartnerPackageSubscriptionStatus.ACTIVE, PartnerPackageSubscriptionStatus.PENDING_PAYMENT)
+            )
             .ifPresent(existing -> {
                 throw BaseException.badRequest(ErrorCode.PARTNER_PACKAGE_SUBSCRIPTION_DUPLICATED)
                     .message("Đối tác đã có gói này đang hoạt động")
@@ -130,4 +134,5 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
         };
     }
 }
+
 

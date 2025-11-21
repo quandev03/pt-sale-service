@@ -18,6 +18,10 @@ public interface PartnerPackageSubscriptionRepository extends BaseJPARepository<
                                                                                                    String packageProfileId,
                                                                                                    PartnerPackageSubscriptionStatus status);
 
+    Optional<PartnerPackageSubscriptionEntity> findFirstByOrganizationUnitIdAndPackageProfileIdAndStatusIn(String organizationUnitId,
+                                                                                                           String packageProfileId,
+                                                                                                           List<PartnerPackageSubscriptionStatus> statuses);
+
     List<PartnerPackageSubscriptionEntity> findByStatusAndEndTimeLessThanEqual(PartnerPackageSubscriptionStatus status,
                                                                                LocalDateTime deadline);
 
@@ -56,4 +60,5 @@ public interface PartnerPackageSubscriptionRepository extends BaseJPARepository<
                        @Param("status") String status,
                        Pageable pageable);
 }
+
 

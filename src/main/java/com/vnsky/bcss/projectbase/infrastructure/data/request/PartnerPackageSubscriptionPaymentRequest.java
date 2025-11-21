@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class PartnerPackageSubscriptionCreateRequest {
+public class PartnerPackageSubscriptionPaymentRequest {
 
     @NotBlank
     private String organizationUnitId;
@@ -17,6 +17,9 @@ public class PartnerPackageSubscriptionCreateRequest {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startTime;
-}
 
+    private String clientIp;
+
+    private String returnUrl;
+}
 

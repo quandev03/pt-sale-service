@@ -23,3 +23,4 @@ public class PartnerPackageSubscriptionDTO extends AbstractAuditDTO {
     private PartnerPackageSubscriptionStatus status;
 }
 
+

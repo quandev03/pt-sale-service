@@ -58,6 +58,14 @@ public class PartnerPackageSubscriptionAdapter extends BaseJPAAdapterVer2<
     }
 
     @Override
+    public Optional<PartnerPackageSubscriptionDTO> findByOrgUnitAndPackageAndStatuses(String organizationUnitId,
+                                                                                      String packageProfileId,
+                                                                                      List<PartnerPackageSubscriptionStatus> statuses) {
+        return repository.findFirstByOrganizationUnitIdAndPackageProfileIdAndStatusIn(organizationUnitId, packageProfileId, statuses)
+            .map(mapper::toDto);
+    }
+
+    @Override
     public List<PartnerPackageSubscriptionDTO> findActiveSubscriptionsEndingBefore(LocalDateTime deadline) {
         return repository.findByStatusAndEndTimeLessThanEqual(PartnerPackageSubscriptionStatus.ACTIVE, deadline)
             .stream()

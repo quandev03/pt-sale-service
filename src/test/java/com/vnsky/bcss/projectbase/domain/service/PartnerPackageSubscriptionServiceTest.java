@@ -60,7 +60,7 @@ class PartnerPackageSubscriptionServiceTest {
 
         when(organizationUnitRepoPort.findById("ORG-1")).thenReturn(Optional.of(org));
         when(packageProfileRepoPort.findById("PKG-1")).thenReturn(packageProfile);
-        when(subscriptionRepoPort.findActiveByOrgUnitAndPackage(anyString(), anyString()))
+        when(subscriptionRepoPort.findByOrgUnitAndPackageAndStatuses(anyString(), anyString(), anyList()))
             .thenReturn(Optional.empty());
         when(subscriptionRepoPort.saveAndFlush(any()))
             .thenAnswer(invocation -> invocation.getArgument(0));
@@ -99,4 +99,5 @@ class PartnerPackageSubscriptionServiceTest {
         assertThat(captor.getValue().getStatus()).isEqualTo(PartnerPackageSubscriptionStatus.EXPIRED);
     }
 }
+
 

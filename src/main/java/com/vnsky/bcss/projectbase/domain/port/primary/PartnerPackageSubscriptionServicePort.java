@@ -21,3 +21,4 @@ public interface PartnerPackageSubscriptionServicePort {
     int expireSubscriptions();
 }
 
+

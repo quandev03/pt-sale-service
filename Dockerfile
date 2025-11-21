@@ -1,18 +1,32 @@
+# syntax=docker/dockerfile:1.6
+
+ARG MAVEN_IMAGE=maven:3.9-eclipse-temurin-17
+ARG RUNTIME_IMAGE=eclipse-temurin:17-jre
+
 # ===== STAGE 1: BUILD =====
-FROM maven:3.9-eclipse-temurin-21 AS build
-
-FROM maven:3.9-eclipse-temurin-17 AS build
-
-COPY settings-vnsky.xml /root/.m2/settings.xml
+FROM ${MAVEN_IMAGE} AS build
 
 WORKDIR /workspace
+
+# Copy Maven settings & project metadata first to maximize layer caching
+COPY settings-vnsky.xml /tmp/settings.xml
 COPY pom.xml .
-RUN mvn -s /root/.m2/settings.xml -e -B -U -DskipTests dependency:go-offline
+COPY mvnw mvnw
+COPY mvnw.cmd mvnw.cmd
+COPY .mvn .mvn
 
+# Pre-download dependencies using BuildKit cache
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -s /tmp/settings.xml -B -e -U -DskipTests dependency:go-offline
+
+# Copy sources only after dependencies are cached
 COPY src ./src
-RUN mvn -s /root/.m2/settings.xml -e -B -DskipTests package
 
-FROM eclipse-temurin:17-jre
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -s /tmp/settings.xml -B -e -DskipTests package
+
+# ===== STAGE 2: RUNTIME =====
+FROM ${RUNTIME_IMAGE} AS runtime
 WORKDIR /app
 
 COPY --from=build /workspace/target/*.jar app.jar

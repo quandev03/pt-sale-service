@@ -47,3 +47,4 @@ public class PartnerPackageSubscriptionView extends CommonDTO {
     private String status;
 }
 
+

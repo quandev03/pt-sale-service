@@ -40,3 +40,4 @@ public class PartnerPackageSubscriptionEntity extends AbstractAuditingEntity {
     private PartnerPackageSubscriptionStatus status;
 }
 
+

@@ -46,7 +46,7 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
                 .build();
         }
 
-        PackageProfileDTO packageProfile = packageProfileRepoPort.findByPackageCode(command.getPackageProfileId()));
+        PackageProfileDTO packageProfile = packageProfileRepoPort.findByPackageCode(command.getPackageProfileId());
 
         if (!Objects.equals(packageProfile.getStatus(), Status.ACTIVE.getValue())) {
             throw BaseException.badRequest(ErrorCode.PACKAGE_PROFILE_INVALID)

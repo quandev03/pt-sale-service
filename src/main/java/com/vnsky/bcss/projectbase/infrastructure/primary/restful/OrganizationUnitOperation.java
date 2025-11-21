@@ -13,9 +13,11 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 @RequestMapping("${application.path.base.public}/organization-unit")
@@ -288,4 +290,26 @@ public interface OrganizationUnitOperation {
 
     @GetMapping("/get-limit")
     ResponseEntity<Object> getDebitLimit();
+
+    @PostMapping("/{id}/images")
+    @Operation(summary = "Upload images for organization unit")
+    ResponseEntity<Object> uploadImages(
+        @PathVariable("id") String orgUnitId,
+        @RequestParam("files") List<MultipartFile> files);
+
+    @GetMapping("/{id}/images")
+    @Operation(summary = "Get image URLs for organization unit")
+    ResponseEntity<Object> getImageUrls(@PathVariable("id") String orgUnitId);
+
+    @GetMapping("/{id}/images/{imageId}")
+    @Operation(summary = "Download image for organization unit")
+    ResponseEntity<Resource> downloadImage(
+        @PathVariable("id") String orgUnitId,
+        @PathVariable("imageId") String imageId);
+
+    @PutMapping("/{id}/images")
+    @Operation(summary = "Update images for organization unit (delete old and upload new)")
+    ResponseEntity<Object> updateImages(
+        @PathVariable("id") String orgUnitId,
+        @RequestParam("files") List<MultipartFile> files);
 }

@@ -129,4 +129,7 @@ public class OrganizationUnitDTO extends CommonDTO {
 
     @Schema(description = "CCCD")
     private String cccd;
+
+    @Schema(description = "Danh sách đường dẫn ảnh")
+    private List<String> imageUrls = new ArrayList<>();
 }

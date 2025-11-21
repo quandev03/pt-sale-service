@@ -1,15 +1,21 @@
 package com.vnsky.bcss.projectbase.infrastructure.primary.restful.partner.impl;
 
 import com.vnsky.bcss.projectbase.domain.dto.OrganizationUnitDTO;
+import com.vnsky.bcss.projectbase.domain.port.primary.OrganizationUnitImageServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.OrganizationUnitServicePort;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.partner.CheckOrgParentRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.GetAllOrganizationUnitResponse;
+import com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitImageResponse;
 import com.vnsky.bcss.projectbase.infrastructure.primary.restful.OrganizationUnitOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,6 +24,7 @@ import java.util.List;
 public class OrganizationUnitRest implements OrganizationUnitOperation {
 
     private final OrganizationUnitServicePort organizationUnitServicePort;
+    private final OrganizationUnitImageServicePort imageServicePort;
 
     @Override
     public List<GetAllOrganizationUnitResponse> getAllStores(Boolean isAll) {
@@ -82,5 +89,38 @@ public class OrganizationUnitRest implements OrganizationUnitOperation {
     @Override
     public ResponseEntity<Object> getDebitLimit() {
         return ResponseEntity.ok(this.organizationUnitServicePort.getDebtRevenue());
+    }
+
+    @Override
+    public ResponseEntity<Object> uploadImages(String orgUnitId, List<MultipartFile> files) {
+        List<String> imageUrls = imageServicePort.uploadImages(orgUnitId, files);
+        return ResponseEntity.ok(OrganizationUnitImageResponse.builder()
+            .imageUrls(imageUrls)
+            .build());
+    }
+
+    @Override
+    public ResponseEntity<Object> getImageUrls(String orgUnitId) {
+        List<String> imageUrls = imageServicePort.getImageUrls(orgUnitId);
+        return ResponseEntity.ok(OrganizationUnitImageResponse.builder()
+            .imageUrls(imageUrls)
+            .build());
+    }
+
+    @Override
+    public ResponseEntity<Resource> downloadImage(String orgUnitId, String imageId) {
+        Resource resource = imageServicePort.downloadImage(orgUnitId, imageId);
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(resource);
+    }
+
+    @Override
+    public ResponseEntity<Object> updateImages(String orgUnitId, List<MultipartFile> files) {
+        List<String> imageUrls = imageServicePort.updateImages(orgUnitId, files);
+        return ResponseEntity.ok(OrganizationUnitImageResponse.builder()
+            .imageUrls(imageUrls)
+            .build());
     }
 }

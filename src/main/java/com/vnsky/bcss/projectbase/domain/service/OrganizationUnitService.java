@@ -4,6 +4,7 @@ package com.vnsky.bcss.projectbase.domain.service;
 import com.vnsky.bcss.projectbase.domain.dto.OrganizationUnitDTO;
 import com.vnsky.bcss.projectbase.domain.dto.OrganizationUserDTO;
 import com.vnsky.bcss.projectbase.domain.dto.UserDTO;
+import com.vnsky.bcss.projectbase.domain.port.primary.OrganizationUnitImageServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.OrganizationUnitServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.PackageManagerServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.StockIsdnServicePort;
@@ -39,6 +40,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
     private final OrganizationUserRepoPort organizationUserRepositoryPort;
     private final StockIsdnServicePort stockIsdnServicePort;
     private final PackageManagerServicePort packageManagerServicePort;
+    private final OrganizationUnitImageServicePort imageServicePort;
 
     private static final String LOG_PREFIX = "[OrganizationUnitService]_";
 
@@ -127,6 +129,9 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
             log.error("{}get org unit not found with id : {}", LOG_PREFIX, id);
             throw BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED).build();
         }
+
+        // Load images
+        organizationUnitDTO.setImageUrls(imageServicePort.getImageUrls(id));
 
         return organizationUnitDTO;
     }

@@ -62,7 +62,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
         }
 
             // kiểm tra Id có tồn tại trong Db không
-            orgDTO = this.organizationUnitRepositoryPort.getOrgRoot(SecurityUtil.getCurrentClientId());
+            orgDTO = this.organizationUnitRepositoryPort.getRootOrg(SecurityUtil.getCurrentClientId());
 
             if (Objects.isNull(orgDTO)) {
                 log.error("{}save org unit not found with id : {}", LOG_PREFIX, id);

@@ -8,3 +8,6 @@ import org.mapstruct.Mapper;
 public interface OrganizationUnitImageMapper extends BaseMapper<OrganizationUnitImageEntity, OrganizationUnitImageDTO> {
 }
 
+
+
+

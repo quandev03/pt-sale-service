@@ -180,37 +180,13 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
     public CheckOrgParentResponse checkOrgParent(CheckOrgParentRequest request) {
         log.debug("[CHECK_ORG_PARENT]: Start");
         log.info("[CHECK_ORG_PARENT]: request = {}", request);
-        
-        OrganizationUserDTO currentUser = organizationUserRepositoryPort.findByUserId(request.getCurrentUserId())
-            .orElseThrow(() -> {
-                log.error("[CHECK_ORG_PARENT]: User not found with userId: {}", request.getCurrentUserId());
-                return BaseException.badRequest(ErrorCode.ORG_UNIT_NOT_EXISTED_BY_USER)
-                    .message("Không tìm thấy user với userId: " + request.getCurrentUserId())
-                    .build();
-            });
-
-        if (currentUser.getOrgId() == null) {
-            log.error("[CHECK_ORG_PARENT]: User does not have orgId: {}", request.getCurrentUserId());
-            throw BaseException.badRequest(ErrorCode.ORG_UNIT_NOT_EXISTED_BY_USER)
-                .message("User không có organization unit")
-                .build();
-        }
+        OrganizationUserDTO currentUser = organizationUserRepositoryPort.findByUserId(request.getCurrentUserId()).orElseThrow(()-> BaseException.badRequest(ErrorKey.BAD_REQUEST).build());
 
         int resultCheck = organizationUnitRepositoryPort.checkChildAndParent(currentUser.getOrgId(), request.getOrgId());
-        
-        // Lấy tên organization unit nếu cần
-        String orgName = null;
-        if (request.getOrgId() != null) {
-            OrganizationUnitDTO orgUnit = organizationUnitRepositoryPort.get(request.getOrgId());
-            if (orgUnit != null) {
-                orgName = orgUnit.getOrgName();
-            }
-        }
 
-        log.info("[CHECK_ORG_PARENT]: Response - result: {}, orgName: {}", resultCheck, orgName);
+        log.info("Response: {}", resultCheck);
         return CheckOrgParentResponse.builder()
             .result(resultCheck)
-            .orgName(orgName)
             .build();
     }
 

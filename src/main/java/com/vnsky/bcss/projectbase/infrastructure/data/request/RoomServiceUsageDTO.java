@@ -11,16 +11,16 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomServiceUsageDTO {
-    @XlsxColumn(index = 0)
+    @XlsxColumn(index = 0, header = "Mã phòng")
     private String roomCode; // Mã phòng
 
-    @XlsxColumn(index = 1)
+    @XlsxColumn(index = 1, header = "Số điện sử dụng")
     private BigDecimal electricityUsage; // Số điện sử dụng
 
-    @XlsxColumn(index = 2)
+    @XlsxColumn(index = 2, header = "Số nước sử dụng")
     private BigDecimal waterUsage; // Số nước sử dụng
 
-    @XlsxColumn(index = 3)
+    @XlsxColumn(index = 3, header = "Số xe")
     private BigDecimal vehicleCount; // Số xe
 }
 

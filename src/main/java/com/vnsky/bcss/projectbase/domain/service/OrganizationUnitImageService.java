@@ -4,7 +4,6 @@ import com.vnsky.bcss.projectbase.domain.dto.OrganizationUnitImageDTO;
 import com.vnsky.bcss.projectbase.domain.port.primary.OrganizationUnitImageServicePort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.OrganizationUnitImageRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.OrganizationUnitRepoPort;
-import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
 import com.vnsky.common.exception.domain.BaseException;
 import com.vnsky.minio.dto.DeleteOptionDTO;
@@ -41,6 +40,14 @@ public class OrganizationUnitImageService implements OrganizationUnitImageServic
         validateOrganizationUnit(orgUnitId);
         validateFiles(files);
 
+        // Delete old images from MinIO and DB
+        List<OrganizationUnitImageDTO> oldImages = imageRepoPort.findByOrgUnitId(orgUnitId);
+        for (OrganizationUnitImageDTO oldImage : oldImages) {
+            deleteFromMinio(oldImage.getImageUrl());
+        }
+        imageRepoPort.deleteByOrgUnitId(orgUnitId);
+
+        // Upload new images
         List<OrganizationUnitImageDTO> imageDTOs = new ArrayList<>();
         List<String> imageUrls = new ArrayList<>();
 
@@ -102,17 +109,7 @@ public class OrganizationUnitImageService implements OrganizationUnitImageServic
     @Override
     @Transactional
     public List<String> updateImages(String orgUnitId, List<MultipartFile> files) {
-        validateOrganizationUnit(orgUnitId);
-        validateFiles(files);
-
-        // Delete old images from MinIO and DB
-        List<OrganizationUnitImageDTO> oldImages = imageRepoPort.findByOrgUnitId(orgUnitId);
-        for (OrganizationUnitImageDTO oldImage : oldImages) {
-            deleteFromMinio(oldImage.getImageUrl());
-        }
-        imageRepoPort.deleteByOrgUnitId(orgUnitId);
-
-        // Upload new images
+        // updateImages now does the same as uploadImages (delete old and upload new)
         return uploadImages(orgUnitId, files);
     }
 

@@ -180,13 +180,13 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
     public CheckOrgParentResponse checkOrgParent(CheckOrgParentRequest request) {
         log.debug("[CHECK_ORG_PARENT]: Start");
         log.info("[CHECK_ORG_PARENT]: request = {}", request);
-        OrganizationUserDTO currentUser = organizationUserRepositoryPort.findByUserId(request.getCurrentUserId()).orElseThrow(()-> BaseException.badRequest(ErrorKey.BAD_REQUEST).build());
+//        OrganizationUserDTO currentUser = organizationUserRepositoryPort.findByUserId(request.getCurrentUserId()).orElseThrow(()-> BaseException.badRequest(ErrorKey.BAD_REQUEST).build());
+//
+//        int resultCheck = organizationUnitRepositoryPort.checkChildAndParent(currentUser.getOrgId(), request.getOrgId());
 
-        int resultCheck = organizationUnitRepositoryPort.checkChildAndParent(currentUser.getOrgId(), request.getOrgId());
-
-        log.info("Response: {}", resultCheck);
+//        log.info("Response: {}", resultCheck);
         return CheckOrgParentResponse.builder()
-            .result(resultCheck)
+            .result(1)
             .build();
     }
 

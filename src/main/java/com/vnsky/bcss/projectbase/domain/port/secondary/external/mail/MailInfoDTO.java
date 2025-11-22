@@ -51,6 +51,12 @@ public class MailInfoDTO {
 
     private List<ESimInfo> eSimInfos;
 
+    // Fields for room payment invoice
+    private String roomCode;
+    private Integer month;
+    private Integer year;
+    private List<RoomPaymentDetailInfo> roomPaymentDetails;
+
     @Builder
     @Getter
     @Setter
@@ -59,6 +65,17 @@ public class MailInfoDTO {
         private String contentId;
         private String path;
         private String contentType;
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class RoomPaymentDetailInfo {
+        private String serviceName;
+        private String quantity;
+        private String unitPrice;
+        private String amount;
     }
 
     @Builder

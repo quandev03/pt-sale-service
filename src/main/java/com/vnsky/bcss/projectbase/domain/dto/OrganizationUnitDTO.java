@@ -87,6 +87,9 @@ public class OrganizationUnitDTO extends CommonDTO {
     @Schema(description = "số tk ngân hàng")
     private String orgBankAccountNo;
 
+    @Schema(description = "Tên ngân hàng")
+    private String bankName;
+
     @Schema(description = "File upload hợp đồng")
     private String contractNoFileUrl;
 
@@ -134,4 +137,7 @@ public class OrganizationUnitDTO extends CommonDTO {
 
     @Schema(description = "Danh sách đường dẫn ảnh")
     private List<String> imageUrls = new ArrayList<>();
+
+    @Schema(description = "Giá phòng")
+    private java.math.BigDecimal priceRoom;
 }

@@ -90,6 +90,9 @@ public class OrganizationUnitEntity extends AbstractAuditingEntity {
     @Column(name = "ORG_BANK_ACCOUNT_NO")
     private String orgBankAccountNo;
 
+    @Column(name = "BANK_NAME")
+    private String bankName;
+
     @Column(name = "APPROVAL_STATUS")
     private Integer approvalStatus;
 
@@ -110,6 +113,9 @@ public class OrganizationUnitEntity extends AbstractAuditingEntity {
 
     @Column(name = "DEBT_LIMIT_MBF")
     private Long debtLimitMbf;
+
+    @Column(name = "PRICE_ROOM", precision = 18, scale = 2)
+    private java.math.BigDecimal priceRoom;
 
     @Transient
     private String cccd;

@@ -5,6 +5,7 @@ import com.vnsky.bcss.projectbase.domain.port.primary.OrganizationUnitServicePor
 import com.vnsky.bcss.projectbase.infrastructure.data.request.partner.CheckOrgParentRequest;
 import com.vnsky.bcss.projectbase.infrastructure.primary.restful.internal.OrganizationUnitOperation;
 import com.vnsky.bcss.projectbase.domain.dto.UserDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,8 @@ public class OrganizationUnitInternalRest implements OrganizationUnitOperation {
 
     private final OrganizationUnitServicePort organizationUnitServicePort;
 
-    public ResponseEntity<Object> checkOrgParent(@RequestBody CheckOrgParentRequest request){
+    @Override
+    public ResponseEntity<Object> checkOrgParent(@Valid @RequestBody CheckOrgParentRequest request){
         return ResponseEntity.ok(organizationUnitServicePort.checkOrgParent(request));
     }
 

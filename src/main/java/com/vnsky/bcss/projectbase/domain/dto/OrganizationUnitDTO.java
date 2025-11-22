@@ -39,6 +39,8 @@ public class OrganizationUnitDTO extends CommonDTO {
     @Schema(description = "Mã nhân viên")
     private String employeeCode;
 
+    private String parentId;
+
     @Schema(description = "Loại đơn vị (NBO: Nội bộ)")
     private String orgType;
 

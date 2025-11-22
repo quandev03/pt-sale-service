@@ -299,7 +299,11 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
 
 
     @Query(value = """
-        Select * from ORGANIZATION_UNIT ou where ou.CLIENT_ID = :clientId and ou.PARENT_ID is NULL AND ORG_TYPE = 'NBO'    """
-        , nativeQuery = true)
-    OrganizationUnitEntity getOrgRoot(String clientId);
+        Select * from ORGANIZATION_UNIT ou 
+        where ou.CLIENT_ID = :clientId 
+        and ou.PARENT_ID is NULL 
+        AND ORG_TYPE = 'NBO'
+        AND ROWNUM = 1
+        """, nativeQuery = true)
+    Optional<OrganizationUnitEntity> getOrgRoot(String clientId);
 }

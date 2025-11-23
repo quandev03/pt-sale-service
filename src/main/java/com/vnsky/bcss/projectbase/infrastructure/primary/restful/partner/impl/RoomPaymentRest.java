@@ -67,6 +67,12 @@ public class RoomPaymentRest implements RoomPaymentOperation {
         return ResponseEntity.ok(Map.of("message", "Email đã được gửi lại thành công"));
     }
 
+    @Override
+    public ResponseEntity<RoomPaymentResponse> generateQRCode(String id) {
+        RoomPaymentDTO payment = roomPaymentServicePort.generateQRCode(id);
+        return ResponseEntity.ok(mapToResponse(payment));
+    }
+
     private RoomPaymentResponse mapToResponse(RoomPaymentDTO dto) {
         List<RoomPaymentDetailResponse> detailResponses = dto.getDetails() != null ?
             dto.getDetails().stream()

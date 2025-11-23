@@ -43,5 +43,10 @@ public interface RoomPaymentOperation {
     @Operation(summary = "Gửi lại email hóa đơn thanh toán")
     @ApiResponse(responseCode = "200", description = "Email đã được gửi lại thành công")
     ResponseEntity<Object> resendEmail(@PathVariable String id);
+
+    @PostMapping("/{id}/generate-qr")
+    @Operation(summary = "Tạo lại QR code thanh toán")
+    @ApiResponse(responseCode = "200", description = "QR code URL đã được tạo")
+    ResponseEntity<RoomPaymentResponse> generateQRCode(@PathVariable String id);
 }
 

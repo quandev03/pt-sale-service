@@ -27,6 +27,7 @@ import org.thymeleaf.spring6.ISpringTemplateEngine;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -144,14 +145,31 @@ public class MailServiceAdapter implements MailServicePort {
         if (!ObjectUtils.isEmpty(lsImageCid)) {
             ByteArrayResource resource;
             for (MailInfoDTO.FileCid e : lsImageCid) {
-                DownloadOptionDTO downloadOptionDTO = DownloadOptionDTO.builder()
-                    .uri(e.getPath())
-                    .isPublic(false)
-                    .build();
-                try (InputStream is = minioOperations.download(downloadOptionDTO).getInputStream()) {
-                    resource = new ByteArrayResource(is.readAllBytes());
-                    helper.addInline(e.getContentId(), resource, e.getContentType());
+                byte[] imageBytes;
+                
+                // Kiểm tra nếu path là URL (http:// hoặc https://)
+                if (e.getPath() != null && (e.getPath().startsWith("http://") || e.getPath().startsWith("https://"))) {
+                    // Download từ URL
+                    try (InputStream is = new java.net.URL(e.getPath()).openStream()) {
+                        imageBytes = is.readAllBytes();
+                        log.debug("[MAIL] Downloaded image from URL: {}, size: {} bytes", e.getPath(), imageBytes.length);
+                    }
+                } else {
+                    // Download từ MinIO
+                    DownloadOptionDTO downloadOptionDTO = DownloadOptionDTO.builder()
+                        .uri(e.getPath())
+                        .isPublic(false)
+                        .build();
+                    try (InputStream is = minioOperations.download(downloadOptionDTO).getInputStream()) {
+                        imageBytes = is.readAllBytes();
+                        log.debug("[MAIL] Downloaded image from MinIO: {}, size: {} bytes", e.getPath(), imageBytes.length);
+                    }
                 }
+                
+                resource = new ByteArrayResource(imageBytes);
+                String contentType = e.getContentType() != null ? e.getContentType() : "image/png";
+                helper.addInline(e.getContentId(), resource, contentType);
+                log.debug("[MAIL] Added inline image with CID: {}", e.getContentId());
             }
         }
     }

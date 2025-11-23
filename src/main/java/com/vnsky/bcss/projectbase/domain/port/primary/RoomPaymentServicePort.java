@@ -14,5 +14,7 @@ public interface RoomPaymentServicePort {
     List<RoomPaymentDTO> getAll(String orgUnitId, Integer year, Integer month);
 
     void resendEmail(String paymentId);
+
+    RoomPaymentDTO generateQRCode(String paymentId);
 }
 

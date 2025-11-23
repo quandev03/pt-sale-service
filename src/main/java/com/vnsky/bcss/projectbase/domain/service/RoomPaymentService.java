@@ -134,78 +134,16 @@ public class RoomPaymentService implements RoomPaymentServicePort {
             .map(RoomPaymentDetailDTO::getAmount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Tạo QR code
-        String qrCodeUrl = null;
-        byte[] qrCodeImage = null;
-        
-        log.info("{}Checking bank information for QR code generation: accountNo={}, bankName={}", 
-            LOG_PREFIX, orgUnit.getOrgBankAccountNo(), orgUnit.getBankName());
-        
-        if (orgUnit.getOrgBankAccountNo() != null && !orgUnit.getOrgBankAccountNo().trim().isEmpty() 
-            && orgUnit.getBankName() != null && !orgUnit.getBankName().trim().isEmpty()) {
-            
-            log.info("{}Bank information found, extracting bank code...", LOG_PREFIX);
-            String bankCode = extractBankCode(orgUnit.getBankName());
-            
-            if (bankCode == null) {
-                log.warn("{}Bank code not found for bank: {}", LOG_PREFIX, orgUnit.getBankName());
-            } else {
-                log.info("{}Bank code extracted: {} for bank: {}", LOG_PREFIX, bankCode, orgUnit.getBankName());
-                String content = String.format("Phòng %s đóng tiền phòng tháng %d/%d", 
-                    usage.getRoomCode(), month, year);
-                
-                log.info("{}Generating QR code: accountNo={}, accountName={}, amount={}, content={}, bankCode={}", 
-                    LOG_PREFIX, orgUnit.getOrgBankAccountNo(), orgUnit.getOrgName(), totalAmount, content, bankCode);
-                
-                VietQRResponse qrResponse = vietQRPort.generateQRCode(
-                    orgUnit.getOrgBankAccountNo(),
-                    orgUnit.getOrgName() != null ? orgUnit.getOrgName() : "",
-                    totalAmount,
-                    content,
-                    bankCode
-                );
+        // Tạo QR code URL (không lưu image, chỉ lưu URL)
+        String qrCodeUrl = generateQRCodeUrl(orgUnit, usage.getRoomCode(), month, year, totalAmount);
 
-                if (qrResponse != null && qrResponse.getData() != null) {
-                    qrCodeUrl = qrResponse.getData().getQrDataURL();
-                    log.info("{}QR code URL generated successfully: {}", LOG_PREFIX, qrCodeUrl);
-                    
-                    // Download QR code image từ URL
-                    if (qrCodeUrl != null && !qrCodeUrl.isEmpty()) {
-                        try {
-                            qrCodeImage = downloadImageFromUrl(qrCodeUrl);
-                            log.info("{}QR code image downloaded, size: {} bytes", LOG_PREFIX, 
-                                qrCodeImage != null ? qrCodeImage.length : 0);
-                        } catch (Exception e) {
-                            log.error("{}Error downloading QR code image from URL: {}", LOG_PREFIX, 
-                                e.getMessage(), e);
-                            // Tiếp tục với qrCodeUrl, không fail toàn bộ process
-                        }
-                    } else {
-                        log.warn("{}QR code URL is null or empty after generation", LOG_PREFIX);
-                    }
-                } else {
-                    log.warn("{}Failed to generate QR code for room: {} - response is null or data is null", 
-                        LOG_PREFIX, usage.getRoomCode());
-                    if (qrResponse != null) {
-                        log.warn("{}VietQR response: code={}, desc={}", 
-                            LOG_PREFIX, qrResponse.getCode(), qrResponse.getDesc());
-                    }
-                }
-            }
-        } else {
-            log.warn("{}Missing bank information for room: {} (accountNo: {}, bankName: {})", 
-                LOG_PREFIX, usage.getRoomCode(), 
-                orgUnit.getOrgBankAccountNo(), orgUnit.getBankName());
-        }
-
-        // Lưu payment
+        // Lưu payment (chỉ lưu QR code URL, không lưu image)
         RoomPaymentDTO payment = RoomPaymentDTO.builder()
             .orgUnitId(orgUnit.getId())
             .month(month)
             .year(year)
             .totalAmount(totalAmount)
             .qrCodeUrl(qrCodeUrl)
-            .qrCodeImage(qrCodeImage)
             .status(0) // Chưa thanh toán
             .build();
 
@@ -364,18 +302,55 @@ public class RoomPaymentService implements RoomPaymentServicePort {
         return null;
     }
 
-    private byte[] downloadImageFromUrl(String imageUrl) {
-        if (imageUrl == null || imageUrl.isEmpty()) {
+    /**
+     * Generate QR code URL từ VietQR API
+     * Không lưu image, chỉ trả về URL để frontend có thể hiển thị trực tiếp
+     */
+    private String generateQRCodeUrl(OrganizationUnitDTO orgUnit, String roomCode, Integer month, Integer year, BigDecimal totalAmount) {
+        log.info("{}Checking bank information for QR code generation: accountNo={}, bankName={}", 
+            LOG_PREFIX, orgUnit.getOrgBankAccountNo(), orgUnit.getBankName());
+        
+        if (orgUnit.getOrgBankAccountNo() == null || orgUnit.getOrgBankAccountNo().trim().isEmpty() 
+            || orgUnit.getBankName() == null || orgUnit.getBankName().trim().isEmpty()) {
+            log.warn("{}Missing bank information for room: {} (accountNo: {}, bankName: {})", 
+                LOG_PREFIX, roomCode, 
+                orgUnit.getOrgBankAccountNo(), orgUnit.getBankName());
             return null;
         }
         
-        try {
-            URL url = new URL(imageUrl);
-            try (InputStream in = url.openStream()) {
-                return in.readAllBytes();
+        log.info("{}Bank information found, extracting bank code...", LOG_PREFIX);
+        String bankCode = extractBankCode(orgUnit.getBankName());
+        
+        if (bankCode == null) {
+            log.warn("{}Bank code not found for bank: {}", LOG_PREFIX, orgUnit.getBankName());
+            return null;
+        }
+        
+        log.info("{}Bank code extracted: {} for bank: {}", LOG_PREFIX, bankCode, orgUnit.getBankName());
+        String content = String.format("Phòng %s đóng tiền phòng tháng %d/%d", roomCode, month, year);
+        
+        log.info("{}Generating QR code: accountNo={}, accountName={}, amount={}, content={}, bankCode={}", 
+            LOG_PREFIX, orgUnit.getOrgBankAccountNo(), orgUnit.getOrgName(), totalAmount, content, bankCode);
+        
+        VietQRResponse qrResponse = vietQRPort.generateQRCode(
+            orgUnit.getOrgBankAccountNo(),
+            orgUnit.getOrgName() != null ? orgUnit.getOrgName() : "",
+            totalAmount,
+            content,
+            bankCode
+        );
+
+        if (qrResponse != null && qrResponse.getData() != null) {
+            String qrCodeUrl = qrResponse.getData().getQrDataURL();
+            log.info("{}QR code URL generated successfully: {}", LOG_PREFIX, qrCodeUrl);
+            return qrCodeUrl;
+        } else {
+            log.warn("{}Failed to generate QR code for room: {} - response is null or data is null", 
+                LOG_PREFIX, roomCode);
+            if (qrResponse != null) {
+                log.warn("{}VietQR response: code={}, desc={}", 
+                    LOG_PREFIX, qrResponse.getCode(), qrResponse.getDesc());
             }
-        } catch (IOException e) {
-            log.error("{}Error downloading image from URL {}: {}", LOG_PREFIX, imageUrl, e.getMessage(), e);
             return null;
         }
     }
@@ -435,6 +410,27 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                     roomCode, payment.getMonth(), payment.getYear());
                 String amountStr = payment.getTotalAmount() != null ? payment.getTotalAmount().toString() : "0";
                 
+                // Download QR code image từ URL để gửi kèm trong email
+                List<MailInfoDTO.FileCid> imageCids = new ArrayList<>();
+                if (StringUtils.isNotBlank(payment.getQrCodeUrl())) {
+                    try {
+                        // Thêm QR code image vào email dưới dạng inline image
+                        // Sử dụng constructor với tham số: contentId, path, contentType
+                        MailInfoDTO.FileCid qrCodeCid = new MailInfoDTO.FileCid(
+                            "qrCode", // CID để reference trong email template (sử dụng <img src="cid:qrCode">)
+                            payment.getQrCodeUrl(), // URL của QR code
+                            "image/png" // MIME type
+                        );
+                        imageCids.add(qrCodeCid);
+                        
+                        log.info("{}QR code image will be attached to email with CID: qrCode, URL: {}", 
+                            LOG_PREFIX, payment.getQrCodeUrl());
+                    } catch (Exception e) {
+                        log.warn("{}Failed to prepare QR code image for email: {}, will use URL in email template", 
+                            LOG_PREFIX, payment.getQrCodeUrl(), e);
+                    }
+                }
+                
                 MailInfoDTO mailInfo = MailInfoDTO.builder()
                     .to(email) // Use validated and trimmed email
                     .subject(subject)
@@ -445,6 +441,7 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                     .month(payment.getMonth())
                     .year(payment.getYear())
                     .roomPaymentDetails(detailInfos)
+                    .imageCids(imageCids)
                     .build();
 
                 log.info("{}Sending email to: {} with template: RoomPaymentInvoice, subject: {}", 
@@ -535,6 +532,46 @@ public class RoomPaymentService implements RoomPaymentServicePort {
         sendPaymentEmail(payment, orgUnit, roomCode);
         
         log.info("{}Email resend completed for payment: {}", LOG_PREFIX, paymentId);
+    }
+
+    @Override
+    @Transactional
+    public RoomPaymentDTO generateQRCode(String paymentId) {
+        log.info("{}Generating QR code for payment: {}", LOG_PREFIX, paymentId);
+        
+        // Lấy payment
+        RoomPaymentDTO payment = roomPaymentRepoPort.findById(paymentId)
+            .orElseThrow(() -> {
+                log.error("{}Payment not found: {}", LOG_PREFIX, paymentId);
+                return BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
+                    .message("Không tìm thấy thông tin thanh toán")
+                    .build();
+            });
+
+        // Lấy organization unit
+        OrganizationUnitDTO orgUnit = organizationUnitRepoPort.findById(payment.getOrgUnitId())
+            .orElseThrow(() -> {
+                log.error("{}Organization unit not found: {}", LOG_PREFIX, payment.getOrgUnitId());
+                return BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
+                    .message("Không tìm thấy thông tin phòng")
+                    .build();
+            });
+
+        // Lấy room code từ orgUnit
+        String roomCode = orgUnit.getOrgCode() != null ? orgUnit.getOrgCode() : orgUnit.getOrgName();
+        
+        // Generate QR code URL
+        String qrCodeUrl = generateQRCodeUrl(orgUnit, roomCode, payment.getMonth(), payment.getYear(), payment.getTotalAmount());
+        
+        if (qrCodeUrl != null) {
+            payment.setQrCodeUrl(qrCodeUrl);
+            payment = roomPaymentRepoPort.update(payment);
+            log.info("{}QR code generated and updated for payment: {}, URL: {}", LOG_PREFIX, paymentId, qrCodeUrl);
+        } else {
+            log.warn("{}Failed to generate QR code for payment: {}", LOG_PREFIX, paymentId);
+        }
+        
+        return payment;
     }
 }
 

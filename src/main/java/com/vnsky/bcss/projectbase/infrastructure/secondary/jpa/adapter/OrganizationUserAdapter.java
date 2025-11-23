@@ -35,6 +35,11 @@ implements OrganizationUserRepoPort {
     }
 
     @Override
+    public Optional<OrganizationUserDTO> findById(String id) {
+        return repository.findById(id).map(mapper::toDto);
+    }
+
+    @Override
     public Optional<OrganizationUserDTO> findByUserId(String userId) {
         return repository.findByUserId(userId).map(mapper::toDto);
     }

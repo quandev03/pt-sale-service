@@ -104,6 +104,18 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                     .build();
             });
 
+        // Reload organization unit để đảm bảo có dữ liệu mới nhất từ database
+        // (trong trường hợp vừa cập nhật thông tin ngân hàng)
+        if (orgUnit.getId() != null) {
+            orgUnit = organizationUnitRepoPort.findById(orgUnit.getId())
+                .orElse(orgUnit); // Fallback nếu không tìm thấy
+        }
+
+        // Log thông tin organization unit để debug
+        log.info("{}Organization unit found: id={}, code={}, name={}, bankAccountNo={}, bankName={}", 
+            LOG_PREFIX, orgUnit.getId(), orgUnit.getOrgCode(), orgUnit.getOrgName(), 
+            orgUnit.getOrgBankAccountNo(), orgUnit.getBankName());
+
         // Kiểm tra đã có thanh toán cho tháng/năm này chưa
         Optional<RoomPaymentDTO> existing = roomPaymentRepoPort.findByOrgUnitIdAndMonthAndYear(
             orgUnit.getId(), month, year);
@@ -125,13 +137,25 @@ public class RoomPaymentService implements RoomPaymentServicePort {
         // Tạo QR code
         String qrCodeUrl = null;
         byte[] qrCodeImage = null;
-        if (orgUnit.getOrgBankAccountNo() != null && orgUnit.getBankName() != null) {
+        
+        log.info("{}Checking bank information for QR code generation: accountNo={}, bankName={}", 
+            LOG_PREFIX, orgUnit.getOrgBankAccountNo(), orgUnit.getBankName());
+        
+        if (orgUnit.getOrgBankAccountNo() != null && !orgUnit.getOrgBankAccountNo().trim().isEmpty() 
+            && orgUnit.getBankName() != null && !orgUnit.getBankName().trim().isEmpty()) {
+            
+            log.info("{}Bank information found, extracting bank code...", LOG_PREFIX);
             String bankCode = extractBankCode(orgUnit.getBankName());
+            
             if (bankCode == null) {
                 log.warn("{}Bank code not found for bank: {}", LOG_PREFIX, orgUnit.getBankName());
             } else {
+                log.info("{}Bank code extracted: {} for bank: {}", LOG_PREFIX, bankCode, orgUnit.getBankName());
                 String content = String.format("Phòng %s đóng tiền phòng tháng %d/%d", 
                     usage.getRoomCode(), month, year);
+                
+                log.info("{}Generating QR code: accountNo={}, accountName={}, amount={}, content={}, bankCode={}", 
+                    LOG_PREFIX, orgUnit.getOrgBankAccountNo(), orgUnit.getOrgName(), totalAmount, content, bankCode);
                 
                 VietQRResponse qrResponse = vietQRPort.generateQRCode(
                     orgUnit.getOrgBankAccountNo(),
@@ -143,7 +167,7 @@ public class RoomPaymentService implements RoomPaymentServicePort {
 
                 if (qrResponse != null && qrResponse.getData() != null) {
                     qrCodeUrl = qrResponse.getData().getQrDataURL();
-                    log.info("{}QR code URL generated: {}", LOG_PREFIX, qrCodeUrl);
+                    log.info("{}QR code URL generated successfully: {}", LOG_PREFIX, qrCodeUrl);
                     
                     // Download QR code image từ URL
                     if (qrCodeUrl != null && !qrCodeUrl.isEmpty()) {
@@ -156,9 +180,16 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                                 e.getMessage(), e);
                             // Tiếp tục với qrCodeUrl, không fail toàn bộ process
                         }
+                    } else {
+                        log.warn("{}QR code URL is null or empty after generation", LOG_PREFIX);
                     }
                 } else {
-                    log.warn("{}Failed to generate QR code for room: {}", LOG_PREFIX, usage.getRoomCode());
+                    log.warn("{}Failed to generate QR code for room: {} - response is null or data is null", 
+                        LOG_PREFIX, usage.getRoomCode());
+                    if (qrResponse != null) {
+                        log.warn("{}VietQR response: code={}, desc={}", 
+                            LOG_PREFIX, qrResponse.getCode(), qrResponse.getDesc());
+                    }
                 }
             }
         } else {

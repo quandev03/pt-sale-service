@@ -1,6 +1,8 @@
 package com.vnsky.bcss.projectbase.infrastructure.primary.restful;
 
 import com.vnsky.bcss.projectbase.domain.dto.OrganizationUserDTO;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.UpdateOrganizationUserRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,14 @@ import org.springframework.web.bind.annotation.*;
 public interface OrganizationUserPrivateOperation {
 
     @PostMapping
+    @Operation(summary = "Tạo người dùng thuộc tổ chức")
     ResponseEntity<Object> save(@RequestBody OrganizationUserDTO request);
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Cập nhật thông tin người dùng thuộc tổ chức")
+    ResponseEntity<OrganizationUserDTO> update(
+        @PathVariable String id,
+        @RequestBody UpdateOrganizationUserRequest request
+    );
 
 }

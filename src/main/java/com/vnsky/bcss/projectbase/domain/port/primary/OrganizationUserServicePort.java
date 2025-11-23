@@ -38,4 +38,6 @@ public interface OrganizationUserServicePort {
     List<UserInfoResponse> getUnitByOrgIdentity(String orgCode);
 
     void updateOrgUnit(String userId, String orgId);
+
+    OrganizationUserDTO update(OrganizationUserDTO organizationUserDTO);
 }

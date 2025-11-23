@@ -154,4 +154,39 @@ public class OrganizationUserService implements OrganizationUserServicePort {
     public void updateOrgUnit(String userId, String orgId) {
         organizationUserRepoPort.updateOrganizationUnit(userId, orgId);
     }
+
+    @Override
+    @Transactional
+    public OrganizationUserDTO update(OrganizationUserDTO organizationUserDTO) {
+        // Kiểm tra organization user có tồn tại không
+        OrganizationUserDTO existing = organizationUserRepoPort.findById(organizationUserDTO.getId())
+            .orElseThrow(() -> BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
+                .message("Không tìm thấy người dùng với ID: " + organizationUserDTO.getId())
+                .build());
+
+        // Cập nhật các trường được phép
+        if (organizationUserDTO.getOrgId() != null) {
+            existing.setOrgId(organizationUserDTO.getOrgId());
+        }
+        if (organizationUserDTO.getUserId() != null) {
+            existing.setUserId(organizationUserDTO.getUserId());
+        }
+        if (organizationUserDTO.getUserName() != null) {
+            existing.setUserName(organizationUserDTO.getUserName());
+        }
+        if (organizationUserDTO.getUserFullname() != null) {
+            existing.setUserFullname(organizationUserDTO.getUserFullname());
+        }
+        if (organizationUserDTO.getEmail() != null) {
+            existing.setEmail(organizationUserDTO.getEmail());
+        }
+        if (organizationUserDTO.getStatus() != null) {
+            existing.setStatus(organizationUserDTO.getStatus());
+        }
+        if (organizationUserDTO.getIsCurrent() != null) {
+            existing.setIsCurrent(organizationUserDTO.getIsCurrent());
+        }
+
+        return organizationUserRepoPort.save(existing);
+    }
 }

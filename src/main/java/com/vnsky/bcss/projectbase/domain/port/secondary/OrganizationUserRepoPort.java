@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface OrganizationUserRepoPort {
     Optional<OrganizationUserDTO> findByUserId(String userId);
 
+    Optional<OrganizationUserDTO> findById(String id);
+
     OrganizationUserDTO save(OrganizationUserDTO organizationUserDTO);
 
     List<OrganizationUserDTO> findOrgByUserId(String userId);

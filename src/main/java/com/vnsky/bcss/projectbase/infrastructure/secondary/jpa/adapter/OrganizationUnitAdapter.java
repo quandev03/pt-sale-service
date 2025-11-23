@@ -74,12 +74,12 @@ public class OrganizationUnitAdapter extends BaseJPAAdapterVer2<OrganizationUnit
     }
 
     @Override
-    public List<GetAllOrganizationUnitResponse> getAllOrganizationUnits(Integer status, String orgType, String orgSubType, String textSearch) {
+    public List<GetAllOrganizationUnitResponse> getAllOrganizationUnits(Integer status, String orgType, String orgSubType, String textSearch, String rentalStatus) {
         List<Tuple> result;
         if(StringUtils.hasText(orgType))
-            result = this.repository.getAllOrganizationUnit(status, orgType, SecurityUtil.getCurrentClientId(), orgSubType, textSearch);
+            result = this.repository.getAllOrganizationUnit(status, orgType, SecurityUtil.getCurrentClientId(), orgSubType, textSearch, rentalStatus);
         else
-            result = this.repository.getAllOrganizationUnit(status, Constant.OrgType.NBO, SecurityUtil.getCurrentClientId(), orgSubType, textSearch);
+            result = this.repository.getAllOrganizationUnit(status, Constant.OrgType.NBO, SecurityUtil.getCurrentClientId(), orgSubType, textSearch, rentalStatus);
 
         return dbMapper.castSqlResult(result, GetAllOrganizationUnitResponse.class);
     }

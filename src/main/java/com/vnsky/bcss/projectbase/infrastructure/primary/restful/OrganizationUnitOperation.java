@@ -275,7 +275,8 @@ public interface OrganizationUnitOperation {
     ResponseEntity<Object> getAllOrganizationUnit(@RequestParam(value = "status", required = false) Integer status,
                                                   @RequestParam(value = "org-type", required = false) String orgType,
                                                   @RequestParam(value = "org-sub-type", required = false) String orgSubType,
-                                                  @RequestParam(value = "textSearch", required= false) String textSearch);
+                                                  @RequestParam(value = "textSearch", required= false) String textSearch,
+                                                  @RequestParam(value = "rentalStatus", required = false) String rentalStatus);
 
 
     @GetMapping("/get-authorized-by-org-type")

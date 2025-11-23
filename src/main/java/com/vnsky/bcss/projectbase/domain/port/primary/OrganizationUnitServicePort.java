@@ -13,7 +13,7 @@ import java.util.List;
 public interface OrganizationUnitServicePort {
     OrganizationUnitDTO save(OrganizationUnitDTO organizationUnitDTO, String id);
     List<GetAllOrganizationUnitResponse> getPartnersWithoutOrganizationLimit();
-    List<GetAllOrganizationUnitResponse> getAll(Integer status, String orgType, String orgSubType, String textSearch);
+    List<GetAllOrganizationUnitResponse> getAll(Integer status, String orgType, String orgSubType, String textSearch, String rentalStatus);
 
     OrganizationUnitDTO get(String id);
 

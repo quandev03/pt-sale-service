@@ -119,8 +119,8 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
     }
 
     @Override
-    public List<GetAllOrganizationUnitResponse> getAll(Integer status, String orgType, String orgSubType, String textSearch) {
-        return this.organizationUnitRepositoryPort.getAllOrganizationUnits(status, orgType, orgSubType, textSearch);
+    public List<GetAllOrganizationUnitResponse> getAll(Integer status, String orgType, String orgSubType, String textSearch, String rentalStatus) {
+        return this.organizationUnitRepositoryPort.getAllOrganizationUnits(status, orgType, orgSubType, textSearch, rentalStatus);
     }
 
     @Override

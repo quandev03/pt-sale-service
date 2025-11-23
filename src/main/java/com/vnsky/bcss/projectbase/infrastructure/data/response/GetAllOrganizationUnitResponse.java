@@ -46,4 +46,8 @@ public class GetAllOrganizationUnitResponse extends CommonDTO {
 
     @DbColumnMapper("NOTE")
     private String note;
+
+    @DbColumnMapper("RENTAL_STATUS")
+    @Schema(description = "Trạng thái thuê phòng: RENTED (đã thuê), AVAILABLE (chưa thuê), MAINTENANCE (bảo trì)")
+    private String rentalStatus;
 }

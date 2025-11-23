@@ -31,7 +31,8 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
                 o.MODIFIED_BY,
                 o.MODIFIED_DATE,
                 o.STATUS,
-                o.CLIENT_ID
+                o.CLIENT_ID,
+                o.RENTAL_STATUS
             FROM ORGANIZATION_UNIT o
             WHERE (:status IS NULL OR o.STATUS = :status)
               AND (
@@ -42,9 +43,10 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
               AND o.ORG_TYPE    = :orgType
               AND o.CLIENT_ID   = :clientId
               AND (:orgSubType IS NULL OR o.ORG_SUB_TYPE = :orgSubType)
+              AND (:rentalStatus IS NULL OR o.RENTAL_STATUS = :rentalStatus)
             ORDER BY o.MODIFIED_DATE DESC
             """, nativeQuery = true)
-    List<Tuple> getAllOrganizationUnit(@Param("status") Integer status, @Param("orgType") String orgType, @Param("clientId") String clientId, String orgSubType, @Param("textSearch") String textSearch);
+    List<Tuple> getAllOrganizationUnit(@Param("status") Integer status, @Param("orgType") String orgType, @Param("clientId") String clientId, String orgSubType, @Param("textSearch") String textSearch, @Param("rentalStatus") String rentalStatus);
 
     @Query(value = """
         SELECT o.ID,
@@ -213,7 +215,7 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
     @Query(value = """
         SELECT o.ID, o.ORG_CODE, o.ORG_NAME, o.CREATED_BY, o.CREATED_DATE,
                o.MODIFIED_BY, o.MODIFIED_DATE, o.STATUS, o.PROVINCE_CODE,
-               o.DISTRICT_CODE, o.WARD_CODE, o.ADDRESS, o.NOTE
+               o.DISTRICT_CODE, o.WARD_CODE, o.ADDRESS, o.NOTE, o.RENTAL_STATUS
         FROM ORGANIZATION_UNIT o
         WHERE o.CLIENT_ID = :clientId
         and o.ORG_SUB_TYPE = :orgSubType
@@ -231,7 +233,7 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
     @Query(value = """
         SELECT o.ID, o.ORG_CODE, o.ORG_NAME, o.CREATED_BY, o.CREATED_DATE,
                o.MODIFIED_BY, o.MODIFIED_DATE, o.STATUS, o.PROVINCE_CODE,
-               o.DISTRICT_CODE, o.WARD_CODE, o.ADDRESS, o.NOTE
+               o.DISTRICT_CODE, o.WARD_CODE, o.ADDRESS, o.NOTE, o.RENTAL_STATUS
         FROM ORGANIZATION_UNIT o
         JOIN ORGANIZATION_USER ou2 ON o.ID = ou2.ORG_ID AND ou2.USER_ID = :userId
         WHERE o.CLIENT_ID = :clientId

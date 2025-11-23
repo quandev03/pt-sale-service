@@ -36,7 +36,7 @@ public interface OrganizationUnitRepoPort {
 
     List<GetAllOrganizationUnitResponse> getPartnersWithoutOrganizationLimit();
 
-    List<GetAllOrganizationUnitResponse> getAllOrganizationUnits(Integer status, String orgType, String orgSubType, String textSearch);
+    List<GetAllOrganizationUnitResponse> getAllOrganizationUnits(Integer status, String orgType, String orgSubType, String textSearch, String rentalStatus);
 
     int countActiveUnit(String id, Integer status);
 

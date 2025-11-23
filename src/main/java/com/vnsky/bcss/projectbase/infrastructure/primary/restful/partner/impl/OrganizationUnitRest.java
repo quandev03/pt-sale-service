@@ -65,8 +65,9 @@ public class OrganizationUnitRest implements OrganizationUnitOperation {
     public ResponseEntity<Object> getAllOrganizationUnit(Integer status,
                                                          String orgType,
                                                          String orgSubType,
-                                                         String textSearch) {
-        return ResponseEntity.ok(this.organizationUnitServicePort.getAll(status, orgType, orgSubType, textSearch));
+                                                         String textSearch,
+                                                         String rentalStatus) {
+        return ResponseEntity.ok(this.organizationUnitServicePort.getAll(status, orgType, orgSubType, textSearch, rentalStatus));
     }
 
     @Override

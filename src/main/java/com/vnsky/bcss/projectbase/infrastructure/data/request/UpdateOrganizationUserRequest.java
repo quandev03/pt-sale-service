@@ -15,8 +15,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Request cập nhật thông tin người dùng thuộc tổ chức")
 public class UpdateOrganizationUserRequest {
 
-    @NotBlank(message = "ID không được để trống")
-    @Schema(description = "ID của organization user", required = true)
     private String id;
 
     @Schema(description = "ID đơn vị tổ chức")

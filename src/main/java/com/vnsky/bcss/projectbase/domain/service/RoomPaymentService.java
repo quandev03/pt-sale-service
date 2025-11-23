@@ -408,6 +408,13 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                 log.warn("{}User {} has no email, skipping", LOG_PREFIX, user.getUserId());
                 continue;
             }
+            
+            // Validate email format
+            String email = user.getEmail().trim();
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                log.warn("{}User {} has invalid email format: {}, skipping", LOG_PREFIX, user.getUserId(), email);
+                continue;
+            }
 
             log.info("{}Preparing email for user: {} (email: {})", LOG_PREFIX, user.getUserId(), user.getEmail());
 
@@ -429,7 +436,7 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                 String amountStr = payment.getTotalAmount() != null ? payment.getTotalAmount().toString() : "0";
                 
                 MailInfoDTO mailInfo = MailInfoDTO.builder()
-                    .to(user.getEmail())
+                    .to(email) // Use validated and trimmed email
                     .subject(subject)
                     .amount(amountStr)
                     .name(user.getUserFullname() != null ? user.getUserFullname() : "")
@@ -441,7 +448,7 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                     .build();
 
                 log.info("{}Sending email to: {} with template: RoomPaymentInvoice, subject: {}", 
-                    LOG_PREFIX, user.getEmail(), subject);
+                    LOG_PREFIX, email, subject);
                 log.info("{}MailInfo: to={}, subject={}, amount={}, roomCode={}, month={}, year={}, detailsCount={}", 
                     LOG_PREFIX, mailInfo.getTo(), mailInfo.getSubject(), mailInfo.getAmount(), 
                     mailInfo.getRoomCode(), mailInfo.getMonth(), mailInfo.getYear(), 
@@ -449,10 +456,10 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                 
                 mailServicePort.sendMail(mailInfo, "RoomPaymentInvoice");
                 emailSentCount++;
-                log.info("{}Email sent successfully to: {}", LOG_PREFIX, user.getEmail());
+                log.info("{}Email sent successfully to: {}", LOG_PREFIX, email);
             } catch (Exception e) {
                 emailErrorCount++;
-                log.error("{}Error sending email to {}: {}", LOG_PREFIX, user.getEmail(), e.getMessage(), e);
+                log.error("{}Error sending email to {}: {}", LOG_PREFIX, email, e.getMessage(), e);
             }
         }
         

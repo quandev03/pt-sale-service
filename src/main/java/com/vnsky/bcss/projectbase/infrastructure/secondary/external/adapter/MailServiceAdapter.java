@@ -106,14 +106,34 @@ public class MailServiceAdapter implements MailServicePort {
 
     @SneakyThrows
     private MimeMessage buildMimeMessage(MailInfoDTO mailInfo, String template) {
+        // Validate email addresses
+        if (!StringUtils.hasText(mailFrom)) {
+            log.error("[MAIL] mailFrom is empty or null. Check spring.mail.from configuration");
+            throw new IllegalArgumentException("Email 'from' address is not configured");
+        }
+        
+        if (!StringUtils.hasText(mailInfo.getTo())) {
+            log.error("[MAIL] mailInfo.to is empty or null");
+            throw new IllegalArgumentException("Email 'to' address is required");
+        }
+        
+        log.debug("[MAIL] Building message: from={}, to={}, subject={}", mailFrom, mailInfo.getTo(), mailInfo.getSubject());
+        
         MimeMessage message = javaMailSender.createMimeMessage();
         Context context = this.buildMailContext(mailInfo);
         String content = this.templateEngine.process(template, context);
         MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
-        helper.setFrom(mailFrom, mailFromDisplay);
+        
+        // Set from address - use mailFromDisplay if available, otherwise just use mailFrom
+        if (StringUtils.hasText(mailFromDisplay)) {
+            helper.setFrom(mailFrom, mailFromDisplay);
+        } else {
+            helper.setFrom(mailFrom);
+        }
+        
         helper.setTo(mailInfo.getTo());
         helper.setText(content, true);
-        helper.setSubject(mailInfo.getSubject());
+        helper.setSubject(mailInfo.getSubject() != null ? mailInfo.getSubject() : "");
         addImageCid(mailInfo.getImageCids(), helper);
         return message;
     }

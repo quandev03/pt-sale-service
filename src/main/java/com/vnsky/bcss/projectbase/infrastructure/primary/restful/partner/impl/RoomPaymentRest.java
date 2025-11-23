@@ -25,13 +25,21 @@ public class RoomPaymentRest implements RoomPaymentOperation {
     @Override
     public ResponseEntity<List<RoomPaymentResponse>> uploadAndProcess(
         @RequestPart("file") MultipartFile file,
-        @RequestParam("month") Integer month,
-        @RequestParam("year") Integer year) {
-        List<RoomPaymentDTO> payments = roomPaymentServicePort.processExcelAndCreatePayments(file, month, year);
-        List<RoomPaymentResponse> responses = payments.stream()
-            .map(this::mapToResponse)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(responses);
+        @RequestPart(value = "month", required = true) String month,
+        @RequestPart(value = "year", required = true) String year) {
+        // Convert String to Integer
+        try {
+            Integer monthInt = Integer.parseInt(month);
+            Integer yearInt = Integer.parseInt(year);
+            
+            List<RoomPaymentDTO> payments = roomPaymentServicePort.processExcelAndCreatePayments(file, monthInt, yearInt);
+            List<RoomPaymentResponse> responses = payments.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Tháng và năm phải là số hợp lệ: month=" + month + ", year=" + year);
+        }
     }
 
     @Override

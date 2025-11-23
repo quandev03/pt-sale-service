@@ -40,10 +40,10 @@ public class MailServiceAdapter implements MailServicePort {
     private final ISpringTemplateEngine templateEngine;
     private final JavaMailSender javaMailSender;
     private final MinioOperations minioOperations;
-    @Value("${spring.mail.from}")
+    @Value("${spring.mail.from:}")
     private String mailFrom;
 
-    @Value("${spring.mail.properties.mail-sender-display-name}")
+    @Value("${spring.mail.properties.mail-sender-display-name:}")
     private String mailFromDisplay;
 
     @Value("${spring.mail.host}")
@@ -108,8 +108,8 @@ public class MailServiceAdapter implements MailServicePort {
     private MimeMessage buildMimeMessage(MailInfoDTO mailInfo, String template) {
         // Validate email addresses
         if (!StringUtils.hasText(mailFrom)) {
-            log.error("[MAIL] mailFrom is empty or null. Check spring.mail.from configuration");
-            throw new IllegalArgumentException("Email 'from' address is not configured");
+            log.error("[MAIL] mailFrom is empty or null. Check spring.mail.from configuration or MAIL_FROM environment variable");
+            throw new IllegalArgumentException("Email 'from' address is not configured. Please set spring.mail.from or MAIL_FROM environment variable");
         }
         
         if (!StringUtils.hasText(mailInfo.getTo())) {
@@ -117,7 +117,8 @@ public class MailServiceAdapter implements MailServicePort {
             throw new IllegalArgumentException("Email 'to' address is required");
         }
         
-        log.debug("[MAIL] Building message: from={}, to={}, subject={}", mailFrom, mailInfo.getTo(), mailInfo.getSubject());
+        log.debug("[MAIL] Building message: from={}, displayName={}, to={}, subject={}", 
+            mailFrom, mailFromDisplay, mailInfo.getTo(), mailInfo.getSubject());
         
         MimeMessage message = javaMailSender.createMimeMessage();
         Context context = this.buildMailContext(mailInfo);
@@ -126,12 +127,12 @@ public class MailServiceAdapter implements MailServicePort {
         
         // Set from address - use mailFromDisplay if available, otherwise just use mailFrom
         if (StringUtils.hasText(mailFromDisplay)) {
-            helper.setFrom(mailFrom, mailFromDisplay);
+            helper.setFrom(mailFrom.trim(), mailFromDisplay.trim());
         } else {
-            helper.setFrom(mailFrom);
+            helper.setFrom(mailFrom.trim());
         }
         
-        helper.setTo(mailInfo.getTo());
+        helper.setTo(mailInfo.getTo().trim());
         helper.setText(content, true);
         helper.setSubject(mailInfo.getSubject() != null ? mailInfo.getSubject() : "");
         addImageCid(mailInfo.getImageCids(), helper);

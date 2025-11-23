@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrganizationUserService implements OrganizationUserServicePort {
     private final OrganizationUserRepoPort organizationUserRepoPort;
     private final OrganizationUnitRepoPort organizationUnitRepoPort;

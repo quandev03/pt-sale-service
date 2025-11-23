@@ -158,6 +158,7 @@ public class OrganizationUserService implements OrganizationUserServicePort {
     @Override
     @Transactional
     public OrganizationUserDTO update(OrganizationUserDTO organizationUserDTO) {
+        log.info("update organization user: {}", organizationUserDTO);
         // Kiểm tra organization user có tồn tại không
         OrganizationUserDTO existing = organizationUserRepoPort.findById(organizationUserDTO.getUserId())
             .orElseThrow(() -> BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)

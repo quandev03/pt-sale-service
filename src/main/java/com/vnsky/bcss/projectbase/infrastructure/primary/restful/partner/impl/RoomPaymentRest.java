@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -58,6 +59,12 @@ public class RoomPaymentRest implements RoomPaymentOperation {
     public ResponseEntity<RoomPaymentResponse> getById(String id) {
         RoomPaymentDTO payment = roomPaymentServicePort.getById(id);
         return ResponseEntity.ok(mapToResponse(payment));
+    }
+
+    @Override
+    public ResponseEntity<Object> resendEmail(String id) {
+        roomPaymentServicePort.resendEmail(id);
+        return ResponseEntity.ok(Map.of("message", "Email đã được gửi lại thành công"));
     }
 
     private RoomPaymentResponse mapToResponse(RoomPaymentDTO dto) {

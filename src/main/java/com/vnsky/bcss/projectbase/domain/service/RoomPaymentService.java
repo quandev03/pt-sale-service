@@ -350,41 +350,57 @@ public class RoomPaymentService implements RoomPaymentServicePort {
     }
 
     private void sendPaymentEmail(RoomPaymentDTO payment, OrganizationUnitDTO orgUnit, String roomCode) {
+        log.info("{}Sending payment email for room: {}, paymentId: {}", LOG_PREFIX, roomCode, payment.getId());
+        
         // Lấy danh sách user của phòng
         List<OrganizationUserDTO> users = organizationUserRepoPort.getAllOrganizationUserByOrgId(orgUnit.getId());
         
         if (users == null || users.isEmpty()) {
-            log.warn("{}No users found for room: {}", LOG_PREFIX, roomCode);
+            log.warn("{}No users found for room: {} (orgUnitId: {})", LOG_PREFIX, roomCode, orgUnit.getId());
             return;
         }
+
+        log.info("{}Found {} users for room: {}", LOG_PREFIX, users.size(), roomCode);
 
         // Lấy chi tiết payment
         List<RoomPaymentDetailDTO> details = roomPaymentRepoPort.findDetailsByRoomPaymentId(payment.getId());
         payment.setDetails(details);
+        
+        log.info("{}Payment details count: {}", LOG_PREFIX, details != null ? details.size() : 0);
 
+        int emailSentCount = 0;
+        int emailErrorCount = 0;
+        
         // Gửi email cho từng user
         for (OrganizationUserDTO user : users) {
             if (StringUtils.isBlank(user.getEmail())) {
+                log.warn("{}User {} has no email, skipping", LOG_PREFIX, user.getUserId());
                 continue;
             }
 
+            log.info("{}Preparing email for user: {} (email: {})", LOG_PREFIX, user.getUserId(), user.getEmail());
+
             try {
                 // Chuyển đổi details sang format cho email
-                List<MailInfoDTO.RoomPaymentDetailInfo> detailInfos = details.stream()
-                    .map(detail -> MailInfoDTO.RoomPaymentDetailInfo.builder()
-                        .serviceName(detail.getServiceName())
-                        .quantity(detail.getQuantity() != null ? detail.getQuantity().toString() : "0")
-                        .unitPrice(detail.getUnitPrice() != null ? detail.getUnitPrice().toString() : "0")
-                        .amount(detail.getAmount() != null ? detail.getAmount().toString() : "0")
-                        .build())
-                    .collect(java.util.stream.Collectors.toList());
+                List<MailInfoDTO.RoomPaymentDetailInfo> detailInfos = (details != null && !details.isEmpty()) ?
+                    details.stream()
+                        .map(detail -> MailInfoDTO.RoomPaymentDetailInfo.builder()
+                            .serviceName(detail.getServiceName() != null ? detail.getServiceName() : "")
+                            .quantity(detail.getQuantity() != null ? detail.getQuantity().toString() : "0")
+                            .unitPrice(detail.getUnitPrice() != null ? detail.getUnitPrice().toString() : "0")
+                            .amount(detail.getAmount() != null ? detail.getAmount().toString() : "0")
+                            .build())
+                        .collect(java.util.stream.Collectors.toList()) : new ArrayList<>();
 
                 // Tạo MailInfoDTO với thông tin cần thiết
+                String subject = String.format("Hóa đơn dịch vụ phòng %s - Tháng %d/%d", 
+                    roomCode, payment.getMonth(), payment.getYear());
+                String amountStr = payment.getTotalAmount() != null ? payment.getTotalAmount().toString() : "0";
+                
                 MailInfoDTO mailInfo = MailInfoDTO.builder()
                     .to(user.getEmail())
-                    .subject(String.format("Hóa đơn dịch vụ phòng %s - Tháng %d/%d", 
-                        roomCode, payment.getMonth(), payment.getYear()))
-                    .amount(payment.getTotalAmount().toString())
+                    .subject(subject)
+                    .amount(amountStr)
                     .name(user.getUserFullname() != null ? user.getUserFullname() : "")
                     .urlQR(payment.getQrCodeUrl())
                     .roomCode(roomCode)
@@ -393,12 +409,24 @@ public class RoomPaymentService implements RoomPaymentServicePort {
                     .roomPaymentDetails(detailInfos)
                     .build();
 
+                log.info("{}Sending email to: {} with template: RoomPaymentInvoice, subject: {}", 
+                    LOG_PREFIX, user.getEmail(), subject);
+                log.info("{}MailInfo: to={}, subject={}, amount={}, roomCode={}, month={}, year={}, detailsCount={}", 
+                    LOG_PREFIX, mailInfo.getTo(), mailInfo.getSubject(), mailInfo.getAmount(), 
+                    mailInfo.getRoomCode(), mailInfo.getMonth(), mailInfo.getYear(), 
+                    detailInfos != null ? detailInfos.size() : 0);
+                
                 mailServicePort.sendMail(mailInfo, "RoomPaymentInvoice");
-                log.info("{}Email sent to: {}", LOG_PREFIX, user.getEmail());
+                emailSentCount++;
+                log.info("{}Email sent successfully to: {}", LOG_PREFIX, user.getEmail());
             } catch (Exception e) {
+                emailErrorCount++;
                 log.error("{}Error sending email to {}: {}", LOG_PREFIX, user.getEmail(), e.getMessage(), e);
             }
         }
+        
+        log.info("{}Email sending completed. Sent: {}, Errors: {}, Total users: {}", 
+            LOG_PREFIX, emailSentCount, emailErrorCount, users.size());
     }
 
     @Override
@@ -436,6 +464,39 @@ public class RoomPaymentService implements RoomPaymentServicePort {
         });
         
         return payments;
+    }
+
+    @Override
+    public void resendEmail(String paymentId) {
+        log.info("{}Resending email for payment: {}", LOG_PREFIX, paymentId);
+        
+        // Lấy payment
+        RoomPaymentDTO payment = roomPaymentRepoPort.findById(paymentId)
+            .orElseThrow(() -> {
+                log.error("{}Payment not found: {}", LOG_PREFIX, paymentId);
+                return BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
+                    .message("Không tìm thấy thông tin thanh toán")
+                    .build();
+            });
+
+        // Lấy organization unit
+        OrganizationUnitDTO orgUnit = organizationUnitRepoPort.findById(payment.getOrgUnitId())
+            .orElseThrow(() -> {
+                log.error("{}Organization unit not found: {}", LOG_PREFIX, payment.getOrgUnitId());
+                return BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
+                    .message("Không tìm thấy thông tin phòng")
+                    .build();
+            });
+
+        // Lấy room code từ orgUnit
+        String roomCode = orgUnit.getOrgCode() != null ? orgUnit.getOrgCode() : orgUnit.getOrgName();
+        
+        log.info("{}Resending email for room: {}, payment: {}", LOG_PREFIX, roomCode, paymentId);
+        
+        // Gửi email
+        sendPaymentEmail(payment, orgUnit, roomCode);
+        
+        log.info("{}Email resend completed for payment: {}", LOG_PREFIX, paymentId);
     }
 }
 

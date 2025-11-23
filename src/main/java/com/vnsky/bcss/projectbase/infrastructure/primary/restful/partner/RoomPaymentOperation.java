@@ -38,5 +38,10 @@ public interface RoomPaymentOperation {
     @Operation(summary = "Lấy chi tiết thanh toán")
     @ApiResponse(responseCode = "200")
     ResponseEntity<RoomPaymentResponse> getById(@PathVariable String id);
+
+    @PostMapping("/{id}/resend-email")
+    @Operation(summary = "Gửi lại email hóa đơn thanh toán")
+    @ApiResponse(responseCode = "200", description = "Email đã được gửi lại thành công")
+    ResponseEntity<Object> resendEmail(@PathVariable String id);
 }
 

@@ -12,5 +12,7 @@ public interface RoomPaymentServicePort {
     RoomPaymentDTO getById(String id);
 
     List<RoomPaymentDTO> getAll(String orgUnitId, Integer year, Integer month);
+
+    void resendEmail(String paymentId);
 }
 

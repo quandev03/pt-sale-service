@@ -27,6 +27,12 @@ public class VietQRAdapter implements VietQRPort {
         log.info("{}Generating QR code for account: {}, amount: {}, bank: {}", LOG_PREFIX, accountNo, amount, bankCode);
         
         try {
+            // Kiểm tra bankCode
+            if (bankCode == null || bankCode.isEmpty()) {
+                log.error("{}Bank code is null or empty, cannot generate QR code", LOG_PREFIX);
+                return null;
+            }
+            
             VietQRRequest request = VietQRRequest.builder()
                 .accountNo(accountNo)
                 .accountName(accountName != null ? accountName : "")
@@ -36,17 +42,31 @@ public class VietQRAdapter implements VietQRPort {
                 .format("qr")
                 .build();
 
+            log.info("{}VietQR request: accountNo={}, acqId={}, amount={}, addInfo={}", 
+                LOG_PREFIX, accountNo, bankCode, amount, content);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<VietQRRequest> entity = new HttpEntity<>(request, headers);
 
             VietQRResponse response = restTemplate.postForObject(VIETQR_GENERATE_API, entity, VietQRResponse.class);
             
+            log.info("{}VietQR API response: code={}, desc={}, data={}", LOG_PREFIX, 
+                response != null ? response.getCode() : "null",
+                response != null ? response.getDesc() : "null",
+                response != null && response.getData() != null ? response.getData().getQrDataURL() : "null");
+            
             if (response != null && "00".equals(response.getCode())) {
-                log.info("{}QR code generated successfully", LOG_PREFIX);
+                if (response.getData() != null && response.getData().getQrDataURL() != null) {
+                    log.info("{}QR code generated successfully, URL: {}", LOG_PREFIX, response.getData().getQrDataURL());
+                } else {
+                    log.warn("{}QR code generated but data or URL is null", LOG_PREFIX);
+                }
                 return response;
             } else {
-                log.error("{}Failed to generate QR code: {}", LOG_PREFIX, response != null ? response.getDesc() : "Unknown error");
+                log.error("{}Failed to generate QR code: code={}, desc={}", LOG_PREFIX, 
+                    response != null ? response.getCode() : "null",
+                    response != null ? response.getDesc() : "Unknown error");
                 return null;
             }
         } catch (Exception e) {

@@ -72,7 +72,7 @@ public class RoomPaymentRest implements RoomPaymentOperation {
             .month(dto.getMonth())
             .year(dto.getYear())
             .totalAmount(dto.getTotalAmount())
-            .qrCodeUrl(dto.getQrCodeUrl())
+            .qrCodeUrl(dto.getQrCodeUrl()) // QR code URL để hiển thị
             .status(dto.getStatus())
             .paymentDate(dto.getPaymentDate())
             .details(detailResponses)

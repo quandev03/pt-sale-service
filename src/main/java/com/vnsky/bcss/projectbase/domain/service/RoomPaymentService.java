@@ -8,6 +8,8 @@ import com.vnsky.bcss.projectbase.domain.port.secondary.RoomPaymentRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.RoomServiceRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.external.MailServicePort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.external.VietQRPort;
+import com.vnsky.bcss.projectbase.domain.service.BankService;
+import com.vnsky.bcss.projectbase.infrastructure.data.response.BankResponse;
 import com.vnsky.bcss.projectbase.domain.port.secondary.external.mail.MailInfoDTO;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.RoomServiceUsageDTO;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.VietQRResponse;
@@ -25,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +44,7 @@ public class RoomPaymentService implements RoomPaymentServicePort {
     private final OrganizationUserRepoPort organizationUserRepoPort;
     private final VietQRPort vietQRPort;
     private final MailServicePort mailServicePort;
+    private final BankService bankService;
 
     private static final String LOG_PREFIX = "[RoomPaymentService]_";
 
@@ -122,21 +127,44 @@ public class RoomPaymentService implements RoomPaymentServicePort {
         byte[] qrCodeImage = null;
         if (orgUnit.getOrgBankAccountNo() != null && orgUnit.getBankName() != null) {
             String bankCode = extractBankCode(orgUnit.getBankName());
-            String content = String.format("Phòng %s đóng tiền phòng tháng %d/%d", 
-                usage.getRoomCode(), month, year);
-            
-            VietQRResponse qrResponse = vietQRPort.generateQRCode(
-                orgUnit.getOrgBankAccountNo(),
-                orgUnit.getOrgName() != null ? orgUnit.getOrgName() : "",
-                totalAmount,
-                content,
-                bankCode
-            );
+            if (bankCode == null) {
+                log.warn("{}Bank code not found for bank: {}", LOG_PREFIX, orgUnit.getBankName());
+            } else {
+                String content = String.format("Phòng %s đóng tiền phòng tháng %d/%d", 
+                    usage.getRoomCode(), month, year);
+                
+                VietQRResponse qrResponse = vietQRPort.generateQRCode(
+                    orgUnit.getOrgBankAccountNo(),
+                    orgUnit.getOrgName() != null ? orgUnit.getOrgName() : "",
+                    totalAmount,
+                    content,
+                    bankCode
+                );
 
-            if (qrResponse != null && qrResponse.getData() != null) {
-                qrCodeUrl = qrResponse.getData().getQrDataURL();
-                // Có thể download QR code image từ URL nếu cần
+                if (qrResponse != null && qrResponse.getData() != null) {
+                    qrCodeUrl = qrResponse.getData().getQrDataURL();
+                    log.info("{}QR code URL generated: {}", LOG_PREFIX, qrCodeUrl);
+                    
+                    // Download QR code image từ URL
+                    if (qrCodeUrl != null && !qrCodeUrl.isEmpty()) {
+                        try {
+                            qrCodeImage = downloadImageFromUrl(qrCodeUrl);
+                            log.info("{}QR code image downloaded, size: {} bytes", LOG_PREFIX, 
+                                qrCodeImage != null ? qrCodeImage.length : 0);
+                        } catch (Exception e) {
+                            log.error("{}Error downloading QR code image from URL: {}", LOG_PREFIX, 
+                                e.getMessage(), e);
+                            // Tiếp tục với qrCodeUrl, không fail toàn bộ process
+                        }
+                    }
+                } else {
+                    log.warn("{}Failed to generate QR code for room: {}", LOG_PREFIX, usage.getRoomCode());
+                }
             }
+        } else {
+            log.warn("{}Missing bank information for room: {} (accountNo: {}, bankName: {})", 
+                LOG_PREFIX, usage.getRoomCode(), 
+                orgUnit.getOrgBankAccountNo(), orgUnit.getBankName());
         }
 
         // Lưu payment
@@ -150,7 +178,13 @@ public class RoomPaymentService implements RoomPaymentServicePort {
             .status(0) // Chưa thanh toán
             .build();
 
+        log.info("{}Saving payment for room: {}, totalAmount: {}, qrCodeUrl: {}", 
+            LOG_PREFIX, usage.getRoomCode(), totalAmount, qrCodeUrl);
+        
         RoomPaymentDTO savedPayment = roomPaymentRepoPort.save(payment);
+        
+        log.info("{}Payment saved with ID: {}, qrCodeUrl: {}", 
+            LOG_PREFIX, savedPayment.getId(), savedPayment.getQrCodeUrl());
         
         // Lưu details
         for (RoomPaymentDetailDTO detail : details) {
@@ -246,28 +280,73 @@ public class RoomPaymentService implements RoomPaymentServicePort {
     }
 
     private String extractBankCode(String bankName) {
-        if (bankName == null) {
+        if (bankName == null || bankName.isEmpty()) {
             return null;
         }
-        // Map một số ngân hàng phổ biến
-        Map<String, String> bankCodeMap = Map.of(
-            "Vietcombank", "970415",
-            "BIDV", "970415",
-            "Vietinbank", "970415",
-            "Agribank", "970415",
-            "Techcombank", "970415",
-            "ACB", "970415",
-            "VPBank", "970415",
-            "TPBank", "970415",
-            "MBBank", "970415",
-            "Sacombank", "970415"
-        );
+        
+        try {
+            // Lấy danh sách ngân hàng từ API
+            List<BankResponse> banks = bankService.getAllBanks();
+            if (banks != null && !banks.isEmpty()) {
+                String upperBankName = bankName.toUpperCase();
+                // Tìm ngân hàng theo tên (case insensitive)
+                for (BankResponse bank : banks) {
+                    if ((bank.getName() != null && upperBankName.contains(bank.getName().toUpperCase())) ||
+                        (bank.getShortName() != null && upperBankName.contains(bank.getShortName().toUpperCase())) ||
+                        (bank.getNameEn() != null && upperBankName.contains(bank.getNameEn().toUpperCase()))) {
+                        log.info("{}Found bank code: {} for bank: {}", LOG_PREFIX, bank.getCode(), bankName);
+                        return bank.getCode();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("{}Error getting bank list from API, using fallback mapping: {}", LOG_PREFIX, e.getMessage());
+        }
+        
+        // Fallback: Map một số ngân hàng phổ biến với mã ngân hàng đúng
+        Map<String, String> bankCodeMap = new HashMap<>();
+        bankCodeMap.put("VIETCOMBANK", "970415");
+        bankCodeMap.put("BIDV", "970418");
+        bankCodeMap.put("VIETINBANK", "970415");
+        bankCodeMap.put("AGRIBANK", "970405");
+        bankCodeMap.put("TECHCOMBANK", "970407");
+        bankCodeMap.put("ACB", "970416");
+        bankCodeMap.put("VPBANK", "970432");
+        bankCodeMap.put("TPBANK", "970423");
+        bankCodeMap.put("MBBANK", "970422");
+        bankCodeMap.put("SACOMBANK", "970403");
+        bankCodeMap.put("NGÂN HÀNG TMCP NGOẠI THƯƠNG VIỆT NAM", "970415");
+        bankCodeMap.put("NGÂN HÀNG TMCP ĐẦU TƯ VÀ PHÁT TRIỂN VIỆT NAM", "970418");
+        bankCodeMap.put("NGÂN HÀNG TMCP CÔNG THƯƠNG VIỆT NAM", "970415");
+        bankCodeMap.put("NGÂN HÀNG NÔNG NGHIỆP VÀ PHÁT TRIỂN NÔNG THÔN VIỆT NAM", "970405");
+        
         // Tìm theo tên ngân hàng (case insensitive)
-        return bankCodeMap.entrySet().stream()
-            .filter(entry -> bankName.toUpperCase().contains(entry.getKey().toUpperCase()))
-            .map(Map.Entry::getValue)
-            .findFirst()
-            .orElse(null);
+        String upperBankName = bankName.toUpperCase();
+        for (Map.Entry<String, String> entry : bankCodeMap.entrySet()) {
+            if (upperBankName.contains(entry.getKey())) {
+                log.info("{}Using fallback bank code: {} for bank: {}", LOG_PREFIX, entry.getValue(), bankName);
+                return entry.getValue();
+            }
+        }
+        
+        log.warn("{}Bank code not found for bank name: {}", LOG_PREFIX, bankName);
+        return null;
+    }
+
+    private byte[] downloadImageFromUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return null;
+        }
+        
+        try {
+            URL url = new URL(imageUrl);
+            try (InputStream in = url.openStream()) {
+                return in.readAllBytes();
+            }
+        } catch (IOException e) {
+            log.error("{}Error downloading image from URL {}: {}", LOG_PREFIX, imageUrl, e.getMessage(), e);
+            return null;
+        }
     }
 
     private void sendPaymentEmail(RoomPaymentDTO payment, OrganizationUnitDTO orgUnit, String roomCode) {

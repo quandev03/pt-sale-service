@@ -25,6 +25,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,7 +60,8 @@ public class XlsxUtils {
                             Field field = hmField.get(index);
                             Method method = getSetter(field, clazz);
                             assert method != null;
-                            method.invoke(rowData, cellToString(cell));
+                            Object value = convertCellValue(cell, field.getType());
+                            method.invoke(rowData, value);
                         }
                     }
                     dataLines.add(rowData);
@@ -434,6 +436,51 @@ public class XlsxUtils {
             default -> {
                 return null;
             }
+        }
+    }
+
+    private static Object convertCellValue(Cell cell, Class<?> targetType) {
+        String stringValue = cellToString(cell);
+        if (stringValue == null || stringValue.isBlank()) {
+            return null;
+        }
+
+        // Convert to target type
+        if (targetType == BigDecimal.class) {
+            try {
+                return new BigDecimal(stringValue.replace(",", ""));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (targetType == Integer.class || targetType == int.class) {
+            try {
+                return Integer.parseInt(stringValue.replace(",", ""));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (targetType == Long.class || targetType == long.class) {
+            try {
+                return Long.parseLong(stringValue.replace(",", ""));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (targetType == Double.class || targetType == double.class) {
+            try {
+                return Double.parseDouble(stringValue.replace(",", ""));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (targetType == Float.class || targetType == float.class) {
+            try {
+                return Float.parseFloat(stringValue.replace(",", ""));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (targetType == Boolean.class || targetType == boolean.class) {
+            return Boolean.parseBoolean(stringValue);
+        } else {
+            // Default to String
+            return stringValue;
         }
     }
 

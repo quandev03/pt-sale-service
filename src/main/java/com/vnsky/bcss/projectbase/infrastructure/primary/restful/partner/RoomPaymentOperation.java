@@ -23,8 +23,8 @@ public interface RoomPaymentOperation {
     )
     ResponseEntity<List<RoomPaymentResponse>> uploadAndProcess(
         @RequestPart("file") MultipartFile file,
-        @RequestPart("month") Integer month,
-        @RequestPart("year") Integer year);
+        @RequestParam("month") Integer month,
+        @RequestParam("year") Integer year);
 
     @GetMapping
     @Operation(summary = "Lấy danh sách thanh toán")

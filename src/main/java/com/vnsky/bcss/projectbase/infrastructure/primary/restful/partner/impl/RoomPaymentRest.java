@@ -25,8 +25,8 @@ public class RoomPaymentRest implements RoomPaymentOperation {
     @Override
     public ResponseEntity<List<RoomPaymentResponse>> uploadAndProcess(
         @RequestPart("file") MultipartFile file,
-        @RequestPart("month") Integer month,
-        @RequestPart("year") Integer year) {
+        @RequestParam("month") Integer month,
+        @RequestParam("year") Integer year) {
         List<RoomPaymentDTO> payments = roomPaymentServicePort.processExcelAndCreatePayments(file, month, year);
         List<RoomPaymentResponse> responses = payments.stream()
             .map(this::mapToResponse)

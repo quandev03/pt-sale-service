@@ -20,5 +20,15 @@ public interface RoomPaymentRepository extends BaseJPARepository<RoomPaymentEnti
     List<RoomPaymentEntity> findByFilters(@Param("orgUnitId") String orgUnitId,
                                           @Param("year") Integer year,
                                           @Param("month") Integer month);
+
+    @Query("SELECT rp FROM RoomPaymentEntity rp " +
+           "INNER JOIN OrganizationUnitEntity ou ON rp.orgUnitId = ou.id " +
+           "WHERE ou.clientId = :clientId " +
+           "AND (:year IS NULL OR rp.year = :year) " +
+           "AND (:month IS NULL OR rp.month = :month) " +
+           "ORDER BY rp.year DESC, rp.month DESC")
+    List<RoomPaymentEntity> findByClientId(@Param("clientId") String clientId,
+                                           @Param("year") Integer year,
+                                           @Param("month") Integer month);
 }
 

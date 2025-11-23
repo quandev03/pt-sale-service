@@ -77,6 +77,14 @@ public class RoomPaymentAdapter extends BaseJPAAdapterVer2<
     }
 
     @Override
+    public List<RoomPaymentDTO> findByClientId(String clientId, Integer year, Integer month) {
+        return repository.findByClientId(clientId, year, month)
+            .stream()
+            .map(mapper::toDto)
+            .toList();
+    }
+
+    @Override
     public RoomPaymentDetailDTO saveDetail(RoomPaymentDetailDTO dto) {
         RoomPaymentDetailEntity entity = detailMapper.toEntity(dto);
         return detailMapper.toDto(detailRepository.save(entity));

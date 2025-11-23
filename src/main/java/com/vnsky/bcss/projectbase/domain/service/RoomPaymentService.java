@@ -339,17 +339,24 @@ public class RoomPaymentService implements RoomPaymentServicePort {
 
     @Override
     public List<RoomPaymentDTO> getAll(String orgUnitId, Integer year, Integer month) {
+        List<RoomPaymentDTO> payments;
+        
         if (orgUnitId != null) {
-            List<RoomPaymentDTO> payments = roomPaymentRepoPort.findByFilters(orgUnitId, year, month);
-            // Load details cho mỗi payment
-            payments.forEach(payment -> {
-                List<RoomPaymentDetailDTO> details = roomPaymentRepoPort.findDetailsByRoomPaymentId(payment.getId());
-                payment.setDetails(details);
-            });
-            return payments;
+            // Lấy theo orgUnitId
+            payments = roomPaymentRepoPort.findByFilters(orgUnitId, year, month);
+        } else {
+            // Lấy tất cả payments của client hiện tại
+            String clientId = SecurityUtil.getCurrentClientId();
+            payments = roomPaymentRepoPort.findByClientId(clientId, year, month);
         }
-        // Nếu không có orgUnitId, trả về empty list
-        return List.of();
+        
+        // Load details cho mỗi payment
+        payments.forEach(payment -> {
+            List<RoomPaymentDetailDTO> details = roomPaymentRepoPort.findDetailsByRoomPaymentId(payment.getId());
+            payment.setDetails(details);
+        });
+        
+        return payments;
     }
 }
 

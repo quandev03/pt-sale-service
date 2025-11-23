@@ -20,6 +20,8 @@ public interface RoomPaymentRepoPort {
 
     List<RoomPaymentDTO> findByFilters(String orgUnitId, Integer year, Integer month);
 
+    List<RoomPaymentDTO> findByClientId(String clientId, Integer year, Integer month);
+
     RoomPaymentDetailDTO saveDetail(RoomPaymentDetailDTO dto);
 
     List<RoomPaymentDetailDTO> findDetailsByRoomPaymentId(String roomPaymentId);

@@ -9,6 +9,7 @@ import com.vnsky.bcss.projectbase.infrastructure.primary.restful.partner.RoomPay
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,9 @@ public class RoomPaymentRest implements RoomPaymentOperation {
 
     @Override
     public ResponseEntity<List<RoomPaymentResponse>> uploadAndProcess(
-        MultipartFile file, Integer month, Integer year) {
+        @RequestPart("file") MultipartFile file,
+        @RequestPart("month") Integer month,
+        @RequestPart("year") Integer year) {
         List<RoomPaymentDTO> payments = roomPaymentServicePort.processExcelAndCreatePayments(file, month, year);
         List<RoomPaymentResponse> responses = payments.stream()
             .map(this::mapToResponse)

@@ -159,7 +159,7 @@ public class OrganizationUserService implements OrganizationUserServicePort {
     @Transactional
     public OrganizationUserDTO update(OrganizationUserDTO organizationUserDTO) {
         // Kiểm tra organization user có tồn tại không
-        OrganizationUserDTO existing = organizationUserRepoPort.findById(organizationUserDTO.getId())
+        OrganizationUserDTO existing = organizationUserRepoPort.findById(organizationUserDTO.getUserId())
             .orElseThrow(() -> BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
                 .message("Không tìm thấy người dùng với ID: " + organizationUserDTO.getId())
                 .build());

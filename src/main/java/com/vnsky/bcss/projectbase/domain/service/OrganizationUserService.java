@@ -162,7 +162,7 @@ public class OrganizationUserService implements OrganizationUserServicePort {
     public OrganizationUserDTO update(OrganizationUserDTO organizationUserDTO) {
         log.info("update organization user: {}", organizationUserDTO);
         // Kiểm tra organization user có tồn tại không
-        OrganizationUserDTO existing = organizationUserRepoPort.findById(organizationUserDTO.getUserId())
+        OrganizationUserDTO existing = organizationUserRepoPort.findByUserId(organizationUserDTO.getUserId())
             .orElseThrow(() -> BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
                 .message("Không tìm thấy người dùng với ID: " + organizationUserDTO.getId())
                 .build());

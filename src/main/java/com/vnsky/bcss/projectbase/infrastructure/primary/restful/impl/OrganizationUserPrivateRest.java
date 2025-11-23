@@ -26,12 +26,10 @@ public class OrganizationUserPrivateRest implements OrganizationUserPrivateOpera
 
     @Override
     public ResponseEntity<OrganizationUserDTO> update(
-        @PathVariable String id,
         @Valid @RequestBody UpdateOrganizationUserRequest request) {
-        
+
         // Map request to DTO
         OrganizationUserDTO dto = OrganizationUserDTO.builder()
-            .id(id)
             .orgId(request.getOrgId())
             .userId(request.getUserId())
             .userName(request.getUserName())

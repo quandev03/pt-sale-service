@@ -18,7 +18,6 @@ public interface OrganizationUserPrivateOperation {
     @PutMapping("/{id}")
     @Operation(summary = "Cập nhật thông tin người dùng thuộc tổ chức")
     ResponseEntity<OrganizationUserDTO> update(
-        @PathVariable String id,
         @RequestBody UpdateOrganizationUserRequest request
     );
 

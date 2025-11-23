@@ -28,7 +28,7 @@ public class AdvertisementRest implements AdvertisementOperation {
     @Override
     public ResponseEntity<AdvertisementResponse> create(
         CreateAdvertisementRequest request,
-        MultipartFile image) {
+        @RequestPart(value = "image", required = false) MultipartFile image) {
         
         // Upload image if provided
         String imageUrl = null;

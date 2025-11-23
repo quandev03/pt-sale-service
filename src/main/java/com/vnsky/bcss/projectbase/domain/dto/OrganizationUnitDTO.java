@@ -1,5 +1,6 @@
 package com.vnsky.bcss.projectbase.domain.dto;
 
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomRentalStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -140,4 +141,7 @@ public class OrganizationUnitDTO extends CommonDTO {
 
     @Schema(description = "Giá phòng")
     private java.math.BigDecimal priceRoom;
+
+    @Schema(description = "Trạng thái thuê phòng: RENTED (đã thuê), AVAILABLE (chưa thuê), MAINTENANCE (bảo trì)")
+    private RoomRentalStatus rentalStatus;
 }

@@ -2,6 +2,7 @@ package com.vnsky.bcss.projectbase.infrastructure.secondary.jpa.repository;
 
 import com.vnsky.bcss.projectbase.domain.entity.OrganizationDeliveryInfoEntity;
 import com.vnsky.bcss.projectbase.domain.entity.OrganizationUnitEntity;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomRentalStatus;
 import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -306,4 +307,6 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
         AND ROWNUM = 1
         """, nativeQuery = true)
     Optional<OrganizationUnitEntity> getOrgRoot(String clientId);
+
+    List<OrganizationUnitEntity> findByRentalStatus(RoomRentalStatus rentalStatus);
 }

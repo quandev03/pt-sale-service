@@ -15,6 +15,7 @@ import com.vnsky.bcss.projectbase.infrastructure.secondary.jpa.repository.Organi
 import com.vnsky.bcss.projectbase.infrastructure.secondary.jpa.repository.OrganizationUnitRepository;
 import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomRentalStatus;
 import com.vnsky.bcss.projectbase.shared.utils.DbMapper;
 import com.vnsky.common.exception.domain.BaseException;
 import com.vnsky.security.SecurityUtil;
@@ -303,5 +304,12 @@ public class OrganizationUnitAdapter extends BaseJPAAdapterVer2<OrganizationUnit
     public List<OrganizationUnitResponse> getListOrganizationUnitChild(String parentId) {
         return repository.getInfoOrganizationByParentId(SecurityUtil.getCurrentClientId())
             .stream().map(org-> dbMapper.castSqlResult(org, OrganizationUnitResponse.class)).toList();
+    }
+
+    @Override
+    public List<OrganizationUnitDTO> findByRentalStatus(com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomRentalStatus rentalStatus) {
+        return repository.findByRentalStatus(rentalStatus).stream()
+            .map(mapper::toDto)
+            .toList();
     }
 }

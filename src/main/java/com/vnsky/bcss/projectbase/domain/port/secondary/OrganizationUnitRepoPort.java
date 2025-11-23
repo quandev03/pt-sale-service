@@ -6,6 +6,7 @@ import com.vnsky.bcss.projectbase.domain.dto.OrganizationUnitDTO;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.GetAllOrganizationUnitResponse;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitResponse;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.SearchPartnerResponse;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomRentalStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -104,4 +105,6 @@ public interface OrganizationUnitRepoPort {
     OrganizationUnitDTO getOrgNBOByPartner(String partnerID);
 
     OrganizationUnitDTO getRootOrg(String clientId);
+
+    List<OrganizationUnitDTO> findByRentalStatus(RoomRentalStatus rentalStatus);
 }

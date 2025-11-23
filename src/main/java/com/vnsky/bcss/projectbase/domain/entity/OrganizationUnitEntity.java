@@ -1,5 +1,6 @@
 package com.vnsky.bcss.projectbase.domain.entity;
 
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomRentalStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -116,6 +117,10 @@ public class OrganizationUnitEntity extends AbstractAuditingEntity {
 
     @Column(name = "PRICE_ROOM", precision = 18, scale = 2)
     private java.math.BigDecimal priceRoom;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "RENTAL_STATUS", length = 50)
+    private RoomRentalStatus rentalStatus;
 
     @Transient
     private String cccd;

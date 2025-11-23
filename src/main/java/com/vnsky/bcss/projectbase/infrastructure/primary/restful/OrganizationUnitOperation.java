@@ -25,6 +25,11 @@ public interface OrganizationUnitOperation {
     @GetMapping("/stores")
     List<GetAllOrganizationUnitResponse> getAllStores(@RequestParam(required = false) Boolean isAll);
 
+    @GetMapping("/available")
+    @Operation(summary = "Lấy danh sách phòng chưa thuê (Public - không cần xác thực)")
+    @ApiResponse(responseCode = "200", description = "Danh sách phòng chưa thuê")
+    ResponseEntity<List<com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitResponse>> getAvailableRooms();
+
     @PostMapping
     @Operation(summary = "Add Organization Unit")
     @ApiResponse(responseCode = "200")

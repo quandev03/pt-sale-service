@@ -34,4 +34,6 @@ public interface OrganizationUnitServicePort {
     OrganizationUnitDTO getOrgCurrent();
 
     DebtRevenueResponse getDebtRevenue();
+
+    List<OrganizationUnitDTO> getAvailableRooms();
 }

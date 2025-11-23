@@ -16,6 +16,7 @@ import com.vnsky.bcss.projectbase.infrastructure.data.response.GetAllOrganizatio
 import com.vnsky.bcss.projectbase.infrastructure.data.response.partner.DebtRevenueResponse;
 import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomRentalStatus;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.StockSerialType;
 import com.vnsky.bcss.projectbase.shared.utils.MessageSourceUtils;
 import com.vnsky.common.dto.ErrorRecord;
@@ -257,5 +258,11 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
         OrganizationUnitDTO organizationUnitDTO = getOrgCurrent();
         Long revenus = this.packageManagerServicePort.revenusPackageSold(organizationUnitDTO.getOrgCode());
         return new DebtRevenueResponse(organizationUnitDTO.getDebtLimit(), organizationUnitDTO.getDebtLimitMbf(), revenus);
+    }
+
+    @Override
+    public List<OrganizationUnitDTO> getAvailableRooms() {
+        log.info("{}Getting available rooms", LOG_PREFIX);
+        return organizationUnitRepositoryPort.findByRentalStatus(RoomRentalStatus.AVAILABLE);
     }
 }

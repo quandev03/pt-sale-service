@@ -6,6 +6,7 @@ import com.vnsky.bcss.projectbase.domain.port.primary.OrganizationUnitServicePor
 import com.vnsky.bcss.projectbase.infrastructure.data.request.partner.CheckOrgParentRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.GetAllOrganizationUnitResponse;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitImageResponse;
+import com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitResponse;
 import com.vnsky.bcss.projectbase.infrastructure.primary.restful.OrganizationUnitOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -122,5 +124,27 @@ public class OrganizationUnitRest implements OrganizationUnitOperation {
         return ResponseEntity.ok(OrganizationUnitImageResponse.builder()
             .imageUrls(imageUrls)
             .build());
+    }
+
+    @Override
+    public ResponseEntity<List<OrganizationUnitResponse>> getAvailableRooms() {
+        List<OrganizationUnitDTO> dtos = organizationUnitServicePort.getAvailableRooms();
+        List<OrganizationUnitResponse> responses = dtos.stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    private OrganizationUnitResponse mapToResponse(OrganizationUnitDTO dto) {
+        return OrganizationUnitResponse.builder()
+            .id(dto.getId())
+            .orgCode(dto.getOrgCode())
+            .orgName(dto.getOrgName())
+            .address(dto.getAddress())
+            .phone(dto.getPhone())
+            .email(dto.getEmail())
+            .priceRoom(dto.getPriceRoom())
+            .rentalStatus(dto.getRentalStatus() != null ? dto.getRentalStatus().name() : null)
+            .build();
     }
 }

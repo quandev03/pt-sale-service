@@ -37,6 +37,8 @@ public class SecurityConfigCustomerService {
                 .requestMatchers("/private/api/v1/update-subscriber-information/preview-confirm-contract/**")
                 .requestMatchers("/private/api/v1/update-subscriber-information/preview-confirm-contract-png/**")
                 .requestMatchers("/public/api/v1/address/**")
+                .requestMatchers("/public/api/v1/advertisements/active")
+                .requestMatchers("/public/api/v1/organization-unit/available")
             ;
     }
 
@@ -51,6 +53,10 @@ public class SecurityConfigCustomerService {
                     "/actuator/health/**")
                 .permitAll()
                 .requestMatchers("/public/api/v1/hook/**")
+                .permitAll()
+                .requestMatchers("/public/api/v1/advertisements/active")
+                .permitAll()
+                .requestMatchers("/public/api/v1/organization-unit/available")
                 .permitAll();
     }
 

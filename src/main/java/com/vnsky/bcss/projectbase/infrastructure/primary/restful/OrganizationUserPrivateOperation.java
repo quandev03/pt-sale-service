@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Organization User Operation", description = "API liên quan đến người dùng")
-@RequestMapping({"${application.path.base.private}/organization-user", "${application.path.base.public}"})
+@RequestMapping({"${application.path.base.private}/organization-user", "${application.path.base.public}/organization-user"})
 public interface OrganizationUserPrivateOperation {
 
     @PostMapping

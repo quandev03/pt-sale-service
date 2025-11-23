@@ -190,6 +190,10 @@ public class OrganizationUserService implements OrganizationUserServicePort {
             existing.setIsCurrent(organizationUserDTO.getIsCurrent());
         }
 
+        if (organizationUserDTO.getOrgId() != null) {
+            existing.setOrgId(organizationUserDTO.getOrgId());
+        }
+
         return organizationUserRepoPort.save(existing);
     }
 }

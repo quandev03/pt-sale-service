@@ -15,7 +15,7 @@ public interface OrganizationUserPrivateOperation {
     @Operation(summary = "Tạo người dùng thuộc tổ chức")
     ResponseEntity<Object> save(@RequestBody OrganizationUserDTO request);
 
-    @PutMapping("/{id}")
+    @PutMapping
     @Operation(summary = "Cập nhật thông tin người dùng thuộc tổ chức")
     ResponseEntity<OrganizationUserDTO> update(
         @RequestBody UpdateOrganizationUserRequest request

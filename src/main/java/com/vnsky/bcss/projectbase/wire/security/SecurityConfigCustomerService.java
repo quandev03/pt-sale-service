@@ -39,6 +39,7 @@ public class SecurityConfigCustomerService {
                 .requestMatchers("/public/api/v1/address/**")
                 .requestMatchers("/public/api/v1/advertisements/active")
                 .requestMatchers("/public/api/v1/organization-unit/available")
+                .requestMatchers("/public/api/v1/files/**")
             ;
     }
 
@@ -57,6 +58,8 @@ public class SecurityConfigCustomerService {
                 .requestMatchers("/public/api/v1/advertisements/active")
                 .permitAll()
                 .requestMatchers("/public/api/v1/organization-unit/available")
+                .permitAll()
+                .requestMatchers("/public/api/v1/files/**")
                 .permitAll();
     }
 

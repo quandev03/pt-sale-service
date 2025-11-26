@@ -83,5 +83,10 @@ public class PartnerPackageSubscriptionAdapter extends BaseJPAAdapterVer2<
             PartnerPackageSubscriptionView.class
         );
     }
+
+    @Override
+    public void updateStatusActive(String id) {
+        repository.updateStatus(id);
+    }
 }
 

@@ -1,10 +1,6 @@
 package com.vnsky.bcss.projectbase.domain.service;
 
-import com.vnsky.bcss.projectbase.domain.dto.OrganizationUnitDTO;
-import com.vnsky.bcss.projectbase.domain.dto.PackageProfileDTO;
-import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionCreateCommand;
-import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionDTO;
-import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionView;
+import com.vnsky.bcss.projectbase.domain.dto.*;
 import com.vnsky.bcss.projectbase.domain.port.primary.PartnerPackageSubscriptionServicePort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.OrganizationUnitRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.PackageProfileRepoPort;
@@ -13,12 +9,14 @@ import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.PartnerPackageSubscriptionStatus;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.Status;
 import com.vnsky.common.exception.domain.BaseException;
+import com.vnsky.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +31,8 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
     private final PartnerPackageSubscriptionRepoPort subscriptionRepoPort;
     private final OrganizationUnitRepoPort organizationUnitRepoPort;
     private final PackageProfileRepoPort packageProfileRepoPort;
+    private final PayOSService payOSService;
+    private final PartnerPackageSubscriptionRepoPort partnerPackageSubscriptionRepoPort;
 
     @Override
     @Transactional
@@ -115,6 +115,33 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
             log.info("Expired {} partner package subscriptions", expired.size());
         }
         return expired.size();
+    }
+
+    @Override
+    public void activeWhenPay(String id) {
+
+        subscriptionRepoPort.updateStatusActive(id);
+    }
+
+    @Override
+    public BuyPackageResponseDTO buyPackage(PartnerPackageSubscriptionDTO request) {
+
+        OrganizationUnitDTO organizationUnitDTO = organizationUnitRepoPort.getRootOrg(SecurityUtil.getCurrentClientId());
+        request.setOrganizationUnitId(organizationUnitDTO.getId());
+        PackageProfileDTO packageProfile = packageProfileRepoPort.findById(request.getPackageProfileId());
+        request.setStartTime(LocalDateTime.now());
+        request.setEndTime(packageProfile.getCycleUnit()==1?LocalDateTime.now().plusDays(packageProfile.getCycleValue()):LocalDateTime.now().plusMonths(packageProfile.getCycleValue()));
+        request.setStatus(PartnerPackageSubscriptionStatus.INACTIVE);
+        request = partnerPackageSubscriptionRepoPort.saveAndFlush(request);
+        CreatePaymentLinkResponse response = payOSService.createPayOS(request.getId(), packageProfile.getPackagePrice());
+        return new BuyPackageResponseDTO(response.getCheckoutUrl());
+    }
+
+    @Override
+    public Page<PartnerPackageSubscriptionView> getPartner(String packageProfileId, PartnerPackageSubscriptionStatus status, Pageable pageable) {
+        OrganizationUnitDTO organizationUnitDTO = organizationUnitRepoPort.getRootOrg(SecurityUtil.getCurrentClientId());
+        String statusValue = status != null ? status.name() : null;
+        return subscriptionRepoPort.search(organizationUnitDTO.getId(), packageProfileId, statusValue, pageable);
     }
 
     private LocalDateTime calculateEndTime(LocalDateTime startTime, Integer cycleValue, Integer cycleUnit) {

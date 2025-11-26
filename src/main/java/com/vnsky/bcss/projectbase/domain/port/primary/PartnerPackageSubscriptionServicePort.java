@@ -1,5 +1,6 @@
 package com.vnsky.bcss.projectbase.domain.port.primary;
 
+import com.vnsky.bcss.projectbase.domain.dto.BuyPackageResponseDTO;
 import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionCreateCommand;
 import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionDTO;
 import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionView;
@@ -19,7 +20,16 @@ public interface PartnerPackageSubscriptionServicePort {
     PartnerPackageSubscriptionDTO stopSubscription(String subscriptionId);
 
     int expireSubscriptions();
+
+    void activeWhenPay(String id);
+
+    BuyPackageResponseDTO buyPackage(PartnerPackageSubscriptionDTO request);
+
+    Page<PartnerPackageSubscriptionView> getPartner(String packageProfileId,
+                                                   PartnerPackageSubscriptionStatus status,
+                                                    Pageable pageable);
 }
+
 
 
 

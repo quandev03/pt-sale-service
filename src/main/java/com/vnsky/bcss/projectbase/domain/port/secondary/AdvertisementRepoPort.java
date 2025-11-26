@@ -21,3 +21,4 @@ public interface AdvertisementRepoPort {
     List<AdvertisementDTO> findActiveAdvertisements(LocalDateTime currentDate);
 }
 
+

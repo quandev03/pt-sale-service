@@ -16,3 +16,4 @@ public interface OrganizationUnitImageRepository extends BaseJPARepository<Organ
     void deleteByOrgUnitId(@Param("orgUnitId") String orgUnitId);
 }
 
+

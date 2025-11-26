@@ -40,3 +40,4 @@ public class CreateAdvertisementRequest {
     private AdvertisementStatus status;
 }
 
+

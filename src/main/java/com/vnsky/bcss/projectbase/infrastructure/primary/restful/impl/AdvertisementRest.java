@@ -11,6 +11,7 @@ import com.vnsky.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +30,7 @@ public class AdvertisementRest implements AdvertisementOperation {
     public ResponseEntity<AdvertisementResponse> create(
         CreateAdvertisementRequest request,
         @RequestPart(value = "image", required = false) MultipartFile image) {
-        
+
         // Upload image if provided
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
@@ -57,7 +58,7 @@ public class AdvertisementRest implements AdvertisementOperation {
         String id,
         UpdateAdvertisementRequest request,
         MultipartFile image) {
-        
+
         // Upload new image if provided
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
@@ -128,4 +129,5 @@ public class AdvertisementRest implements AdvertisementOperation {
             .build();
     }
 }
+
 

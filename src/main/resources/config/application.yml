@@ -202,6 +202,7 @@ third-party:
   qr-code:
     create-qr-code-url: ${QR_DOMAIN:}
 
+
 payment:
   vnpay:
     tmn-code: ${VNP_TMN_CODE:GQ8OID19}
@@ -214,6 +215,10 @@ payment:
     order-type: ${VNP_ORDER_TYPE:partner_package}
     currency: ${VNP_CURRENCY:VND}
     locale: ${VNP_LOCALE:vn}
+  payos:
+    client-id: ${PAYOS_CLIENT_ID}
+    api-key: ${PAYOS_API_KEY}
+    checksum-key: ${PAYOS_CHECKSUM_KEY}
 
 param:
   template:
@@ -233,6 +238,8 @@ hi-vn-service:
 domain:
   internal:
     domain-admin: ${DOMAIN_API_ADMIN}
+  ui:
+    partner: ${DOMAIN_PARTNER}
 #    domain-admin: http://localhost:8081/hvn-admin-service
 management:
   health:

@@ -11,3 +11,4 @@ public interface OrganizationUnitImageMapper extends BaseMapper<OrganizationUnit
 
 
 
+

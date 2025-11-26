@@ -52,3 +52,4 @@ public class AdvertisementResponse {
     private LocalDateTime modifiedDate;
 }
 
+

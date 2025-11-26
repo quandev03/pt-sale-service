@@ -35,3 +35,4 @@ public class UpdateAdvertisementRequest {
     private AdvertisementStatus status;
 }
 
+

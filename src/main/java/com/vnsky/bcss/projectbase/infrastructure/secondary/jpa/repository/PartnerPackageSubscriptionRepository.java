@@ -3,8 +3,10 @@ package com.vnsky.bcss.projectbase.infrastructure.secondary.jpa.repository;
 import com.vnsky.bcss.projectbase.domain.entity.PartnerPackageSubscriptionEntity;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.PartnerPackageSubscriptionStatus;
 import jakarta.persistence.Tuple;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -59,6 +61,14 @@ public interface PartnerPackageSubscriptionRepository extends BaseJPARepository<
                        @Param("packageProfileId") String packageProfileId,
                        @Param("status") String status,
                        Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+        update PARTNER_PACKAGE_SUBSCRIPTION set STATUS = 'ACTIVE'
+            where id = :id
+    """, nativeQuery = true)
+    void updateStatus(@Param("id") String id);
 }
 
 

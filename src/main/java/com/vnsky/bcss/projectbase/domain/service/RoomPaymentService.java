@@ -537,7 +537,7 @@ public class RoomPaymentService implements RoomPaymentServicePort {
     @Override
     @Transactional
     public RoomPaymentDTO generateQRCode(String paymentId) {
-        log.info("{}Generating QR code for payment: {}", LOG_PREFIX, paymentId);
+        log.info("{}Generating QR code foorganization_delivery_infor payment: {}", LOG_PREFIX, paymentId);
 
         // Lấy payment
         RoomPaymentDTO payment = roomPaymentRepoPort.findById(paymentId)

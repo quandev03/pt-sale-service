@@ -20,3 +20,4 @@ public interface AdvertisementServicePort {
     List<AdvertisementDTO> getActiveAdvertisements();
 }
 
+

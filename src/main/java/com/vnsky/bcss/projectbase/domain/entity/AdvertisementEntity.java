@@ -46,3 +46,4 @@ public class AdvertisementEntity extends AbstractAuditingEntity {
     private String clientId;
 }
 
+

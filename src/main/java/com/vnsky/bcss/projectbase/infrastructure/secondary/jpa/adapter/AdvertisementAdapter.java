@@ -55,3 +55,4 @@ public class AdvertisementAdapter implements AdvertisementRepoPort {
     }
 }
 
+

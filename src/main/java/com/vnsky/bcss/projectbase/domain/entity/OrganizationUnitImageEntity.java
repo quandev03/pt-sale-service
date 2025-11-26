@@ -39,3 +39,4 @@ public class OrganizationUnitImageEntity extends AbstractAuditingEntity {
     private Integer sortOrder;
 }
 
+

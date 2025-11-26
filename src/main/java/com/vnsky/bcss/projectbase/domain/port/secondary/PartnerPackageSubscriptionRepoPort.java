@@ -24,6 +24,8 @@ public interface PartnerPackageSubscriptionRepoPort {
     List<PartnerPackageSubscriptionDTO> findActiveSubscriptionsEndingBefore(LocalDateTime deadline);
 
     Page<PartnerPackageSubscriptionView> search(String organizationUnitId, String packageProfileId, String status, Pageable pageable);
+
+    void updateStatusActive(String id);
 }
 
 

@@ -16,3 +16,4 @@ public interface OrganizationUnitImageServicePort {
     List<String> getImageUrls(String orgUnitId);
 }
 
+

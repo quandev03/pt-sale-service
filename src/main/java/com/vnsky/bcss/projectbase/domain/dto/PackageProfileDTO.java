@@ -42,4 +42,6 @@ public class PackageProfileDTO extends AbstractAuditingEntity implements Seriali
 
     @Schema(description = "Đơn vị chu kỳ gói cước")
     private Integer cycleUnit;
+
+    private String packageType;
 }

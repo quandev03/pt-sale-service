@@ -88,6 +88,8 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
         organizationUnitDTO.setParentCode(orgDTO.getOrgCode());
         organizationUnitDTO.setParentId(orgDTO.getId());
         checkDuplicate(organizationUnitDTO);
+        organizationUnitDTO.setProvinceCode(orgDTO.getProvinceCode());
+        organizationUnitDTO.setWardCode(orgDTO.getWardCode());
 
         if (Objects.isNull(id)) {
             // Thêm mới

@@ -44,7 +44,7 @@ public interface PartnerPackageSubscriptionRepository extends BaseJPARepository<
         FROM PARTNER_PACKAGE_SUBSCRIPTION pps
                  JOIN ORGANIZATION_UNIT ou ON ou.ID = pps.ORG_UNIT_ID
                  JOIN PACKAGE_PROFILE pp ON pp.ID = pps.PACKAGE_PROFILE_ID
-        WHERE (:orgUnitId IS NULL OR pps.ORG_UNIT_ID = :orgUnitId)
+        WHERE (:organizationUnitId IS NULL OR pps.ORG_UNIT_ID = :organizationUnitId)
           AND (:packageProfileId IS NULL OR pps.PACKAGE_PROFILE_ID = :packageProfileId)
           AND (:status IS NULL OR pps.STATUS = :status)
         ORDER BY pps.CREATED_DATE DESC
@@ -52,16 +52,14 @@ public interface PartnerPackageSubscriptionRepository extends BaseJPARepository<
         countQuery = """
         SELECT COUNT(1)
         FROM PARTNER_PACKAGE_SUBSCRIPTION pps
-        WHERE (:orgUnitId IS NULL OR pps.ORG_UNIT_ID = :orgUnitId)
+        WHERE (:organizationUnitId IS NULL OR pps.ORG_UNIT_ID = :organizationUnitId)
           AND (:packageProfileId IS NULL OR pps.PACKAGE_PROFILE_ID = :packageProfileId)
           AND (:status IS NULL OR pps.STATUS = :status)
-          AND (:organizationUnitId IS NULL OR pps.organization_unit_id = :organizationUnitId)
         """,
         nativeQuery = true)
-    Page<Tuple> search(@Param("orgUnitId") String orgUnitId,
+    Page<Tuple> search(@Param("organizationUnitId") String organizationUnitId,
                        @Param("packageProfileId") String packageProfileId,
                        @Param("status") String status,
-                       @Param("organizationUnitId") String organizationUnitId,
                        Pageable pageable);
 
     @Modifying

@@ -55,11 +55,13 @@ public interface PartnerPackageSubscriptionRepository extends BaseJPARepository<
         WHERE (:orgUnitId IS NULL OR pps.ORG_UNIT_ID = :orgUnitId)
           AND (:packageProfileId IS NULL OR pps.PACKAGE_PROFILE_ID = :packageProfileId)
           AND (:status IS NULL OR pps.STATUS = :status)
+          AND (:organizationUnitId IS NULL OR pps.organization_unit_id = :organizationUnitId)
         """,
         nativeQuery = true)
     Page<Tuple> search(@Param("orgUnitId") String orgUnitId,
                        @Param("packageProfileId") String packageProfileId,
                        @Param("status") String status,
+                       @Param("organizationUnitId") String organizationUnitId,
                        Pageable pageable);
 
     @Modifying

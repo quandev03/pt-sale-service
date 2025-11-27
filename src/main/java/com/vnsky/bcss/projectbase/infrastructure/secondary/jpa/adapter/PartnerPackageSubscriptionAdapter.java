@@ -4,16 +4,20 @@ import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionDTO;
 import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionView;
 import com.vnsky.bcss.projectbase.domain.entity.PartnerPackageSubscriptionEntity;
 import com.vnsky.bcss.projectbase.domain.mapper.PartnerPackageSubscriptionMapper;
+import com.vnsky.bcss.projectbase.domain.port.secondary.OrganizationUnitRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.PartnerPackageSubscriptionRepoPort;
 import com.vnsky.bcss.projectbase.infrastructure.secondary.jpa.repository.PartnerPackageSubscriptionRepository;
+import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.PartnerPackageSubscriptionStatus;
 import com.vnsky.bcss.projectbase.shared.utils.DbMapper;
+import com.vnsky.security.SecurityUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -27,14 +31,16 @@ public class PartnerPackageSubscriptionAdapter extends BaseJPAAdapterVer2<
     private final PartnerPackageSubscriptionRepository repository;
     private final PartnerPackageSubscriptionMapper mapper;
     private final DbMapper dbMapper;
+    private final OrganizationUnitRepoPort organizationUnitRepoPort;
 
     public PartnerPackageSubscriptionAdapter(PartnerPackageSubscriptionRepository repository,
                                              PartnerPackageSubscriptionMapper mapper,
-                                             DbMapper dbMapper) {
+                                             DbMapper dbMapper, OrganizationUnitRepoPort organizationUnitRepoPort) {
         super(repository, mapper);
         this.repository = repository;
         this.mapper = mapper;
         this.dbMapper = dbMapper;
+        this.organizationUnitRepoPort = organizationUnitRepoPort;
     }
 
     @Override
@@ -78,8 +84,12 @@ public class PartnerPackageSubscriptionAdapter extends BaseJPAAdapterVer2<
                                                        String packageProfileId,
                                                        String status,
                                                        Pageable pageable) {
+        String orgId = null;
+        if(!Objects.equals(SecurityUtil.getCurrentClientId(), "000000000000")){
+            orgId = organizationUnitRepoPort.getOrgRootByClientId(SecurityUtil.getCurrentClientId()).getId();
+        }
         return dbMapper.castSqlResult(
-            repository.search(organizationUnitId, packageProfileId, status, pageable),
+            repository.search(organizationUnitId, packageProfileId, status, orgId, pageable),
             PartnerPackageSubscriptionView.class
         );
     }

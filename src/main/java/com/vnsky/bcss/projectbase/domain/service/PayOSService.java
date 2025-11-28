@@ -3,6 +3,7 @@ package com.vnsky.bcss.projectbase.domain.service;
 import com.vnsky.bcss.projectbase.domain.port.primary.PartnerPackageSubscriptionPaymentServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.PartnerPackageSubscriptionServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.PayOSServicePort;
+import com.vnsky.bcss.projectbase.domain.port.secondary.PartnerPackageSubscriptionRepoPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +30,7 @@ public class PayOSService implements PayOSServicePort {
     @Value("${payment.payos.checksum-key}")
     private String checksum;
 
-    private final PartnerPackageSubscriptionServicePort partnerackageSubscriptionServicePort;
+    private final PartnerPackageSubscriptionRepoPort subscriptionRepoPort;
 
 
     public CreatePaymentLinkResponse createPayOS(String orderId, Long orderAmount){
@@ -55,7 +56,7 @@ public class PayOSService implements PayOSServicePort {
         try {
             WebhookData data = payOS.webhooks().verify(webhook);
             log.info("Thanh toán thành công: {}" , data.getOrderCode());
-            partnerackageSubscriptionServicePort.activeWhenPay(data.getDescription());
+            subscriptionRepoPort.updateStatusActive(data.getDescription());
 
             return "OK";
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package com.vnsky.bcss.projectbase.domain.service;
 
 import com.vnsky.bcss.projectbase.domain.dto.*;
 import com.vnsky.bcss.projectbase.domain.port.primary.PartnerPackageSubscriptionServicePort;
+import com.vnsky.bcss.projectbase.domain.port.primary.PayOSServicePort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.OrganizationUnitRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.PackageProfileRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.PartnerPackageSubscriptionRepoPort;
@@ -10,6 +11,7 @@ import com.vnsky.bcss.projectbase.shared.enumeration.domain.PartnerPackageSubscr
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.Status;
 import com.vnsky.common.exception.domain.BaseException;
 import com.vnsky.security.SecurityUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -25,25 +27,15 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PartnerPackageSubscriptionService implements PartnerPackageSubscriptionServicePort {
 
     private final PartnerPackageSubscriptionRepoPort subscriptionRepoPort;
     private final OrganizationUnitRepoPort organizationUnitRepoPort;
     private final PackageProfileRepoPort packageProfileRepoPort;
-    private final PayOSService payOSService;
+    private final PayOSServicePort payOSService;
     private final PartnerPackageSubscriptionRepoPort partnerPackageSubscriptionRepoPort;
 
-    public PartnerPackageSubscriptionService(PartnerPackageSubscriptionRepoPort subscriptionRepoPort,
-                                             OrganizationUnitRepoPort organizationUnitRepoPort,
-                                             PackageProfileRepoPort packageProfileRepoPort,
-                                             @Lazy PayOSService payOSService,
-                                             PartnerPackageSubscriptionRepoPort partnerPackageSubscriptionRepoPort) {
-        this.subscriptionRepoPort = subscriptionRepoPort;
-        this.organizationUnitRepoPort = organizationUnitRepoPort;
-        this.packageProfileRepoPort = packageProfileRepoPort;
-        this.payOSService = payOSService;
-        this.partnerPackageSubscriptionRepoPort = partnerPackageSubscriptionRepoPort;
-    }
 
     @Override
     @Transactional

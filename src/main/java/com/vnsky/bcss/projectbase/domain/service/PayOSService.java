@@ -1,7 +1,4 @@
 package com.vnsky.bcss.projectbase.domain.service;
-
-import com.vnsky.bcss.projectbase.domain.port.primary.PartnerPackageSubscriptionPaymentServicePort;
-import com.vnsky.bcss.projectbase.domain.port.primary.PartnerPackageSubscriptionServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.PayOSServicePort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.PartnerPackageSubscriptionRepoPort;
 import lombok.RequiredArgsConstructor;

@@ -12,6 +12,6 @@ public interface SalePackageToPartnerOperation {
     ResponseEntity<Object> create(@RequestBody PartnerPackageSubscriptionDTO packageCode, @RequestParam(required = false, defaultValue = "true") Boolean isMoney);
 
     @GetMapping
-    ResponseEntity<Object> list(@RequestParam String packageProfileId,
-                                @RequestParam PartnerPackageSubscriptionStatus status, Pageable pageable);
+    ResponseEntity<Object> list(@RequestParam(required = false) String packageProfileId,
+                                @RequestParam(required = false) PartnerPackageSubscriptionStatus status, Pageable pageable);
 }

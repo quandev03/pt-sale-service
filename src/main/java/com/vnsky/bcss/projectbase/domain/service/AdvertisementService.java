@@ -81,6 +81,7 @@ public class AdvertisementService implements AdvertisementServicePort {
             existing.setContent(dto.getContent());
         }
         if (StringUtils.isNotBlank(dto.getImageUrl())) {
+            log.info("{}Creating advertisement image: {}", LOG_PREFIX, dto.getImageUrl());
             existing.setImageUrl(dto.getImageUrl());
         }
         if (dto.getStartDate() != null) {
@@ -165,7 +166,7 @@ public class AdvertisementService implements AdvertisementServicePort {
         try {
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             String imageUrl = "advertisements/" + fileName;
-            
+
             UploadOptionDTO uploadOption = UploadOptionDTO.builder()
                 .uri(imageUrl)
                 .isPublic(true)

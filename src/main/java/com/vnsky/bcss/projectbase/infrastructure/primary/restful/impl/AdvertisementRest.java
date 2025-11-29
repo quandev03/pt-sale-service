@@ -89,6 +89,7 @@ public class AdvertisementRest implements AdvertisementOperation {
 
         String fileUrl =  "/advertisements/" + DateUtils.localDateTimeToString(now, Constant.DATE_TIME_NO_SYMBOL_PATTERN) + "/" + image.getOriginalFilename();
 
+        log.info("FILE_IMAGE: {}", fileUrl);
         try{
             UploadOptionDTO uploadOptionDTO = UploadOptionDTO.builder()
                 .uri(fileUrl)

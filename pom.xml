@@ -225,6 +225,13 @@
             <version>1.26.1</version> <!-- Hoặc 1.21 trở lên -->
         </dependency>
 
+        <!-- JODConverter local to call LibreOffice for conversion -->
+        <dependency>
+            <groupId>org.jodconverter</groupId>
+            <artifactId>jodconverter-local</artifactId>
+            <version>4.4.6</version>
+        </dependency>
+
         <dependency>
             <groupId>org.docx4j</groupId>
             <artifactId>docx4j-export-fo</artifactId>

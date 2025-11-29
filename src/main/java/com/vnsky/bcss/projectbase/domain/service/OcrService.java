@@ -86,7 +86,7 @@ public class OcrService implements OcrServicePort {
             throw new RuntimeException(e);
         }
 
-        return fillTemplateToDocx(template.getInputStream(),test());
+        return fillTemplateToDocx(tem,test());
     }
 
     private EKYCOCRResponseDTO getOCR(EKYCOCRRequestDTO ekycocrRequestDTO) {

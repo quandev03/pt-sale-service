@@ -6,8 +6,13 @@ import com.vnsky.bcss.projectbase.infrastructure.data.request.CreateAdvertisemen
 import com.vnsky.bcss.projectbase.infrastructure.data.request.UpdateAdvertisementRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.AdvertisementResponse;
 import com.vnsky.bcss.projectbase.infrastructure.primary.restful.AdvertisementOperation;
+import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.AdvertisementStatus;
+import com.vnsky.bcss.projectbase.shared.utils.DateUtils;
+import com.vnsky.minio.dto.UploadOptionDTO;
+import com.vnsky.minio.operation.MinioOperations;
 import com.vnsky.security.SecurityUtil;
+import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,11 +33,12 @@ import java.util.stream.Collectors;
 public class AdvertisementRest implements AdvertisementOperation {
 
     private final AdvertisementServicePort advertisementServicePort;
+    private final MinioOperations minioClient;
 
     @Override
     public ResponseEntity<AdvertisementResponse> create(
         CreateAdvertisementRequest request,
-        @RequestPart(value = "image", required = false) MultipartFile image) {
+        @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
 
         // Upload image if provided
         String imageUrl = null;
@@ -39,11 +48,22 @@ public class AdvertisementRest implements AdvertisementOperation {
             imageUrl = request.getImageUrl();
         }
 
+        LocalDateTime now = LocalDateTime.now();
+
+        String fileUrl = "/attachments/" + DateUtils.localDateTimeToString(now, Constant.DATE_TIME_NO_SYMBOL_PATTERN) + "/" + image.getOriginalFilename();
+
+        UploadOptionDTO uploadOptionDTO = UploadOptionDTO.builder()
+            .uri(fileUrl)
+            .isPublic(false)
+            .build();
+
+        minioClient.upload(image.getInputStream(), uploadOptionDTO);
+
         // Map request to DTO
         AdvertisementDTO dto = AdvertisementDTO.builder()
             .title(request.getTitle())
             .content(request.getContent())
-            .imageUrl(imageUrl)
+            .imageUrl(fileUrl)
             .startDate(request.getStartDate())
             .endDate(request.getEndDate())
             .status(request.getStatus())

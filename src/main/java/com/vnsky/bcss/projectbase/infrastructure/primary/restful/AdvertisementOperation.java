@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "Advertisement Operation", description = "API quản lý quảng cáo")
@@ -29,7 +30,7 @@ public interface AdvertisementOperation {
     @AuditAction(targetType = "ADVERTISEMENT", actionType = AuditActionType.CREATE)
     ResponseEntity<AdvertisementResponse> create(
         @RequestPart("request") @Valid CreateAdvertisementRequest request,
-        @RequestPart(value = "image", required = false) MultipartFile image);
+        @RequestPart(value = "image", required = false) MultipartFile image) throws IOException;
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Cập nhật quảng cáo", security = @SecurityRequirement(name = "bearerAuth"))

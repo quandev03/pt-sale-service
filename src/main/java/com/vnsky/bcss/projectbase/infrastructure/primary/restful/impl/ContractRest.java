@@ -26,9 +26,9 @@ public class ContractRest implements ContractOperation {
     public ResponseEntity<Object> genContract() throws Exception {
         Resource resource = ocrServicePort.genContract();
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(resource.getFilename()+".docx").build().toString())
+            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(resource.getFilename()).build().toString())
             .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
-            .contentType(MediaType.ALL)
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(resource);
     }
 }

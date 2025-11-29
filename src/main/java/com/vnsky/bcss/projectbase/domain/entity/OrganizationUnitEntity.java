@@ -124,4 +124,7 @@ public class OrganizationUnitEntity extends AbstractAuditingEntity {
 
     @Transient
     private String cccd;
+
+    @Column(name = "ACREAGE")
+    private Long acreage;
 }

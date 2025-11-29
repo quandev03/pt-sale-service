@@ -144,4 +144,7 @@ public class OrganizationUnitDTO extends CommonDTO {
 
     @Schema(description = "Trạng thái thuê phòng: RENTED (đã thuê), AVAILABLE (chưa thuê), MAINTENANCE (bảo trì)")
     private RoomRentalStatus rentalStatus;
+
+    @Schema(description = "Diên tích")
+    private Long acreage;
 }

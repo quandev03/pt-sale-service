@@ -45,6 +45,6 @@ public class PackageProfileEntity extends AbstractAuditingEntity {
     @Column(name = "CYCLE_UNIT")
     private Integer cycleUnit;
 
-    @Column(name = "PACKAGE_TYPE")
+    @Column(name = "TYPE_SERVICE")
     private String packageType;
 }

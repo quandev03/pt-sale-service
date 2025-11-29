@@ -15,8 +15,8 @@ public class SalePackageToPartnerRest implements SalePackageToPartnerOperation {
     private final PartnerPackageSubscriptionServicePort partnerPackageSubscriptionServicePort;
 
     @Override
-    public ResponseEntity<Object> create(PartnerPackageSubscriptionDTO request) {
-        return ResponseEntity.ok(partnerPackageSubscriptionServicePort.buyPackage(request));
+    public ResponseEntity<Object> create(PartnerPackageSubscriptionDTO request, Boolean isMoney) {
+        return ResponseEntity.ok(partnerPackageSubscriptionServicePort.buyPackage(request, isMoney));
     }
 
     @Override

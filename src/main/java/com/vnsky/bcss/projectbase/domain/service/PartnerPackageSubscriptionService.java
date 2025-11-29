@@ -127,14 +127,22 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
     }
 
     @Override
-    public BuyPackageResponseDTO buyPackage(PartnerPackageSubscriptionDTO request) {
+    @Transactional
+    public BuyPackageResponseDTO buyPackage(PartnerPackageSubscriptionDTO request, Boolean isMoney) {
 
         OrganizationUnitDTO organizationUnitDTO = organizationUnitRepoPort.getRootOrg(SecurityUtil.getCurrentClientId());
         request.setOrganizationUnitId(organizationUnitDTO.getId());
         PackageProfileDTO packageProfile = packageProfileRepoPort.findById(request.getPackageProfileId());
         request.setStartTime(LocalDateTime.now());
         request.setEndTime(packageProfile.getCycleUnit()==1?LocalDateTime.now().plusDays(packageProfile.getCycleValue()):LocalDateTime.now().plusMonths(packageProfile.getCycleValue()));
-        request.setStatus(PartnerPackageSubscriptionStatus.INACTIVE);
+        if (Boolean.TRUE.equals(isMoney)) {
+            request.setStatus(PartnerPackageSubscriptionStatus.ACTIVE);
+            partnerPackageSubscriptionRepoPort.saveAndFlush(request);
+            return BuyPackageResponseDTO.builder().build();
+        }
+        else {
+            request.setStatus(PartnerPackageSubscriptionStatus.INACTIVE);
+        }
         request = partnerPackageSubscriptionRepoPort.saveAndFlush(request);
         CreatePaymentLinkResponse response = payOSService.createPayOS(request.getId(), packageProfile.getPackagePrice());
         return new BuyPackageResponseDTO(response.getCheckoutUrl());

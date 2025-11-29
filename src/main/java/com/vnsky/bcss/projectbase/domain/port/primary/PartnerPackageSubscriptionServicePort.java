@@ -23,7 +23,7 @@ public interface PartnerPackageSubscriptionServicePort {
 
     void activeWhenPay(String id);
 
-    BuyPackageResponseDTO buyPackage(PartnerPackageSubscriptionDTO request);
+    BuyPackageResponseDTO buyPackage(PartnerPackageSubscriptionDTO request, Boolean isMoney);
 
     Page<PartnerPackageSubscriptionView> getPartner(String packageProfileId,
                                                    PartnerPackageSubscriptionStatus status,

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("${application.path.base.public}/sale-package-partner")
 public interface SalePackageToPartnerOperation {
     @PostMapping
-    ResponseEntity<Object> create(@RequestBody PartnerPackageSubscriptionDTO packageCode);
+    ResponseEntity<Object> create(@RequestBody PartnerPackageSubscriptionDTO packageCode, @RequestParam(required = false, defaultValue = "true") Boolean isMoney);
 
     @GetMapping
     ResponseEntity<Object> list(@RequestParam String packageProfileId,

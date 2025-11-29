@@ -3,6 +3,10 @@ package com.vnsky.bcss.projectbase.infrastructure.primary.restful.impl;
 import com.vnsky.bcss.projectbase.domain.port.primary.OcrServicePort;
 import com.vnsky.bcss.projectbase.infrastructure.primary.restful.ContractOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +24,11 @@ public class ContractRest implements ContractOperation {
 
     @Override
     public ResponseEntity<Object> genContract() throws Exception {
-        return ResponseEntity.ok(ocrServicePort.genContract());
+        Resource resource = ocrServicePort.genContract();
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(resource.getFilename()+".docx").build().toString())
+            .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
+            .contentType(MediaType.ALL)
+            .body(resource);
     }
 }

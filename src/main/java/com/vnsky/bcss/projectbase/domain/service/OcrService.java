@@ -75,7 +75,7 @@ public class OcrService implements OcrServicePort {
     }
 
     @Override
-    public Object genContract() throws Exception {
+    public Resource genContract() throws Exception {
 
         DownloadOptionDTO downloadOptionDTO = DownloadOptionDTO.builder()
             .isPublic(false).uri(URL_TEMPALTE).build();

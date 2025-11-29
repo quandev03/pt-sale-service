@@ -1,6 +1,12 @@
 package com.vnsky.bcss.projectbase.domain.service;
 
-import com.vnsky.bcss.projectbase.domain.dto.*;
+import com.vnsky.bcss.projectbase.domain.dto.BuyPackageResponseDTO;
+import com.vnsky.bcss.projectbase.domain.dto.OrganizationUnitDTO;
+import com.vnsky.bcss.projectbase.domain.dto.PackageProfileDTO;
+import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionCreateCommand;
+import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionDTO;
+import com.vnsky.bcss.projectbase.domain.dto.PartnerPackageSubscriptionView;
+import com.vnsky.bcss.projectbase.domain.integration.AdminGroupUserClient;
 import com.vnsky.bcss.projectbase.domain.port.primary.PartnerPackageSubscriptionServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.PayOSServicePort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.OrganizationUnitRepoPort;
@@ -13,11 +19,11 @@ import com.vnsky.common.exception.domain.BaseException;
 import com.vnsky.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 
 import java.time.LocalDateTime;
@@ -35,6 +41,7 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
     private final PackageProfileRepoPort packageProfileRepoPort;
     private final PayOSServicePort payOSService;
     private final PartnerPackageSubscriptionRepoPort partnerPackageSubscriptionRepoPort;
+    private final AdminGroupUserClient adminGroupUserClient;
 
 
     @Override
@@ -79,7 +86,9 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
             .status(PartnerPackageSubscriptionStatus.ACTIVE)
             .build();
 
-        return subscriptionRepoPort.saveAndFlush(dto);
+        PartnerPackageSubscriptionDTO savedSubscription = subscriptionRepoPort.saveAndFlush(dto);
+        syncGroupUserMembership(packageProfile, organizationUnit, true);
+        return savedSubscription;
     }
 
     @Override
@@ -105,7 +114,9 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
 
         subscription.setStatus(PartnerPackageSubscriptionStatus.INACTIVE);
         subscription.setEndTime(LocalDateTime.now());
-        return subscriptionRepoPort.saveAndFlush(subscription);
+        PartnerPackageSubscriptionDTO saved = subscriptionRepoPort.saveAndFlush(subscription);
+        syncGroupUserMembership(subscription.getPackageProfileId(), subscription.getOrganizationUnitId(), false);
+        return saved;
     }
 
     @Override
@@ -113,7 +124,10 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
     public int expireSubscriptions() {
         List<PartnerPackageSubscriptionDTO> expired = subscriptionRepoPort.findActiveSubscriptionsEndingBefore(LocalDateTime.now());
         expired.forEach(subscription -> subscription.setStatus(PartnerPackageSubscriptionStatus.EXPIRED));
-        expired.forEach(subscriptionRepoPort::saveAndFlush);
+        expired.forEach(subscription -> {
+            subscriptionRepoPort.saveAndFlush(subscription);
+            syncGroupUserMembership(subscription.getPackageProfileId(), subscription.getOrganizationUnitId(), false);
+        });
         if (!expired.isEmpty()) {
             log.info("Expired {} partner package subscriptions", expired.size());
         }
@@ -124,6 +138,9 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
     public void activeWhenPay(String id) {
 
         subscriptionRepoPort.updateStatusActive(id);
+        subscriptionRepoPort.findById(id).ifPresent(subscription ->
+            syncGroupUserMembership(subscription.getPackageProfileId(), subscription.getOrganizationUnitId(), true)
+        );
     }
 
     @Override
@@ -138,6 +155,7 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
         if (Boolean.TRUE.equals(isMoney)) {
             request.setStatus(PartnerPackageSubscriptionStatus.ACTIVE);
             partnerPackageSubscriptionRepoPort.saveAndFlush(request);
+            syncGroupUserMembership(packageProfile, organizationUnitDTO, true);
             return BuyPackageResponseDTO.builder().build();
         }
         else {
@@ -169,6 +187,42 @@ public class PartnerPackageSubscriptionService implements PartnerPackageSubscrip
                 .message("Đơn vị chu kỳ không hỗ trợ")
                 .build();
         };
+    }
+
+    private void syncGroupUserMembership(PackageProfileDTO packageProfile,
+                                         OrganizationUnitDTO organizationUnit,
+                                         boolean register) {
+        if (packageProfile == null || organizationUnit == null) {
+            log.warn("Skip syncing group-user because packageProfile={} or organizationUnit={} is null",
+                packageProfile != null ? packageProfile.getId() : null,
+                organizationUnit != null ? organizationUnit.getId() : null);
+            return;
+        }
+
+        String groupId = packageProfile.getPackageType();
+        String userId = organizationUnit.getClientId();
+
+        if (!StringUtils.hasText(userId)) {
+            log.warn("Skip syncing group-user because clientId is missing for organizationUnit={}", organizationUnit.getId());
+            return;
+        }
+        if (!StringUtils.hasText(groupId)) {
+            log.warn("Skip syncing group-user because packageType is missing for packageProfile={}", packageProfile.getId());
+            return;
+        }
+
+        if (register) {
+            adminGroupUserClient.addUserToGroup(groupId, userId);
+        } else {
+            adminGroupUserClient.removeUserFromGroup(groupId, userId);
+        }
+    }
+
+    private void syncGroupUserMembership(String packageProfileId, String organizationUnitId, boolean register) {
+        PackageProfileDTO packageProfile = packageProfileRepoPort.findById(packageProfileId);
+        OrganizationUnitDTO organizationUnit = organizationUnitRepoPort.findById(organizationUnitId)
+            .orElse(null);
+        syncGroupUserMembership(packageProfile, organizationUnit, register);
     }
 }
 

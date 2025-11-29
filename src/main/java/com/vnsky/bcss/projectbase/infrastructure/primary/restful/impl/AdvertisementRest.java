@@ -104,7 +104,7 @@ public class AdvertisementRest implements AdvertisementOperation {
         AdvertisementDTO dto = AdvertisementDTO.builder()
             .title(request.getTitle())
             .content(request.getContent())
-            .imageUrl(imageUrl)
+            .imageUrl(fileUrl)
             .startDate(request.getStartDate())
             .endDate(request.getEndDate())
             .status(request.getStatus())

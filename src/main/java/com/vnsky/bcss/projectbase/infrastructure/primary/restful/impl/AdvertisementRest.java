@@ -50,7 +50,7 @@ public class AdvertisementRest implements AdvertisementOperation {
 
         LocalDateTime now = LocalDateTime.now();
 
-        String fileUrl = "/attachments/" + DateUtils.localDateTimeToString(now, Constant.DATE_TIME_NO_SYMBOL_PATTERN) + "/" + image.getOriginalFilename();
+        String fileUrl =  Constant.MinioDir.ATTACHMENTS +"/" + DateUtils.localDateTimeToString(now, Constant.DATE_TIME_NO_SYMBOL_PATTERN) + "/" + image.getOriginalFilename();
 
         UploadOptionDTO uploadOptionDTO = UploadOptionDTO.builder()
             .uri(fileUrl)

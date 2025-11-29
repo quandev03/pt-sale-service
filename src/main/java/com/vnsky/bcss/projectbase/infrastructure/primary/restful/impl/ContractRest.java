@@ -19,7 +19,7 @@ public class ContractRest implements ContractOperation {
     }
 
     @Override
-    public ResponseEntity<Object> genContract(MultipartFile template) throws Exception {
-        return ResponseEntity.ok(ocrServicePort.genContract(template));
+    public ResponseEntity<Object> genContract() throws Exception {
+        return ResponseEntity.ok(ocrServicePort.genContract());
     }
 }

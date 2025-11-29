@@ -8,6 +8,8 @@ import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorSubcriberKey;
 import com.vnsky.common.exception.domain.BaseException;
 import com.vnsky.common.exception.domain.ErrorKey;
+import com.vnsky.minio.dto.DownloadOptionDTO;
+import com.vnsky.minio.operation.MinioOperations;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
@@ -38,10 +40,12 @@ public class OcrService implements OcrServicePort {
     private static final Long MAX_SIZE_IMAGE = 5000 * 1024L * 1024L;
     private final RestOperations restTemplateOperation;
     private static final boolean DEBUG = true;
+    private final MinioOperations minioOperations;
 
 
-    public OcrService (@Qualifier("restTemplate") RestOperations restTemplateOperation) {
+    public OcrService (@Qualifier("restTemplate") RestOperations restTemplateOperation, MinioOperations minioOperations) {
         this.restTemplateOperation = restTemplateOperation;
+        this.minioOperations = minioOperations;
     }
 
     @Value("${third-party.integration.apikey}")
@@ -49,6 +53,8 @@ public class OcrService implements OcrServicePort {
 
     @Value("${third-party.integration.general}")
     private String urlGeneral;
+
+    private final String URL_TEMPALTE = "/contract-pt/example-2.docx";
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
@@ -69,7 +75,17 @@ public class OcrService implements OcrServicePort {
     }
 
     @Override
-    public Object genContract(MultipartFile template) throws Exception {
+    public Object genContract() throws Exception {
+
+        DownloadOptionDTO downloadOptionDTO = DownloadOptionDTO.builder()
+            .isPublic(false).uri(URL_TEMPALTE).build();
+        InputStream tem;
+        try {
+            tem =  minioOperations.download(downloadOptionDTO).getInputStream();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return fillTemplateToDocx(template.getInputStream(),test());
     }
 

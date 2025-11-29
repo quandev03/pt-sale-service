@@ -8,5 +8,5 @@ import java.io.IOException;
 
 public interface OcrServicePort {
     EKYCOCRResponseDTO callOCRAndFaceCheck(int cardType, MultipartFile front, MultipartFile back, MultipartFile portrait, String authenCode);
-    Object genContract(MultipartFile template) throws Exception;
+    Object genContract() throws Exception;
 }

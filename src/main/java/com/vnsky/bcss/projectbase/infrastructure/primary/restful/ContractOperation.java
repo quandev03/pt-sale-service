@@ -17,6 +17,6 @@ public interface ContractOperation {
         @RequestPart MultipartFile portrait);
 
     @PostMapping("/gen-contract")
-    ResponseEntity<Object> genContract(@RequestPart MultipartFile template) throws Exception;
+    ResponseEntity<Object> genContract() throws Exception;
 
 }

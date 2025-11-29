@@ -85,6 +85,19 @@ public class AdvertisementRest implements AdvertisementOperation {
         } else if (request.getImageUrl() != null) {
             imageUrl = request.getImageUrl();
         }
+        LocalDateTime now = LocalDateTime.now();
+
+        String fileUrl =  "/advertisements/" + DateUtils.localDateTimeToString(now, Constant.DATE_TIME_NO_SYMBOL_PATTERN) + "/" + image.getOriginalFilename();
+
+        try{
+            UploadOptionDTO uploadOptionDTO = UploadOptionDTO.builder()
+                .uri(fileUrl)
+                .isPublic(false)
+                .build();
+            minioClient.upload(image.getInputStream(), uploadOptionDTO);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
 
         // Map request to DTO
         AdvertisementDTO dto = AdvertisementDTO.builder()

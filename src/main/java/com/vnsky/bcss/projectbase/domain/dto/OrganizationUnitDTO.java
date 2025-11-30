@@ -147,4 +147,7 @@ public class OrganizationUnitDTO extends CommonDTO {
 
     @Schema(description = "Diên tích")
     private Long acreage;
+
+    @Schema(description = "Số điện thoại của chủ nhà (từ parent organization unit)")
+    private String ownerPhone;
 }

@@ -33,8 +33,18 @@ public class ContractRest implements ContractOperation {
     }
 
     @Override
-    public ResponseEntity<Object> genContract() throws Exception {
-        Resource resource = ocrServicePort.genContract();
+    public ResponseEntity<Object> genContract(
+        @RequestPart("request") CreateContractRequest request,
+        @RequestPart("frontImage") MultipartFile frontImage,
+        @RequestPart("backImage") MultipartFile backImage,
+        @RequestPart("portraitImage") MultipartFile portraitImage) throws Exception {
+        
+        // Set images to request (images không được sử dụng trong genContract, nhưng cần validate)
+        request.setFrontImage(frontImage);
+        request.setBackImage(backImage);
+        request.setPortraitImage(portraitImage);
+        
+        Resource resource = contractServicePort.genContract(request);
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(resource.getFilename()).build().toString())
             .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
@@ -48,12 +58,12 @@ public class ContractRest implements ContractOperation {
         @RequestPart("frontImage") MultipartFile frontImage,
         @RequestPart("backImage") MultipartFile backImage,
         @RequestPart("portraitImage") MultipartFile portraitImage) {
-        
+
         // Set images to request
         request.setFrontImage(frontImage);
         request.setBackImage(backImage);
         request.setPortraitImage(portraitImage);
-        
+
         ContractResponse response = contractServicePort.createContract(request);
         return ResponseEntity.ok(response);
     }
@@ -65,7 +75,7 @@ public class ContractRest implements ContractOperation {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
         Pageable pageable) {
-        
+
         Page<ContractResponse> contracts = contractServicePort.listContracts(ownerName, tenantName, fromDate, toDate, pageable);
         return ResponseEntity.ok(contracts);
     }

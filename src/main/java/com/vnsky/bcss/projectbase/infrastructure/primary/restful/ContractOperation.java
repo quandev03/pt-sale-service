@@ -23,8 +23,12 @@ public interface ContractOperation {
         @RequestPart MultipartFile back,
         @RequestPart MultipartFile portrait);
 
-    @PostMapping("/gen-contract")
-    ResponseEntity<Object> genContract() throws Exception;
+    @PostMapping(value = "/gen-contract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Object> genContract(
+        @RequestPart("request") @Valid CreateContractRequest request,
+        @RequestPart("frontImage") MultipartFile frontImage,
+        @RequestPart("backImage") MultipartFile backImage,
+        @RequestPart("portraitImage") MultipartFile portraitImage) throws Exception;
 
     @PostMapping(value = "/contracts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<ContractResponse> createContract(

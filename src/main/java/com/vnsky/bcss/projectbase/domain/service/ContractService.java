@@ -141,6 +141,72 @@ public class ContractService implements ContractServicePort {
     }
 
     @Override
+    public Resource genContract(CreateContractRequest request) throws Exception {
+        log.info("Generating contract PDF for organizationUnitId: {}", request.getOrganizationUnitId());
+
+        // Get room information
+        OrganizationUnitDTO room = organizationUnitRepoPort.findById(request.getOrganizationUnitId())
+            .orElseThrow(() -> BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
+                .message("Không tìm thấy thông tin phòng")
+                .build());
+
+        // Get owner information (parent of room)
+        OrganizationUnitDTO owner = null;
+        if (room.getParentId() != null) {
+            owner = organizationUnitRepoPort.findById(room.getParentId())
+                .orElse(null);
+        }
+
+        if (owner == null) {
+            throw BaseException.badRequest(ErrorCode.VALIDATION_ERROR_CODE)
+                .message("Không tìm thấy thông tin chủ trọ")
+                .build();
+        }
+
+        // Get room services (WATER, ELECTRICITY, ROOM_RENT)
+        List<RoomServiceDTO> roomServices = roomServiceRepoPort.findByOrgUnitId(request.getOrganizationUnitId());
+        Map<RoomServiceType, RoomServiceDTO> serviceMap = roomServices.stream()
+            .filter(service -> service.getServiceType() != null)
+            .collect(Collectors.toMap(
+                RoomServiceDTO::getServiceType,
+                service -> service,
+                (existing, replacement) -> existing
+            ));
+
+        // Fill ContractData with information from database
+        ContractData contractData = fillContractDataFromDatabase(
+            request.getContractData(),
+            room,
+            owner,
+            serviceMap
+        );
+
+        log.info("Generating contract PDF for owner: {}, tenant: {}", 
+            contractData.getOwnerName(), 
+            contractData.getTenantName());
+
+        try {
+            // Download template from MinIO
+            DownloadOptionDTO downloadOptionDTO = DownloadOptionDTO.builder()
+                .isPublic(false)
+                .uri(TEMPLATE_PATH)
+                .build();
+            InputStream template = minioOperations.download(downloadOptionDTO).getInputStream();
+
+            // Convert ContractData to Map
+            Map<String, String> dataMap = convertContractDataToMap(contractData);
+
+            // Generate PDF contract (không lưu vào DB, không upload lên MinIO)
+            return ocrServicePort.genContract(template, dataMap);
+        } catch (Exception e) {
+            log.error("Error generating contract PDF: {}", e.getMessage(), e);
+            throw BaseException.badRequest(ErrorCode.VALIDATION_ERROR_CODE)
+                .message("Lỗi khi generate hợp đồng: " + e.getMessage())
+                .build();
+        }
+    }
+
+    @Override
     public Page<ContractResponse> listContracts(String ownerName, String tenantName, 
                                                  LocalDateTime fromDate, LocalDateTime toDate, 
                                                  Pageable pageable) {

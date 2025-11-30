@@ -15,5 +15,7 @@ public interface ContractServicePort {
     Resource genContract(GenContractRequest request) throws Exception;
 
     Page<ContractResponse> listContracts(String ownerName, String tenantName, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable);
+
+    ContractResponse getContractById(String id);
 }
 

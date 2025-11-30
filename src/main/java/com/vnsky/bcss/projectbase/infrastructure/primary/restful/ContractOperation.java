@@ -42,4 +42,7 @@ public interface ContractOperation {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
         @PageableDefault Pageable pageable);
+
+    @GetMapping("/contracts/{id}")
+    ResponseEntity<ContractResponse> getContractById(@PathVariable String id);
 }

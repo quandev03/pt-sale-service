@@ -432,6 +432,15 @@ public class ContractService implements ContractServicePort {
             .build();
     }
 
+    @Override
+    public ContractResponse getContractById(String id) {
+        ContractDTO dto = contractRepoPort.findById(id)
+            .orElseThrow(() -> BaseException.notFoundError(ErrorCode.CONTRACT_NOT_FOUND)
+                .message("Contract not found with id: " + id)
+                .build());
+        return convertToResponse(dto);
+    }
+
     private ContractResponse convertToResponse(ContractDTO dto) {
         return ContractResponse.builder()
             .id(dto.getId())

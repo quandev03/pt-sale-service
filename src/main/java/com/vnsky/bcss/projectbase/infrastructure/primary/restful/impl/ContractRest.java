@@ -40,7 +40,7 @@ public class ContractRest implements ContractOperation {
     @Override
     public ResponseEntity<Object> genContract(
         @RequestPart("request") GenContractRequest request) throws Exception {
-        
+
         Resource resource = contractServicePort.genContract(request);
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(resource.getFilename()).build().toString())
@@ -95,5 +95,11 @@ public class ContractRest implements ContractOperation {
 
         Page<ContractResponse> contracts = contractServicePort.listContracts(ownerName, tenantName, fromDate, toDate, pageable);
         return ResponseEntity.ok(contracts);
+    }
+
+    @Override
+    public ResponseEntity<ContractResponse> getContractById(String id) {
+        ContractResponse response = contractServicePort.getContractById(id);
+        return ResponseEntity.ok(response);
     }
 }

@@ -155,6 +155,9 @@ public enum ErrorCode implements ErrorKey {
     PARTNER_PACKAGE_SUBSCRIPTION_INVALID_CYCLE("SALE310004"),
     PARTNER_PACKAGE_SUBSCRIPTION_INVALID_STATUS("SALE310005"),
 
+    // Contract Management
+    CONTRACT_NOT_FOUND("SALE320001"),
+
     ;
 
     private final String code;

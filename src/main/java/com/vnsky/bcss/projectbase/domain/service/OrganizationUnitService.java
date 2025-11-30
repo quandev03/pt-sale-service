@@ -47,7 +47,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
 
     @Override
     @Transactional
-    public OrganizationUnitDTO save(OrganizationUnitDTO organizationUnitDTO, String id) {
+    public OrganizationUnitDTO save(OrganizationUnitDTO organizationUnitDTO, String id, boolean isUpdate) {
         // Kiểm tra mã đơn vị
         OrganizationUnitDTO orgDTO = this.organizationUnitRepositoryPort.getByOrgCode(id, organizationUnitDTO.getOrgCode());
         if (!Objects.isNull(orgDTO)) {
@@ -86,11 +86,15 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
         organizationUnitDTO.setOrgType(Constant.OrgType.NBO);
         organizationUnitDTO.setClientId(SecurityUtil.getCurrentClientId());
         organizationUnitDTO.setParentCode(orgDTO.getOrgCode());
-        organizationUnitDTO.setParentId(orgDTO.getId());
+
         checkDuplicate(organizationUnitDTO);
         organizationUnitDTO.setProvinceCode(orgDTO.getProvinceCode());
         organizationUnitDTO.setWardCode(orgDTO.getWardCode());
         organizationUnitDTO.setAddress(orgDTO.getAddress());
+
+        if(!isUpdate) {
+            organizationUnitDTO.setParentId(orgDTO.getId());
+        }
 
         if (Objects.isNull(id)) {
             // Thêm mới
@@ -267,7 +271,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
     public List<OrganizationUnitDTO> getAvailableRooms() {
         log.info("{}Getting available rooms", LOG_PREFIX);
         List<OrganizationUnitDTO> rooms = organizationUnitRepositoryPort.findByRentalStatus(RoomRentalStatus.AVAILABLE);
-        
+
         // Load images and owner phone for each room
         for (OrganizationUnitDTO room : rooms) {
             try {
@@ -277,11 +281,11 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
                 // Set empty list if failed to load images
                 room.setImageUrls(new ArrayList<>());
             }
-            
+
             // Load owner phone from parent
             loadOwnerPhone(room);
         }
-        
+
         return rooms;
     }
 
@@ -291,11 +295,11 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
             String wardCode,
             Long minAcreage,
             Long maxAcreage) {
-        log.info("{}Getting available rooms with filters: provinceCode={}, wardCode={}, minAcreage={}, maxAcreage={}", 
+        log.info("{}Getting available rooms with filters: provinceCode={}, wardCode={}, minAcreage={}, maxAcreage={}",
             LOG_PREFIX, provinceCode, wardCode, minAcreage, maxAcreage);
         List<OrganizationUnitDTO> rooms = organizationUnitRepositoryPort.findAvailableRoomsWithFilters(
             provinceCode, wardCode, minAcreage, maxAcreage);
-        
+
         // Load images and owner phone for each room
         for (OrganizationUnitDTO room : rooms) {
             try {
@@ -305,11 +309,11 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
                 // Set empty list if failed to load images
                 room.setImageUrls(new ArrayList<>());
             }
-            
+
             // Load owner phone from parent
             loadOwnerPhone(room);
         }
-        
+
         return rooms;
     }
 
@@ -323,7 +327,7 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
                 if (parent.isPresent()) {
                     room.setOwnerPhone(parent.get().getPhone());
                 } else {
-                    log.warn("{}Parent organization unit not found for room {}: parentId={}", 
+                    log.warn("{}Parent organization unit not found for room {}: parentId={}",
                         LOG_PREFIX, room.getId(), room.getParentId());
                     room.setOwnerPhone(null);
                 }

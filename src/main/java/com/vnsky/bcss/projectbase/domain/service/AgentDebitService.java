@@ -74,7 +74,7 @@ public class AgentDebitService implements AgentDebitServicePort {
         organizationUnitDTO.setDebtLimit(Optional.ofNullable(organizationUnitDTO.getDebtLimit()).orElse(0L) + amountLong);
         organizationUnitDTO.setDebtLimitMbf(Optional.ofNullable(organizationUnitDTO.getDebtLimitMbf()).orElse(0L) + amountLong);
 
-        organizationUnitServicePort.save(organizationUnitDTO, organizationUnitDTO.getId());
+        organizationUnitServicePort.save(organizationUnitDTO, organizationUnitDTO.getId(), false);
 
         // Tạo bản ghi lịch sử trong AgentDebit
         AgentDebitDTO agentDebit = AgentDebitDTO.builder()

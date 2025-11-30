@@ -11,7 +11,7 @@ import com.vnsky.bcss.projectbase.infrastructure.data.response.partner.DebtReven
 import java.util.List;
 
 public interface OrganizationUnitServicePort {
-    OrganizationUnitDTO save(OrganizationUnitDTO organizationUnitDTO, String id);
+    OrganizationUnitDTO save(OrganizationUnitDTO organizationUnitDTO, String id, boolean isUpdate);
     List<GetAllOrganizationUnitResponse> getPartnersWithoutOrganizationLimit();
     List<GetAllOrganizationUnitResponse> getAll(Integer status, String orgType, String orgSubType, String textSearch, String rentalStatus);
 

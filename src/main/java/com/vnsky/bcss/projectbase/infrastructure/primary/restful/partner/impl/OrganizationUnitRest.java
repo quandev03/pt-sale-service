@@ -36,14 +36,14 @@ public class OrganizationUnitRest implements OrganizationUnitOperation {
 
     @Override
     public ResponseEntity<Object> addOrganizationUnit(OrganizationUnitDTO organizationUnitDTO) {
-        return ResponseEntity.ok(organizationUnitServicePort.save(organizationUnitDTO, null));
+        return ResponseEntity.ok(organizationUnitServicePort.save(organizationUnitDTO, null, false));
     }
 
     @Override
     public ResponseEntity<Object> updateOrganizationUnit(
         OrganizationUnitDTO organizationUnitDTO,
          String id) {
-        return ResponseEntity.ok(this.organizationUnitServicePort.save(organizationUnitDTO, id));
+        return ResponseEntity.ok(this.organizationUnitServicePort.save(organizationUnitDTO, id, true));
     }
 
     @Override

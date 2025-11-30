@@ -400,7 +400,7 @@ public class BookEsimService implements BookEsimServicePort {
         OrganizationUnitDTO organizationUnitDTO = organizationUnitServicePort.get(organizationId);
         organizationUnitDTO.setDebtLimit(organizationUnitDTO.getDebtLimit() - debitLimit);
         organizationUnitDTO.setDebtLimitMbf(organizationUnitDTO.getDebtLimitMbf() - debitLimitMbf);
-        this.organizationUnitServicePort.save(organizationUnitDTO, organizationUnitDTO.getId());
+        this.organizationUnitServicePort.save(organizationUnitDTO, organizationUnitDTO.getId(), false);
     }
 
     @Override

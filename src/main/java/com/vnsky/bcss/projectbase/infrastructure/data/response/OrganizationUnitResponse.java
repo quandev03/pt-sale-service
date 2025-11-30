@@ -34,4 +34,6 @@ public class OrganizationUnitResponse {
     
     private Long acreage;
     private List<String> imageUrls;
+    
+    private String ownerPhone; // Số điện thoại của chủ nhà (từ parent organization unit)
 }

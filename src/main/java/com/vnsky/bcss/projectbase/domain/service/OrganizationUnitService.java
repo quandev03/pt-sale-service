@@ -266,7 +266,23 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
     @Override
     public List<OrganizationUnitDTO> getAvailableRooms() {
         log.info("{}Getting available rooms", LOG_PREFIX);
-        return organizationUnitRepositoryPort.findByRentalStatus(RoomRentalStatus.AVAILABLE);
+        List<OrganizationUnitDTO> rooms = organizationUnitRepositoryPort.findByRentalStatus(RoomRentalStatus.AVAILABLE);
+        
+        // Load images and owner phone for each room
+        for (OrganizationUnitDTO room : rooms) {
+            try {
+                room.setImageUrls(imageServicePort.getImageUrls(room.getId()));
+            } catch (Exception e) {
+                log.warn("{}Failed to load images for room {}: {}", LOG_PREFIX, room.getId(), e.getMessage());
+                // Set empty list if failed to load images
+                room.setImageUrls(new ArrayList<>());
+            }
+            
+            // Load owner phone from parent
+            loadOwnerPhone(room);
+        }
+        
+        return rooms;
     }
 
     @Override
@@ -277,7 +293,46 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
             Long maxAcreage) {
         log.info("{}Getting available rooms with filters: provinceCode={}, wardCode={}, minAcreage={}, maxAcreage={}", 
             LOG_PREFIX, provinceCode, wardCode, minAcreage, maxAcreage);
-        return organizationUnitRepositoryPort.findAvailableRoomsWithFilters(
+        List<OrganizationUnitDTO> rooms = organizationUnitRepositoryPort.findAvailableRoomsWithFilters(
             provinceCode, wardCode, minAcreage, maxAcreage);
+        
+        // Load images and owner phone for each room
+        for (OrganizationUnitDTO room : rooms) {
+            try {
+                room.setImageUrls(imageServicePort.getImageUrls(room.getId()));
+            } catch (Exception e) {
+                log.warn("{}Failed to load images for room {}: {}", LOG_PREFIX, room.getId(), e.getMessage());
+                // Set empty list if failed to load images
+                room.setImageUrls(new ArrayList<>());
+            }
+            
+            // Load owner phone from parent
+            loadOwnerPhone(room);
+        }
+        
+        return rooms;
+    }
+
+    /**
+     * Load owner phone from parent organization unit
+     */
+    private void loadOwnerPhone(OrganizationUnitDTO room) {
+        if (room.getParentId() != null) {
+            try {
+                Optional<OrganizationUnitDTO> parent = organizationUnitRepositoryPort.findById(room.getParentId());
+                if (parent.isPresent()) {
+                    room.setOwnerPhone(parent.get().getPhone());
+                } else {
+                    log.warn("{}Parent organization unit not found for room {}: parentId={}", 
+                        LOG_PREFIX, room.getId(), room.getParentId());
+                    room.setOwnerPhone(null);
+                }
+            } catch (Exception e) {
+                log.warn("{}Failed to load owner phone for room {}: {}", LOG_PREFIX, room.getId(), e.getMessage());
+                room.setOwnerPhone(null);
+            }
+        } else {
+            room.setOwnerPhone(null);
+        }
     }
 }

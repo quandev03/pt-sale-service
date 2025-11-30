@@ -154,6 +154,7 @@ public class OrganizationUnitRest implements OrganizationUnitOperation {
             .rentalStatus(dto.getRentalStatus() != null ? dto.getRentalStatus().name() : null)
             .acreage(dto.getAcreage())
             .imageUrls(dto.getImageUrls() != null ? dto.getImageUrls() : new ArrayList<>())
+            .ownerPhone(dto.getOwnerPhone())
             .build();
     }
 }

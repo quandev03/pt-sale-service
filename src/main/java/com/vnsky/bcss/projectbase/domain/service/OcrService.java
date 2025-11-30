@@ -78,18 +78,21 @@ public class OcrService implements OcrServicePort {
 
     @Override
     public Resource genContract() throws Exception {
-
         DownloadOptionDTO downloadOptionDTO = DownloadOptionDTO.builder()
             .isPublic(false).uri(URL_TEMPALTE).build();
-        InputStream tem;
+        InputStream template;
         try {
-            tem =  minioOperations.download(downloadOptionDTO).getInputStream();
+            template = minioOperations.download(downloadOptionDTO).getInputStream();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return genContract(template, test());
+    }
 
+    @Override
+    public Resource genContract(InputStream template, Map<String, String> data) throws Exception {
         // Generate DOCX first
-        Resource docxResource = fillTemplateToDocx(tem, test());
+        Resource docxResource = fillTemplateToDocx(template, data);
         
         // Convert DOCX to PDF
         ByteArrayOutputStream docxOutputStream = new ByteArrayOutputStream();

@@ -3,6 +3,7 @@ package com.vnsky.bcss.projectbase.infrastructure.primary.restful.impl;
 import com.vnsky.bcss.projectbase.domain.port.primary.ContractServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.OcrServicePort;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.CreateContractRequest;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.CreateContractRequestData;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.GenContractRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.ContractResponse;
 import com.vnsky.bcss.projectbase.infrastructure.primary.restful.ContractOperation;
@@ -50,10 +51,10 @@ public class ContractRest implements ContractOperation {
 
     @Override
     public ResponseEntity<ContractResponse> createContract(
-        @RequestPart(value = "request", required = true) @Valid CreateContractRequest request,
-        @RequestPart(value = "frontImage", required = true) MultipartFile frontImage,
-        @RequestPart(value = "backImage", required = true) MultipartFile backImage,
-        @RequestPart(value = "portraitImage", required = true) MultipartFile portraitImage) {
+        @RequestPart("request") @Valid CreateContractRequestData requestData,
+        @RequestPart("frontImage") MultipartFile frontImage,
+        @RequestPart("backImage") MultipartFile backImage,
+        @RequestPart("portraitImage") MultipartFile portraitImage) {
 
         // Validate images
         if (frontImage == null || frontImage.isEmpty()) {
@@ -72,7 +73,10 @@ public class ContractRest implements ContractOperation {
                 .build();
         }
 
-        // Set images to request
+        // Create full request object
+        CreateContractRequest request = new CreateContractRequest();
+        request.setOrganizationUnitId(requestData.getOrganizationUnitId());
+        request.setContractData(requestData.getContractData());
         request.setFrontImage(frontImage);
         request.setBackImage(backImage);
         request.setPortraitImage(portraitImage);

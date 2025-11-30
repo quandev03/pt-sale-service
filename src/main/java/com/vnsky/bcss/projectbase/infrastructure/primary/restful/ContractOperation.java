@@ -1,6 +1,6 @@
 package com.vnsky.bcss.projectbase.infrastructure.primary.restful;
 
-import com.vnsky.bcss.projectbase.infrastructure.data.request.CreateContractRequest;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.CreateContractRequestData;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.GenContractRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.ContractResponse;
 import jakarta.validation.Valid;
@@ -30,7 +30,7 @@ public interface ContractOperation {
 
     @PostMapping(value = "/contracts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<ContractResponse> createContract(
-        @RequestPart("request") @Valid CreateContractRequest request,
+        @RequestPart("request") @Valid CreateContractRequestData requestData,
         @RequestPart("frontImage") MultipartFile frontImage,
         @RequestPart("backImage") MultipartFile backImage,
         @RequestPart("portraitImage") MultipartFile portraitImage);

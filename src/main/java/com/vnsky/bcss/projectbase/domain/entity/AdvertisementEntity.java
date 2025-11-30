@@ -44,6 +44,9 @@ public class AdvertisementEntity extends AbstractAuditingEntity {
 
     @Column(name = "CLIENT_ID", nullable = false)
     private String clientId;
+
+    @Column(name = "VIEW_COUNT", nullable = false)
+    private Long viewCount = 0L;
 }
 
 

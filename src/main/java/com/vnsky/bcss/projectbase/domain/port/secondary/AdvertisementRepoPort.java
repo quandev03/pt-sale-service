@@ -19,6 +19,10 @@ public interface AdvertisementRepoPort {
     List<AdvertisementDTO> findByClientId(String clientId);
 
     List<AdvertisementDTO> findActiveAdvertisements(LocalDateTime currentDate);
+
+    Optional<AdvertisementDTO> findRandomActiveAdvertisement(LocalDateTime currentDate);
+
+    void incrementViewCount(String id);
 }
 
 

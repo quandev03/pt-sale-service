@@ -18,6 +18,10 @@ public interface AdvertisementServicePort {
     List<AdvertisementDTO> getAll(String clientId, AdvertisementStatus status);
 
     List<AdvertisementDTO> getActiveAdvertisements();
+
+    AdvertisementDTO getRandomActiveAdvertisement();
+
+    void incrementViewCount(String id);
 }
 
 

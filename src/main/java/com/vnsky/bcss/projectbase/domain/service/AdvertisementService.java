@@ -155,6 +155,47 @@ public class AdvertisementService implements AdvertisementServicePort {
         return advertisementRepoPort.findActiveAdvertisements(now);
     }
 
+    @Override
+    @Transactional
+    public AdvertisementDTO getRandomActiveAdvertisement() {
+        log.info("{}Getting random active advertisement", LOG_PREFIX);
+
+        LocalDateTime now = LocalDateTime.now();
+        AdvertisementDTO advertisement = advertisementRepoPort.findRandomActiveAdvertisement(now)
+            .orElseThrow(() -> {
+                log.warn("{}No active advertisement found", LOG_PREFIX);
+                return BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
+                    .message("Không tìm thấy quảng cáo đang diễn ra")
+                    .build();
+            });
+
+        // Increment view count when getting random advertisement
+        advertisementRepoPort.incrementViewCount(advertisement.getId());
+        log.info("{}View count incremented for advertisement: {}", LOG_PREFIX, advertisement.getId());
+
+        // Reload to get updated view count
+        return advertisementRepoPort.findById(advertisement.getId())
+            .orElse(advertisement);
+    }
+
+    @Override
+    @Transactional
+    public void incrementViewCount(String id) {
+        log.info("{}Incrementing view count for advertisement: {}", LOG_PREFIX, id);
+
+        // Check if advertisement exists
+        advertisementRepoPort.findById(id)
+            .orElseThrow(() -> {
+                log.error("{}Advertisement not found: {}", LOG_PREFIX, id);
+                return BaseException.notFoundError(ErrorCode.ORG_NOT_EXISTED)
+                    .message("Quảng cáo không tồn tại")
+                    .build();
+            });
+
+        advertisementRepoPort.incrementViewCount(id);
+        log.info("{}View count incremented for advertisement: {}", LOG_PREFIX, id);
+    }
+
     /**
      * Upload image to MinIO and return the file URL
      */

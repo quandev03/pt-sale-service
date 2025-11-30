@@ -23,6 +23,20 @@ public interface AdvertisementRepository extends JpaRepository<AdvertisementEnti
         @Param("currentDate") LocalDateTime currentDate
     );
 
+    @Query(value = """
+        SELECT * FROM (
+            SELECT a.* FROM ADVERTISEMENT a
+            WHERE a.STATUS = :status
+              AND :currentDate >= a.START_DATE
+              AND :currentDate <= a.END_DATE
+            ORDER BY DBMS_RANDOM.VALUE
+        ) WHERE ROWNUM = 1
+        """, nativeQuery = true)
+    Optional<AdvertisementEntity> findRandomActiveAdvertisement(
+        @Param("status") String status,
+        @Param("currentDate") LocalDateTime currentDate
+    );
+
     Optional<AdvertisementEntity> findByIdAndClientId(String id, String clientId);
 }
 

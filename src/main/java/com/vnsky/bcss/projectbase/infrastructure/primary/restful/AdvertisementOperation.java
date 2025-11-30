@@ -62,5 +62,15 @@ public interface AdvertisementOperation {
     @Operation(summary = "Lấy danh sách quảng cáo đang diễn ra (Public - không cần xác thực)")
     @ApiResponse(responseCode = "200", description = "Danh sách quảng cáo đang diễn ra")
     ResponseEntity<List<AdvertisementResponse>> getActiveAdvertisements();
+
+    @GetMapping("/random")
+    @Operation(summary = "Lấy quảng cáo ngẫu nhiên đang diễn ra (Public - không cần xác thực)")
+    @ApiResponse(responseCode = "200", description = "Quảng cáo ngẫu nhiên đang diễn ra")
+    ResponseEntity<AdvertisementResponse> getRandomActiveAdvertisement();
+
+    @PostMapping("/{id}/increment-view")
+    @Operation(summary = "Tăng lượt xem quảng cáo (Public - không cần xác thực)")
+    @ApiResponse(responseCode = "200", description = "Lượt xem đã được tăng")
+    ResponseEntity<Object> incrementViewCount(@PathVariable String id);
 }
 

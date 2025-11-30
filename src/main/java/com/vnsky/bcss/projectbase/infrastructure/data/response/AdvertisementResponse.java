@@ -50,6 +50,9 @@ public class AdvertisementResponse {
 
     @Schema(description = "Ngày sửa")
     private LocalDateTime modifiedDate;
+
+    @Schema(description = "Lượt xem")
+    private Long viewCount;
 }
 
 

@@ -23,6 +23,7 @@ public class AdvertisementDTO extends AbstractAuditDTO {
     private LocalDateTime endDate;
     private AdvertisementStatus status;
     private String clientId;
+    private Long viewCount;
 }
 
 

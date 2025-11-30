@@ -53,6 +53,20 @@ public class AdvertisementAdapter implements AdvertisementRepoPort {
             .map(mapper::toDto)
             .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<AdvertisementDTO> findRandomActiveAdvertisement(LocalDateTime currentDate) {
+        return repository.findRandomActiveAdvertisement(AdvertisementStatus.ACTIVE.name(), currentDate)
+            .map(mapper::toDto);
+    }
+
+    @Override
+    public void incrementViewCount(String id) {
+        repository.findById(id).ifPresent(ad -> {
+            ad.setViewCount(ad.getViewCount() != null ? ad.getViewCount() + 1 : 1L);
+            repository.save(ad);
+        });
+    }
 }
 
 

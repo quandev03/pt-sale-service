@@ -145,6 +145,18 @@ public class AdvertisementRest implements AdvertisementOperation {
         return ResponseEntity.ok(responses);
     }
 
+    @Override
+    public ResponseEntity<AdvertisementResponse> getRandomActiveAdvertisement() {
+        AdvertisementDTO dto = advertisementServicePort.getRandomActiveAdvertisement();
+        return ResponseEntity.ok(mapToResponse(dto));
+    }
+
+    @Override
+    public ResponseEntity<Object> incrementViewCount(String id) {
+        advertisementServicePort.incrementViewCount(id);
+        return ResponseEntity.ok(Map.of("message", "Lượt xem đã được tăng thành công"));
+    }
+
     private AdvertisementResponse mapToResponse(AdvertisementDTO dto) {
         return AdvertisementResponse.builder()
             .id(dto.getId())
@@ -159,6 +171,7 @@ public class AdvertisementRest implements AdvertisementOperation {
             .createdDate(dto.getCreatedDate())
             .modifiedBy(dto.getModifiedBy())
             .modifiedDate(dto.getModifiedDate())
+            .viewCount(dto.getViewCount() != null ? dto.getViewCount() : 0L)
             .build();
     }
 }

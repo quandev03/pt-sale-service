@@ -6,6 +6,8 @@ import com.vnsky.bcss.projectbase.domain.dto.GeneralDTO;
 import com.vnsky.bcss.projectbase.domain.port.primary.OcrServicePort;
 import com.vnsky.bcss.projectbase.shared.constant.Constant;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorSubcriberKey;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.TypeContract;
+import com.vnsky.bcss.projectbase.shared.pdf.ContractUtils;
 import com.vnsky.common.exception.domain.BaseException;
 import com.vnsky.common.exception.domain.ErrorKey;
 import com.vnsky.minio.dto.DownloadOptionDTO;
@@ -86,7 +88,24 @@ public class OcrService implements OcrServicePort {
             throw new RuntimeException(e);
         }
 
-        return fillTemplateToDocx(tem,test());
+        // Generate DOCX first
+        Resource docxResource = fillTemplateToDocx(tem, test());
+        
+        // Convert DOCX to PDF
+        ByteArrayOutputStream docxOutputStream = new ByteArrayOutputStream();
+        docxResource.getInputStream().transferTo(docxOutputStream);
+        InputStream docxInputStream = new ByteArrayInputStream(docxOutputStream.toByteArray());
+        
+        ByteArrayOutputStream pdfOutputStream = ContractUtils.convertWordToPdfByteArrayOutputStream(
+            docxInputStream, TypeContract.PDF
+        );
+        
+        return new ByteArrayResource(pdfOutputStream.toByteArray()) {
+            @Override
+            public String getFilename() {
+                return "generated-contract.pdf";
+            }
+        };
     }
 
     private EKYCOCRResponseDTO getOCR(EKYCOCRRequestDTO ekycocrRequestDTO) {

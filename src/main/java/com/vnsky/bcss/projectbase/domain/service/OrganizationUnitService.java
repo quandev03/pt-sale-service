@@ -93,7 +93,8 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
         organizationUnitDTO.setAddress(orgDTO.getAddress());
 
         if(!isUpdate) {
-            organizationUnitDTO.setParentId(orgDTO.getId());
+            OrganizationUnitDTO parent = this.organizationUnitRepositoryPort.getRootOrg(SecurityUtil.getCurrentClientId());
+            organizationUnitDTO.setParentId(parent.getId());
         }
 
         if (Objects.isNull(id)) {

@@ -312,4 +312,21 @@ public class OrganizationUnitAdapter extends BaseJPAAdapterVer2<OrganizationUnit
             .map(mapper::toDto)
             .toList();
     }
+
+    @Override
+    public List<OrganizationUnitDTO> findAvailableRoomsWithFilters(
+            String provinceCode,
+            String wardCode,
+            Long minAcreage,
+            Long maxAcreage) {
+        return repository.findAvailableRoomsWithFilters(
+                com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomRentalStatus.AVAILABLE,
+                provinceCode,
+                wardCode,
+                minAcreage,
+                maxAcreage
+        ).stream()
+            .map(mapper::toDto)
+            .toList();
+    }
 }

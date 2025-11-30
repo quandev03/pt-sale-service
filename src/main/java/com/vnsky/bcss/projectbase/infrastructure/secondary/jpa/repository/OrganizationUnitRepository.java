@@ -302,13 +302,29 @@ public interface OrganizationUnitRepository extends BaseJPARepository<Organizati
 
 
     @Query(value = """
-        Select * from ORGANIZATION_UNIT ou 
-        where ou.CLIENT_ID = :clientId 
-        and ou.PARENT_ID is NULL 
+        Select * from ORGANIZATION_UNIT ou
+        where ou.CLIENT_ID = :clientId
+        and ou.PARENT_ID is NOT NULL
         AND ORG_TYPE = 'NBO'
         AND ROWNUM = 1
         """, nativeQuery = true)
     Optional<OrganizationUnitEntity> getOrgRoot(String clientId);
 
     List<OrganizationUnitEntity> findByRentalStatus(RoomRentalStatus rentalStatus);
+
+    @Query("""
+        SELECT o FROM OrganizationUnitEntity o
+        WHERE o.rentalStatus = :rentalStatus
+          AND (:provinceCode IS NULL OR o.provinceCode = :provinceCode)
+          AND (:wardCode IS NULL OR o.wardCode = :wardCode)
+          AND (:minAcreage IS NULL OR o.acreage >= :minAcreage)
+          AND (:maxAcreage IS NULL OR o.acreage <= :maxAcreage)
+        ORDER BY o.createdDate DESC
+        """)
+    List<OrganizationUnitEntity> findAvailableRoomsWithFilters(
+        @Param("rentalStatus") RoomRentalStatus rentalStatus,
+        @Param("provinceCode") String provinceCode,
+        @Param("wardCode") String wardCode,
+        @Param("minAcreage") Long minAcreage,
+        @Param("maxAcreage") Long maxAcreage);
 }

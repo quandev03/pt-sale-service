@@ -28,7 +28,11 @@ public interface OrganizationUnitOperation {
     @GetMapping("/available")
     @Operation(summary = "Lấy danh sách phòng chưa thuê (Public - không cần xác thực)")
     @ApiResponse(responseCode = "200", description = "Danh sách phòng chưa thuê")
-    ResponseEntity<List<com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitResponse>> getAvailableRooms();
+    ResponseEntity<List<com.vnsky.bcss.projectbase.infrastructure.data.response.OrganizationUnitResponse>> getAvailableRooms(
+        @RequestParam(required = false) String provinceCode,
+        @RequestParam(required = false) String wardCode,
+        @RequestParam(required = false) Long minAcreage,
+        @RequestParam(required = false) Long maxAcreage);
 
     @PostMapping
     @Operation(summary = "Add Organization Unit")

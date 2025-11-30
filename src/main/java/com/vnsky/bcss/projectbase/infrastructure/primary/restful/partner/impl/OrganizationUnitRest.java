@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -128,8 +129,13 @@ public class OrganizationUnitRest implements OrganizationUnitOperation {
     }
 
     @Override
-    public ResponseEntity<List<OrganizationUnitResponse>> getAvailableRooms() {
-        List<OrganizationUnitDTO> dtos = organizationUnitServicePort.getAvailableRooms();
+    public ResponseEntity<List<OrganizationUnitResponse>> getAvailableRooms(
+            String provinceCode,
+            String wardCode,
+            Long minAcreage,
+            Long maxAcreage) {
+        List<OrganizationUnitDTO> dtos = organizationUnitServicePort.getAvailableRoomsWithFilters(
+            provinceCode, wardCode, minAcreage, maxAcreage);
         List<OrganizationUnitResponse> responses = dtos.stream()
             .map(this::mapToResponse)
             .collect(Collectors.toList());
@@ -146,6 +152,8 @@ public class OrganizationUnitRest implements OrganizationUnitOperation {
             .email(dto.getEmail())
             .priceRoom(dto.getPriceRoom())
             .rentalStatus(dto.getRentalStatus() != null ? dto.getRentalStatus().name() : null)
+            .acreage(dto.getAcreage())
+            .imageUrls(dto.getImageUrls() != null ? dto.getImageUrls() : new ArrayList<>())
             .build();
     }
 }

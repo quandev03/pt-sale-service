@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
@@ -30,4 +31,7 @@ public class OrganizationUnitResponse {
     private String email;
     private BigDecimal priceRoom;
     private String rentalStatus;
+    
+    private Long acreage;
+    private List<String> imageUrls;
 }

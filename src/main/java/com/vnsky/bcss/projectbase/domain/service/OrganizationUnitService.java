@@ -268,4 +268,16 @@ public class OrganizationUnitService implements OrganizationUnitServicePort {
         log.info("{}Getting available rooms", LOG_PREFIX);
         return organizationUnitRepositoryPort.findByRentalStatus(RoomRentalStatus.AVAILABLE);
     }
+
+    @Override
+    public List<OrganizationUnitDTO> getAvailableRoomsWithFilters(
+            String provinceCode,
+            String wardCode,
+            Long minAcreage,
+            Long maxAcreage) {
+        log.info("{}Getting available rooms with filters: provinceCode={}, wardCode={}, minAcreage={}, maxAcreage={}", 
+            LOG_PREFIX, provinceCode, wardCode, minAcreage, maxAcreage);
+        return organizationUnitRepositoryPort.findAvailableRoomsWithFilters(
+            provinceCode, wardCode, minAcreage, maxAcreage);
+    }
 }

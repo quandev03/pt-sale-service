@@ -36,4 +36,10 @@ public interface OrganizationUnitServicePort {
     DebtRevenueResponse getDebtRevenue();
 
     List<OrganizationUnitDTO> getAvailableRooms();
+
+    List<OrganizationUnitDTO> getAvailableRoomsWithFilters(
+        String provinceCode,
+        String wardCode,
+        Long minAcreage,
+        Long maxAcreage);
 }

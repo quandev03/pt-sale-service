@@ -107,4 +107,10 @@ public interface OrganizationUnitRepoPort {
     OrganizationUnitDTO getRootOrg(String clientId);
 
     List<OrganizationUnitDTO> findByRentalStatus(RoomRentalStatus rentalStatus);
+
+    List<OrganizationUnitDTO> findAvailableRoomsWithFilters(
+        String provinceCode,
+        String wardCode,
+        Long minAcreage,
+        Long maxAcreage);
 }

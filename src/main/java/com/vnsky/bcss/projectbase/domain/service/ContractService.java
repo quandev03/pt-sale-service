@@ -10,6 +10,7 @@ import com.vnsky.bcss.projectbase.domain.port.secondary.ContractRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.OrganizationUnitRepoPort;
 import com.vnsky.bcss.projectbase.domain.port.secondary.RoomServiceRepoPort;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.CreateContractRequest;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.GenContractRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.ContractResponse;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
 import com.vnsky.bcss.projectbase.shared.enumeration.domain.RoomServiceType;
@@ -141,7 +142,7 @@ public class ContractService implements ContractServicePort {
     }
 
     @Override
-    public Resource genContract(CreateContractRequest request) throws Exception {
+    public Resource genContract(GenContractRequest request) throws Exception {
         log.info("Generating contract PDF for organizationUnitId: {}", request.getOrganizationUnitId());
 
         // Get room information

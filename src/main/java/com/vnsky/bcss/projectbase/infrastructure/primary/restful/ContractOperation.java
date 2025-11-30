@@ -1,6 +1,7 @@
 package com.vnsky.bcss.projectbase.infrastructure.primary.restful;
 
 import com.vnsky.bcss.projectbase.infrastructure.data.request.CreateContractRequest;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.GenContractRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.ContractResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -25,10 +26,7 @@ public interface ContractOperation {
 
     @PostMapping(value = "/gen-contract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<Object> genContract(
-        @RequestPart("request") @Valid CreateContractRequest request,
-        @RequestPart("frontImage") MultipartFile frontImage,
-        @RequestPart("backImage") MultipartFile backImage,
-        @RequestPart("portraitImage") MultipartFile portraitImage) throws Exception;
+        @RequestPart("request") @Valid GenContractRequest request) throws Exception;
 
     @PostMapping(value = "/contracts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<ContractResponse> createContract(

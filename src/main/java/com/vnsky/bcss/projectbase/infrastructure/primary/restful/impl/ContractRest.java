@@ -3,6 +3,7 @@ package com.vnsky.bcss.projectbase.infrastructure.primary.restful.impl;
 import com.vnsky.bcss.projectbase.domain.port.primary.ContractServicePort;
 import com.vnsky.bcss.projectbase.domain.port.primary.OcrServicePort;
 import com.vnsky.bcss.projectbase.infrastructure.data.request.CreateContractRequest;
+import com.vnsky.bcss.projectbase.infrastructure.data.request.GenContractRequest;
 import com.vnsky.bcss.projectbase.infrastructure.data.response.ContractResponse;
 import com.vnsky.bcss.projectbase.infrastructure.primary.restful.ContractOperation;
 import lombok.RequiredArgsConstructor;
@@ -34,15 +35,7 @@ public class ContractRest implements ContractOperation {
 
     @Override
     public ResponseEntity<Object> genContract(
-        @RequestPart("request") CreateContractRequest request,
-        @RequestPart("frontImage") MultipartFile frontImage,
-        @RequestPart("backImage") MultipartFile backImage,
-        @RequestPart("portraitImage") MultipartFile portraitImage) throws Exception {
-        
-        // Set images to request (images không được sử dụng trong genContract, nhưng cần validate)
-        request.setFrontImage(frontImage);
-        request.setBackImage(backImage);
-        request.setPortraitImage(portraitImage);
+        @RequestPart("request") GenContractRequest request) throws Exception {
         
         Resource resource = contractServicePort.genContract(request);
         return ResponseEntity.ok()

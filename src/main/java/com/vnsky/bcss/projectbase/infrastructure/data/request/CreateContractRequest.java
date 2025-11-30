@@ -16,13 +16,12 @@ public class CreateContractRequest {
     @Valid
     private ContractData contractData;
 
-    @NotNull
+    // Images are received separately via @RequestPart, not in JSON
+    // They will be set by the controller after validation
     private MultipartFile frontImage;
 
-    @NotNull
     private MultipartFile backImage;
 
-    @NotNull
     private MultipartFile portraitImage;
 }
 

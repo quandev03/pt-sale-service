@@ -18,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.vnsky.bcss.projectbase.shared.enumeration.domain.ErrorCode;
+import com.vnsky.common.exception.domain.BaseException;
+import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;
 
@@ -47,10 +50,27 @@ public class ContractRest implements ContractOperation {
 
     @Override
     public ResponseEntity<ContractResponse> createContract(
-        @RequestPart("request") CreateContractRequest request,
-        @RequestPart("frontImage") MultipartFile frontImage,
-        @RequestPart("backImage") MultipartFile backImage,
-        @RequestPart("portraitImage") MultipartFile portraitImage) {
+        @RequestPart(value = "request", required = true) @Valid CreateContractRequest request,
+        @RequestPart(value = "frontImage", required = true) MultipartFile frontImage,
+        @RequestPart(value = "backImage", required = true) MultipartFile backImage,
+        @RequestPart(value = "portraitImage", required = true) MultipartFile portraitImage) {
+
+        // Validate images
+        if (frontImage == null || frontImage.isEmpty()) {
+            throw BaseException.badRequest(ErrorCode.VALIDATION_ERROR_CODE)
+                .message("frontImage must not be null or empty")
+                .build();
+        }
+        if (backImage == null || backImage.isEmpty()) {
+            throw BaseException.badRequest(ErrorCode.VALIDATION_ERROR_CODE)
+                .message("backImage must not be null or empty")
+                .build();
+        }
+        if (portraitImage == null || portraitImage.isEmpty()) {
+            throw BaseException.badRequest(ErrorCode.VALIDATION_ERROR_CODE)
+                .message("portraitImage must not be null or empty")
+                .build();
+        }
 
         // Set images to request
         request.setFrontImage(frontImage);
